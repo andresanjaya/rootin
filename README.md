@@ -11,6 +11,8 @@ Rootin adalah aplikasi pengingat rutin berdasarkan [PRD](./prd-reminder-pwa-mvp-
 
 Publishable key dapat digunakan di browser; RLS menentukan baris yang boleh dibaca atau ditulis. Jangan menaruh secret/service role key di variabel `NEXT_PUBLIC_`.
 
+Untuk Vercel, `.env.production` berisi URL dan publishable key publik agar build dari GitHub tetap terkonfigurasi. Nilai yang diatur pada Vercel Environment Variables akan mengambil prioritas; setelah mengubahnya, lakukan redeploy. `.env.local` tetap hanya untuk mesin pengembang.
+
 ## Menjalankan aplikasi
 
 ```bash
