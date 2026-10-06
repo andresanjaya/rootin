@@ -39,6 +39,7 @@ describe("due status", () => {
   it("labels overdue and snoozed reminders without changing the base due date", () => {
     expect(toReminderView(base, "2026-10-08").status).toBe("overdue");
     expect(toReminderView({ ...base, snoozed_until: "2026-10-10" }, "2026-10-08").status).toBe("soon");
+    expect(toReminderView({ ...base, snoozed_until: "2026-10-10" }, "2026-10-10").status).toBe("due");
     expect(base.next_due_at).toBe("2026-10-06");
   });
 

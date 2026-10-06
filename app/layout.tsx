@@ -5,12 +5,15 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: { default: "Rootin", template: "%s · Rootin" },
   description: "Pengingat sederhana untuk hal-hal yang perlu dirawat dan diganti secara berkala.",
+  appleWebApp: { capable: true, title: "Rootin", statusBarStyle: "default" },
+  icons: { apple: "/icon-192.png" },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  themeColor: "#246b53",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

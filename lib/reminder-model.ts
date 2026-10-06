@@ -20,6 +20,7 @@ export type ReminderRow = {
   next_due_at: string | null;
   snoozed_until: string | null;
   notification_enabled: boolean;
+  notification_cycle_id?: string;
   archived_at: string | null;
   created_at: string;
   updated_at: string;
@@ -81,7 +82,7 @@ export function toReminderView(reminder: ReminderRow, today: string): ReminderVi
     return { ...base, description: "Berdasarkan jarak tempuh", status: remaining <= 0 ? "due" : "manual", statusText: remaining <= 0 ? "Target jarak tercapai" : `${new Intl.NumberFormat("id-ID").format(remaining)} km lagi`, dueDate: null };
   }
 
-  const dueDate = reminder.snoozed_until && reminder.snoozed_until > today ? reminder.snoozed_until : reminder.next_due_at;
+  const dueDate = reminder.snoozed_until && reminder.next_due_at && reminder.snoozed_until > reminder.next_due_at ? reminder.snoozed_until : reminder.next_due_at;
   const days = dueDate ? Math.round((Date.parse(`${dueDate}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / 86400000) : 0;
   const unitLabels: Record<IntervalUnit, string> = { day: "hari", week: "minggu", month: "bulan", year: "tahun" };
   const description = `Setiap ${reminder.interval_value} ${unitLabels[reminder.interval_unit ?? "day"]}`;

@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/empty-state";
 import { ReminderList } from "@/components/reminder-list";
 import { requireUser } from "@/lib/auth";
 import { getReminders } from "@/lib/reminder-data";
+import { pushIsConfigured } from "@/lib/push-server";
 import { sortReminders, todayISO, toReminderView } from "@/lib/reminder-model";
 
 export const metadata: Metadata = { title: "Semua" };
@@ -20,7 +21,7 @@ const filters = [
 ] as const;
 type Filter = (typeof filters)[number]["id"];
 
-export default async function AllPage({ searchParams }: { searchParams: Promise<{ filter?: string }> }) {
+export default async function AllPage({ searchParams }: { searchParams: Promise<{ filter?: string; notifications?: string }> }) {
   const params = await searchParams;
   const activeFilter: Filter = filters.find((item) => item.id === params.filter)?.id ?? "all";
   const { supabase, userId } = await requireUser();
@@ -43,6 +44,8 @@ export default async function AllPage({ searchParams }: { searchParams: Promise<
         </div>
         <AddReminderButton />
       </div>
+
+      {params.notifications === "offer" && !error && allReminders.length === 1 && pushIsConfigured() && <div className="notification-invite"><strong>Ingin diingatkan saat jatuh tempo?</strong><p>Aktifkan notifikasi setelah menambahkan Rootin ke Home Screen pada iPhone.</p><Link className="text-link" href="/pengaturan">Atur notifikasi</Link></div>}
 
       <nav className="filter-list" aria-label="Filter reminder">
         {filters.map((filter) => (

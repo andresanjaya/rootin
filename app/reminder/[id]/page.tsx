@@ -3,7 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { DataError } from "@/components/data-error";
+import { ReminderActions } from "@/components/reminder-actions";
 import { requireUser } from "@/lib/auth";
+import { pushIsConfigured } from "@/lib/push-server";
 import { todayISO, toReminderView, type ReminderRow } from "@/lib/reminder-model";
 
 export const metadata: Metadata = { title: "Detail reminder" };
@@ -30,6 +32,7 @@ export default async function ReminderDetailPage({ params }: { params: Promise<{
           {view.dueDate && <div><dt>Jatuh tempo</dt><dd>{view.dueDate}</dd></div>}
           {reminder.notes && <div><dt>Catatan</dt><dd>{reminder.notes}</dd></div>}
         </dl>
+        {reminder.notification_cycle_id && <ReminderActions reminder={reminder} pushReady={pushIsConfigured()} />}
       </>}
     </AppShell>
   );

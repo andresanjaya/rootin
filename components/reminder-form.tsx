@@ -67,14 +67,15 @@ export function ReminderForm() {
       return;
     }
 
-    const { error } = await supabase.from("reminders").insert(toReminderInsert(result.data, user.id));
+    const { count } = await supabase.from("reminders").select("id", { count: "exact", head: true }).eq("user_id", user.id);
+    const { error } = await supabase.from("reminders").insert({ ...toReminderInsert(result.data, user.id), notification_enabled: true });
     if (error) {
       setFormError(error.code === "PGRST205" ? "Tabel Rootin belum tersedia di Supabase." : "Reminder belum tersimpan. Periksa koneksi dan coba lagi.");
       setBusy(false);
       return;
     }
 
-    router.replace("/semua");
+    router.replace(count === 0 ? "/semua?notifications=offer" : "/semua");
     router.refresh();
   }
 

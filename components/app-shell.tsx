@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Icon, type IconName } from "./icons";
 import { SignOutButton } from "./sign-out-button";
 
-type Tab = "today" | "all" | "history";
+type Tab = "today" | "all" | "history" | "settings";
 const tabs: { id: Tab; label: string; href: string; icon: IconName }[] = [
   { id: "today", label: "Hari ini", href: "/", icon: "today" },
   { id: "all", label: "Semua", href: "/semua", icon: "all" },
@@ -29,13 +29,13 @@ export function AppShell({ active, children }: { active: Tab; children: React.Re
         <Link href="/" className="brand brand-desktop" aria-label="Rootin, ke Hari ini">rootin<span className="brand-dot">.</span></Link>
         <p className="rail-caption">Hal-hal rutin, tetap terurus.</p>
         <Navigation active={active} className="desktop-nav" />
-        <div className="rail-foot"><SignOutButton /></div>
+        <div className="rail-foot"><Link className="settings-link" href="/pengaturan">Pengaturan</Link><SignOutButton /></div>
       </aside>
 
       <div className="app-content">
         <header className="mobile-header">
           <Link href="/" className="brand" aria-label="Rootin, ke Hari ini">rootin<span className="brand-dot">.</span></Link>
-          <SignOutButton />
+          <div className="mobile-header-actions"><Link className="settings-link" href="/pengaturan">Pengaturan</Link><SignOutButton /></div>
         </header>
         <main className="main-content" id="konten-utama">{children}</main>
       </div>
