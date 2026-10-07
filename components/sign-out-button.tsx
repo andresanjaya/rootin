@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Button } from "@heroui/react";
 import { createClient } from "@/lib/supabase/client";
 
 export function SignOutButton() {
@@ -38,5 +39,5 @@ export function SignOutButton() {
     router.refresh();
   }
 
-  return <span className="sign-out-wrap"><button type="button" className="sign-out-button" onClick={signOut} disabled={busy}>{busy ? "Keluar…" : "Keluar"}</button>{errorMessage && <span className="sign-out-error" role="alert">{errorMessage}</span>}</span>;
+  return <span className="sign-out-wrap"><Button type="button" variant="ghost" className="sign-out-button" onPress={signOut} isDisabled={busy}>{busy ? "Keluar…" : "Keluar"}</Button>{errorMessage && <span className="sign-out-error" role="alert">{errorMessage}</span>}</span>;
 }

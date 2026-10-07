@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Button, Card, Chip, Input, Label, TextField } from "@heroui/react";
 import { createClient } from "@/lib/supabase/client";
 import { isValidTimeZone } from "@/lib/push-schedule";
 
@@ -132,18 +133,18 @@ export function NotificationSettings({ userId, hasReminders, serverReady, public
     problem: "Subscription perlu diperiksa ulang agar pengingat dapat diterima.",
   };
 
-  return <section className="settings-panel" aria-labelledby="notification-heading">
+  return <Card className="settings-panel" variant="default" aria-labelledby="notification-heading">
     <p className="section-kicker">PERANGKAT INI</p>
-    <h2 id="notification-heading">Notifikasi</h2>
-    <p className="settings-status"><strong>{status === "active" ? "Aktif" : status === "checking" ? "Memeriksa" : status === "problem" ? "Bermasalah" : "Belum aktif"}</strong> · {descriptions[status]}</p>
+    <Card.Header><Card.Title id="notification-heading">Notifikasi</Card.Title></Card.Header>
+    <p className="settings-status"><Chip size="sm" color={status === "active" ? "success" : status === "problem" ? "warning" : "default"} variant="soft">{status === "active" ? "Aktif" : status === "checking" ? "Memeriksa" : status === "problem" ? "Bermasalah" : "Belum aktif"}</Chip> {descriptions[status]}</p>
     {!hasReminders && <p className="settings-help">Buat reminder pertama sebelum mengaktifkan notifikasi.</p>}
     {status === "install" && <p className="settings-help">Di Safari: ketuk Bagikan → Tambah ke Layar Utama. Buka Rootin dari ikon yang muncul.</p>}
-    {(status === "ready" || status === "problem") && <button type="button" className="primary-button settings-button" onClick={activate} disabled={busy || !hasReminders}>{busy ? "Memproses…" : status === "problem" ? "Sambungkan ulang" : "Aktifkan notifikasi"}</button>}
-    {(status === "denied" || status === "problem") && endpoint && <button type="button" className="secondary-button settings-button" onClick={disable} disabled={busy}>Matikan subscription</button>}
+    {(status === "ready" || status === "problem") && <Button type="button" className="primary-button settings-button" onPress={activate} isDisabled={busy || !hasReminders}>{busy ? "Memproses…" : status === "problem" ? "Sambungkan ulang" : "Aktifkan notifikasi"}</Button>}
+    {(status === "denied" || status === "problem") && endpoint && <Button type="button" variant="secondary" className="secondary-button settings-button" onPress={disable} isDisabled={busy}>Matikan subscription</Button>}
     {status === "active" && <>
-      <div className="settings-actions"><button type="button" className="primary-button settings-button" onClick={sendTest} disabled={busy}>{busy ? "Memproses…" : "Kirim notifikasi uji"}</button><button type="button" className="secondary-button" onClick={disable} disabled={busy}>Matikan</button></div>
-      <div className="field settings-field"><label htmlFor="time-zone">Zona waktu perangkat</label><input id="time-zone" value={timeZone} onChange={(event) => setTimeZone(event.target.value)} placeholder="Asia/Makassar" /><p className="settings-help">Tanggal jatuh tempo mengikuti zona waktu ini. Pengiriman harian dapat bergeser menurut lokasi.</p><button type="button" className="secondary-button" onClick={saveTimeZone} disabled={busy}>Simpan zona waktu</button></div>
+      <div className="settings-actions"><Button type="button" className="primary-button settings-button" onPress={sendTest} isDisabled={busy}>{busy ? "Memproses…" : "Kirim notifikasi uji"}</Button><Button type="button" variant="secondary" className="secondary-button" onPress={disable} isDisabled={busy}>Matikan</Button></div>
+      <div className="settings-field"><TextField className="field" name="time_zone" value={timeZone} onChange={setTimeZone}><Label>Zona waktu perangkat</Label><Input placeholder="Asia/Makassar" /></TextField><p className="settings-help">Tanggal jatuh tempo mengikuti zona waktu ini. Pengiriman harian dapat bergeser menurut lokasi.</p><Button type="button" variant="secondary" className="secondary-button" onPress={saveTimeZone} isDisabled={busy}>Simpan zona waktu</Button></div>
     </>}
     {message && <p className="settings-message" role="status">{message}</p>}
-  </section>;
+  </Card>;
 }

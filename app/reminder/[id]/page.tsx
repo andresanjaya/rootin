@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Chip } from "@heroui/react";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { DataError } from "@/components/data-error";
@@ -25,7 +26,7 @@ export default async function ReminderDetailPage({ params }: { params: Promise<{
       {error || !reminder || !view ? <DataError /> : <>
         <Link className="text-link back-link" href="/semua">← Semua reminder</Link>
         <div className="page-heading detail-heading"><div><p className="eyebrow">DETAIL REMINDER</p><h1>{reminder.title}<span className="heading-period">.</span></h1><p className="page-intro">{reminder.category ?? "Tanpa kategori"}</p></div></div>
-        <div className="detail-status"><span className={`row-marker marker-${view.status}`} aria-hidden="true" /><strong>{view.statusText}</strong></div>
+        <div className="detail-status"><Chip color={view.status === "overdue" ? "warning" : view.status === "due" ? "accent" : "default"} variant="soft">{view.statusText}</Chip></div>
         <dl className="detail-list">
           <div><dt>Aturan</dt><dd>{view.description}</dd></div>
           {reminder.last_completed_at && <div><dt>Terakhir dilakukan</dt><dd>{reminder.last_completed_at}</dd></div>}

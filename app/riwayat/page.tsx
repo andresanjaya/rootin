@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Chip } from "@heroui/react";
 import { AppShell } from "@/components/app-shell";
 import { DataError } from "@/components/data-error";
 import { EmptyState } from "@/components/empty-state";
@@ -39,7 +40,7 @@ export default async function HistoryPage() {
         <section className="content-section history-section" aria-labelledby="history-heading">
           <div className="section-heading">
             <div><p className="section-kicker">TERBARU</p><h2 id="history-heading">Aktivitas</h2></div>
-            <span className="section-count">{events.length}</span>
+            <Chip size="sm" variant="tertiary" className="section-count">{events.length}</Chip>
           </div>
           <ol className="history-list">
             {events.map((item) => (

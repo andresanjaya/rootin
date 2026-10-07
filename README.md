@@ -1,6 +1,6 @@
 # Rootin
 
-Rootin adalah aplikasi pengingat rutin berdasarkan [PRD](./prd-reminder-pwa-mvp-v1.md). Aplikasi memakai Supabase Auth dan database untuk reminder pribadi. PWA dan Web Push tersedia setelah konfigurasi server dan migrasi push diterapkan.
+Rootin adalah aplikasi pengingat rutin berdasarkan [PRD](./prd-reminder-pwa-mvp-v1.md). UI memakai HeroUI React v3 dengan Tailwind CSS v4 dan tema hijau Rootin. Aplikasi memakai Supabase Auth dan database untuk reminder pribadi. PWA dan Web Push tersedia setelah konfigurasi server dan migrasi push diterapkan.
 
 ## Menyiapkan Supabase
 

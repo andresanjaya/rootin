@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Alert, buttonVariants, Chip } from "@heroui/react";
 import { AddReminderButton } from "@/components/add-reminder-button";
 import { AppShell } from "@/components/app-shell";
 import { DataError } from "@/components/data-error";
@@ -45,11 +46,11 @@ export default async function AllPage({ searchParams }: { searchParams: Promise<
         <AddReminderButton />
       </div>
 
-      {params.notifications === "offer" && !error && allReminders.length === 1 && pushIsConfigured() && <div className="notification-invite"><strong>Ingin diingatkan saat jatuh tempo?</strong><p>Aktifkan notifikasi setelah menambahkan Rootin ke Home Screen pada iPhone.</p><Link className="text-link" href="/pengaturan">Atur notifikasi</Link></div>}
+      {params.notifications === "offer" && !error && allReminders.length === 1 && pushIsConfigured() && <Alert status="success" className="notification-invite"><Alert.Indicator /><Alert.Content><Alert.Title>Ingin diingatkan saat jatuh tempo?</Alert.Title><Alert.Description>Aktifkan notifikasi setelah menambahkan Rootin ke Home Screen pada iPhone.</Alert.Description><Link className="text-link" href="/pengaturan">Atur notifikasi</Link></Alert.Content></Alert>}
 
       <nav className="filter-list" aria-label="Filter reminder">
         {filters.map((filter) => (
-          <Link key={filter.id} href={filter.id === "all" ? "/semua" : `/semua?filter=${filter.id}`} className={`filter-chip ${activeFilter === filter.id ? "filter-chip-active" : ""}`} aria-current={activeFilter === filter.id ? "page" : undefined}>{filter.label}</Link>
+          <Link key={filter.id} href={filter.id === "all" ? "/semua" : `/semua?filter=${filter.id}`} className={`${buttonVariants({ variant: activeFilter === filter.id ? "primary" : "secondary", size: "sm" })} filter-chip ${activeFilter === filter.id ? "filter-chip-active" : ""}`} aria-current={activeFilter === filter.id ? "page" : undefined}>{filter.label}</Link>
         ))}
       </nav>
 
@@ -59,7 +60,7 @@ export default async function AllPage({ searchParams }: { searchParams: Promise<
         <section className="content-section all-section" aria-labelledby="all-heading">
           <div className="section-heading">
             <div><p className="section-kicker">AKTIF</p><h2 id="all-heading">{activeFilter === "all" ? "Semua reminder" : filters.find((item) => item.id === activeFilter)?.label}</h2></div>
-            <span className="section-count">{reminders.length}</span>
+            <Chip size="sm" variant="tertiary" className="section-count">{reminders.length}</Chip>
           </div>
           <ReminderList reminders={reminders} />
         </section>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Button, Input, Label, TextField } from "@heroui/react";
 import { createClient } from "@/lib/supabase/client";
 import { todayISO, type ReminderRow } from "@/lib/reminder-model";
 
@@ -70,10 +71,10 @@ export function ReminderActions({ reminder, pushReady }: { reminder: ReminderRow
     <p className="section-kicker">AKSI</p><h2 id="actions-heading">Perbarui reminder</h2>
     {reminder.schedule_type === "usage" && (reminder.usage_target !== null && reminder.usage_count >= reminder.usage_target
       ? <p className="settings-help">Target sudah tercapai. Tandai selesai untuk memulai siklus baru.</p>
-      : <button type="button" className="primary-button" onClick={() => void progress()} disabled={busy}>+1 pemakaian</button>)}
-    {reminder.schedule_type === "distance" && <form className="detail-action-form" onSubmit={progress}><div className="field"><label htmlFor="current-odometer">Odometer sekarang (km)</label><input id="current-odometer" type="number" min={reminder.current_odometer_km ?? 0} step="0.1" value={odometer} onChange={(event) => setOdometer(event.target.value)} required /></div><button className="primary-button" disabled={busy}>Simpan odometer</button></form>}
-    <form className="detail-action-form" onSubmit={complete}><div className="field"><label htmlFor="completed-on">Tanggal selesai</label><input id="completed-on" type="date" value={completedOn} onChange={(event) => setCompletedOn(event.target.value)} required /></div><button className="secondary-button" disabled={busy}>Tandai selesai</button></form>
-    <div className="detail-notification"><p><strong>Notifikasi reminder</strong><span>{notificationEnabled ? "Aktif jika perangkat tersambung" : "Mati"}</span></p><button type="button" className="secondary-button" onClick={toggleNotification} disabled={busy}>{notificationEnabled ? "Matikan" : "Aktifkan"}</button></div>
+      : <Button type="button" className="primary-button" onPress={() => void progress()} isDisabled={busy}>+1 pemakaian</Button>)}
+    {reminder.schedule_type === "distance" && <form className="detail-action-form" onSubmit={progress}><TextField className="field" name="current_odometer" type="number" value={odometer} onChange={setOdometer} isRequired><Label>Odometer sekarang (km)</Label><Input min={reminder.current_odometer_km ?? 0} step={0.1} /></TextField><Button className="primary-button" type="submit" isDisabled={busy}>Simpan odometer</Button></form>}
+    <form className="detail-action-form" onSubmit={complete}><TextField className="field" name="completed_on" type="date" value={completedOn} onChange={setCompletedOn} isRequired><Label>Tanggal selesai</Label><Input /></TextField><Button variant="secondary" className="secondary-button" type="submit" isDisabled={busy}>Tandai selesai</Button></form>
+    <div className="detail-notification"><p><strong>Notifikasi reminder</strong><span>{notificationEnabled ? "Aktif jika perangkat tersambung" : "Mati"}</span></p><Button type="button" variant="secondary" className="secondary-button" onPress={toggleNotification} isDisabled={busy}>{notificationEnabled ? "Matikan" : "Aktifkan"}</Button></div>
     {message && <p className="settings-message" role="status">{message}</p>}
   </section>;
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Alert, Chip } from "@heroui/react";
 import { AddReminderButton } from "@/components/add-reminder-button";
 import { AppShell } from "@/components/app-shell";
 import { DataError } from "@/components/data-error";
@@ -35,15 +36,15 @@ export default async function TodayPage() {
         <EmptyState title="Belum ada reminder" description="Buat reminder pertama untuk mulai mencatat kapan sesuatu perlu dilakukan lagi." action={<Link className="text-link" href="/baru">Buat reminder pertama</Link>} />
       ) : (
         <>
-          <div className="summary-strip" aria-label="Ringkasan hari ini">
-            <span className="summary-icon"><Icon name="calendar" width={18} height={18} /></span>
-            <p><strong>{attention.length} perlu diperhatikan</strong><span className="summary-divider">·</span>{soon.length} segera</p>
-          </div>
+          <Alert status="success" className="summary-strip" aria-label="Ringkasan hari ini">
+            <Alert.Indicator><Icon name="calendar" width={18} height={18} /></Alert.Indicator>
+            <Alert.Content><Alert.Title>{attention.length} perlu diperhatikan</Alert.Title><Alert.Description>{soon.length} segera</Alert.Description></Alert.Content>
+          </Alert>
 
           <section className="content-section" aria-labelledby="attention-heading">
             <div className="section-heading">
               <div><p className="section-kicker">PRIORITAS</p><h2 id="attention-heading">Perlu dilakukan</h2></div>
-              <span className="section-count">{attention.length}</span>
+              <Chip size="sm" variant="tertiary" className="section-count">{attention.length}</Chip>
             </div>
             {attention.length ? <ReminderList reminders={attention} /> : <p className="section-empty">Tidak ada yang perlu dilakukan saat ini.</p>}
           </section>
@@ -51,7 +52,7 @@ export default async function TodayPage() {
           <section className="content-section" aria-labelledby="soon-heading">
             <div className="section-heading">
               <div><p className="section-kicker">MENDATANG</p><h2 id="soon-heading">Segera</h2></div>
-              <span className="section-count">{soon.length}</span>
+              <Chip size="sm" variant="tertiary" className="section-count">{soon.length}</Chip>
             </div>
             {soon.length ? <ReminderList reminders={soon} /> : <p className="section-empty">Belum ada reminder yang segera jatuh tempo.</p>}
           </section>
