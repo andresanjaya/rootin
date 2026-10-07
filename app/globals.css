@@ -66,14 +66,22 @@ h1 { margin-bottom: 11px; font-size: clamp(38px, 11vw, 52px); line-height: 1.04;
 h2 { margin-bottom: 0; font-size: 21px; line-height: 1.25; letter-spacing: -.025em; font-weight: 730; }
 .section-count { color: var(--quiet); font-size: 13px; font-weight: 650; }
 .reminder-list, .history-list { padding: 0; margin: 0; list-style: none; }
-.reminder-row { display: grid; grid-template-columns: 9px minmax(0, 1fr); align-items: start; column-gap: 15px; padding: 19px 2px 19px 0; border-bottom: 1px solid var(--line); scroll-margin-top: 30px; }
+.reminder-list { display: grid; gap: 11px; padding-top: 15px; }
+.reminder-item { min-width: 0; scroll-margin-top: 30px; }
+.reminder-card { position: relative; min-width: 0; gap: 0; padding: 15px 17px 16px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); box-shadow: none; }
+.reminder-card:hover { border-color: #cbd9cf; }
+.reminder-card:focus-within { outline: 2px solid #74b59c; outline-offset: 2px; }
+.reminder-card .reminder-card-header { display: grid; grid-template-columns: 8px minmax(0, 1fr); align-items: center; column-gap: 13px; padding: 0; }
+.reminder-card .reminder-card-content { padding: 0 0 0 21px; }
 .row-marker { width: 8px; height: 8px; margin-top: 7px; border-radius: 50%; background: #9fb0a4; }
+.reminder-card .row-marker { margin-top: 0; }
 .marker-overdue { background: var(--overdue); }
 .marker-due, .marker-soon { background: var(--accent); }
-.row-content { min-width: 0; }
-.row-title-line { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-.row-title-line h3 { margin-bottom: 3px; overflow-wrap: anywhere; font-size: 15px; font-weight: 710; line-height: 1.4; letter-spacing: -.014em; }
+.row-title-line { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: 8px; }
+.row-title-line .card__title { min-width: 0; margin: 0; overflow-wrap: anywhere; font-size: 15px; font-weight: 710; line-height: 1.4; letter-spacing: -.014em; }
 .row-link { display: inline-flex; align-items: center; min-height: 44px; }
+.reminder-card .row-link::after { position: absolute; inset: 0; content: ""; }
+.reminder-card .row-link:focus-visible { outline: none; }
 .row-link:hover { color: var(--accent); }
 .row-category { color: var(--quiet); font-size: 11px; white-space: nowrap; }
 .row-description { margin-bottom: 7px; color: var(--muted); font-size: 12px; line-height: 1.5; }
