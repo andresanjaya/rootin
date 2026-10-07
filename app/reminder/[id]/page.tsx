@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Chip } from "@heroui/react";
+import { Card, Chip } from "@heroui/react";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { DataError } from "@/components/data-error";
@@ -11,6 +11,10 @@ import { todayISO, toReminderView, type ReminderRow } from "@/lib/reminder-model
 
 export const metadata: Metadata = { title: "Detail reminder" };
 export const dynamic = "force-dynamic";
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`));
+}
 
 export default async function ReminderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -26,13 +30,20 @@ export default async function ReminderDetailPage({ params }: { params: Promise<{
       {error || !reminder || !view ? <DataError /> : <>
         <Link className="text-link back-link" href="/semua">← Semua reminder</Link>
         <div className="page-heading detail-heading"><div><p className="eyebrow">DETAIL REMINDER</p><h1>{reminder.title}<span className="heading-period">.</span></h1><p className="page-intro">{reminder.category ?? "Tanpa kategori"}</p></div></div>
-        <div className="detail-status"><Chip color={view.status === "overdue" ? "warning" : view.status === "due" ? "accent" : "default"} variant="soft">{view.statusText}</Chip></div>
-        <dl className="detail-list">
-          <div><dt>Aturan</dt><dd>{view.description}</dd></div>
-          {reminder.last_completed_at && <div><dt>Terakhir dilakukan</dt><dd>{reminder.last_completed_at}</dd></div>}
-          {view.dueDate && <div><dt>Jatuh tempo</dt><dd>{view.dueDate}</dd></div>}
-          {reminder.notes && <div><dt>Catatan</dt><dd>{reminder.notes}</dd></div>}
-        </dl>
+        <Card className="detail-summary-card" variant="default">
+          <Card.Header className="detail-summary-header">
+            <Card.Title>Jadwal</Card.Title>
+            <Chip color={view.status === "overdue" ? "warning" : view.status === "due" ? "accent" : "default"} variant="soft">{view.statusText}</Chip>
+          </Card.Header>
+          <Card.Content>
+            <dl className="detail-list">
+              <div><dt>Aturan</dt><dd>{view.description}</dd></div>
+              {reminder.last_completed_at && <div><dt>Terakhir dilakukan</dt><dd><time dateTime={reminder.last_completed_at}>{formatDate(reminder.last_completed_at)}</time></dd></div>}
+              {view.dueDate && <div><dt>Jatuh tempo</dt><dd><time dateTime={view.dueDate}>{formatDate(view.dueDate)}</time></dd></div>}
+              {reminder.notes && <div><dt>Catatan</dt><dd className="detail-notes">{reminder.notes}</dd></div>}
+            </dl>
+          </Card.Content>
+        </Card>
         {reminder.notification_cycle_id && <ReminderActions reminder={reminder} pushReady={pushIsConfigured()} />}
       </>}
     </AppShell>
