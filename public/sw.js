@@ -5,8 +5,8 @@ self.addEventListener("push", (event) => {
   const path = typeof payload.url === "string" && /^\/reminder\/[0-9a-f-]{36}$/i.test(payload.url) ? payload.url : "/";
   event.waitUntil(self.registration.showNotification("Rootin", {
     body: typeof payload.body === "string" ? payload.body.slice(0, 160) : "Ada pengingat untukmu.",
-    icon: "/icon-192.png",
-    badge: "/icon-192.png",
+    icon: "/rootin-home-192.png",
+    badge: "/rootin-home-192.png",
     tag: typeof payload.tag === "string" ? payload.tag : "rootin",
     data: { path },
   }));

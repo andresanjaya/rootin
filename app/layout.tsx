@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: { default: "Rootin", template: "%s · Rootin" },
   description: "Pengingat sederhana untuk hal-hal yang perlu dirawat dan diganti secara berkala.",
   appleWebApp: { capable: true, title: "Rootin", statusBarStyle: "default" },
-  icons: { apple: "/icon-192.png" },
+  icons: { apple: "/rootin-home-180.png" },
 };
 
 export const viewport: Viewport = {
