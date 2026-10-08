@@ -36,7 +36,7 @@ export default async function TodayPage() {
         <EmptyState title="Belum ada reminder" description="Buat reminder pertama untuk mulai mencatat kapan sesuatu perlu dilakukan lagi." action={<Link className="text-link" href="/baru">Buat reminder pertama</Link>} />
       ) : (
         <>
-          <Alert status="success" className="summary-strip" aria-label="Ringkasan hari ini">
+          <Alert status="accent" className="summary-strip" aria-label="Ringkasan hari ini">
             <Alert.Indicator><Icon name="calendar" width={18} height={18} /></Alert.Indicator>
             <Alert.Content><Alert.Title>{attention.length} perlu diperhatikan</Alert.Title><Alert.Description>{soon.length} segera</Alert.Description></Alert.Content>
           </Alert>
