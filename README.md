@@ -9,6 +9,8 @@ Rootin adalah aplikasi pengingat rutin berdasarkan [PRD](./prd-reminder-pwa-mvp-
 3. Di Supabase Authentication → URL Configuration, tambahkan `http://localhost:3000/auth/callback` ke Redirect URLs. Jika memakai port 3001, tambahkan juga `http://localhost:3001/auth/callback`. Atur Site URL sesuai alamat aplikasi yang digunakan. Konfigurasi URL produksi saat deployment.
 4. Jalankan `npm run check:supabase`. Pemeriksaan ini berhasil jika proyek dapat dijangkau dan akses anonim ke `reminders` ditolak. Sebelum migrasi diterapkan, perintah ini keluar dengan kode 2 karena tabel belum tersedia.
 
+Untuk mengaktifkan tombol **Hapus** pada daftar dan detail, jalankan [migrasi hapus reminder](./supabase/migrations/20261008000000_reminder_delete.sql) di Supabase SQL Editor setelah migrasi awal. Kebijakan RLS hanya mengizinkan pengguna masuk menghapus reminder miliknya. Penghapusan permanen juga menghapus riwayat aktivitas dan catatan pengiriman push milik reminder tersebut karena relasi `ON DELETE CASCADE`.
+
 ## Mengaktifkan Web Push
 
 1. Jalankan [migrasi push](./supabase/migrations/20261006010000_push_delivery.sql) **setelah** migrasi awal di Supabase SQL Editor. Migrasi menambah zona waktu subscription, klaim pengiriman yang unik, dan aksi progres/selesai.

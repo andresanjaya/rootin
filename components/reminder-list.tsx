@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Card, Chip } from "@heroui/react";
+import { DeleteReminderButton } from "@/components/delete-reminder-button";
 import type { ReminderView } from "@/lib/reminder-model";
 
 export function ReminderList({ reminders }: { reminders: ReminderView[] }) {
@@ -17,8 +18,11 @@ export function ReminderList({ reminders }: { reminders: ReminderView[] }) {
             </Card.Header>
             <Card.Content className="reminder-card-content">
               <Card.Description className="row-description">{reminder.description}</Card.Description>
-              <p className={`row-status status-${reminder.status}`}>{reminder.statusText}</p>
             </Card.Content>
+            <Card.Footer className="reminder-card-footer">
+              <p className={`row-status status-${reminder.status}`}>{reminder.statusText}</p>
+              <DeleteReminderButton id={reminder.id} title={reminder.title} location="list" />
+            </Card.Footer>
           </Card>
         </li>
       ))}

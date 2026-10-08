@@ -73,6 +73,7 @@ h2 { margin-bottom: 0; font-size: 21px; line-height: 1.25; letter-spacing: -.025
 .reminder-card:focus-within { outline: 2px solid #74b59c; outline-offset: 2px; }
 .reminder-card .reminder-card-header { display: grid; grid-template-columns: 8px minmax(0, 1fr); align-items: center; column-gap: 13px; padding: 0; }
 .reminder-card .reminder-card-content { padding: 0 0 0 21px; }
+.reminder-card .reminder-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 0 0 21px; }
 .row-marker { width: 8px; height: 8px; margin-top: 7px; border-radius: 50%; background: #9fb0a4; }
 .reminder-card .row-marker { margin-top: 0; }
 .marker-overdue { background: var(--overdue); }
@@ -86,6 +87,11 @@ h2 { margin-bottom: 0; font-size: 21px; line-height: 1.25; letter-spacing: -.025
 .row-category { color: var(--quiet); font-size: 11px; white-space: nowrap; }
 .row-description { margin-bottom: 7px; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .row-status { margin-bottom: 0; color: var(--muted); font-size: 12px; font-weight: 690; line-height: 1.45; }
+.delete-reminder-trigger { position: relative; z-index: 1; min-height: 44px; flex: none; color: var(--muted); font-size: 12px; }
+.delete-reminder-trigger:hover { color: var(--overdue); }
+.delete-reminder-dialog { background: var(--surface); color: var(--text); }
+.delete-reminder-dialog strong { overflow-wrap: anywhere; }
+.delete-reminder-error { margin-top: 12px; color: var(--overdue); font-size: 13px; }
 .status-overdue { color: var(--overdue); }
 .status-due, .status-soon { color: var(--accent); }
 .section-empty { margin: 0; padding: 24px 0; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 13px; line-height: 1.5; }
@@ -143,6 +149,7 @@ h2 { margin-bottom: 0; font-size: 21px; line-height: 1.25; letter-spacing: -.025
 .detail-summary-card .detail-summary-header { display: flex; flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 0 0 16px; border-bottom: 1px solid var(--line); }
 .detail-summary-card .card__title, .detail-actions .card__title { font-size: 18px; line-height: 1.35; }
 .detail-summary-card .card__content, .detail-actions .card__content { padding: 0; }
+.detail-summary-card .detail-delete-footer { justify-content: flex-end; margin-top: 18px; padding: 12px 0 0; border-top: 1px solid var(--line); }
 .detail-actions { margin-top: 14px; }
 .detail-actions .card__header { padding: 0; margin-bottom: 21px; }
 .detail-actions .section-kicker { margin-bottom: 7px; }

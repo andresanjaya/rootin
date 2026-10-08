@@ -4,6 +4,7 @@ import { Card, Chip } from "@heroui/react";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { DataError } from "@/components/data-error";
+import { DeleteReminderButton } from "@/components/delete-reminder-button";
 import { ReminderActions } from "@/components/reminder-actions";
 import { requireUser } from "@/lib/auth";
 import { pushIsConfigured } from "@/lib/push-server";
@@ -43,6 +44,9 @@ export default async function ReminderDetailPage({ params }: { params: Promise<{
               {reminder.notes && <div><dt>Catatan</dt><dd className="detail-notes">{reminder.notes}</dd></div>}
             </dl>
           </Card.Content>
+          <Card.Footer className="detail-delete-footer">
+            <DeleteReminderButton id={reminder.id} title={reminder.title} location="detail" />
+          </Card.Footer>
         </Card>
         {reminder.notification_cycle_id && <ReminderActions reminder={reminder} pushReady={pushIsConfigured()} />}
       </>}
