@@ -2,10 +2,11 @@ import Link from "next/link";
 import { Icon, type IconName } from "./icons";
 import { SignOutButton } from "./sign-out-button";
 
-type Tab = "today" | "all" | "history" | "settings";
+type Tab = "today" | "all" | "items" | "history" | "settings";
 const tabs: { id: Tab; label: string; href: string; icon: IconName }[] = [
   { id: "today", label: "Hari ini", href: "/", icon: "today" },
   { id: "all", label: "Semua", href: "/semua", icon: "all" },
+  { id: "items", label: "Barang", href: "/barang", icon: "items" },
   { id: "history", label: "Riwayat", href: "/riwayat", icon: "history" },
 ];
 

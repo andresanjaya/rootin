@@ -9,6 +9,7 @@ import { ReminderActions } from "@/components/reminder-actions";
 import { requireUser } from "@/lib/auth";
 import { pushIsConfigured } from "@/lib/push-server";
 import { todayISO, toReminderView, type ReminderRow } from "@/lib/reminder-model";
+import { profileCategoryLabels, type ProfileRow } from "@/lib/profile-model";
 
 export const metadata: Metadata = { title: "Detail reminder" };
 export const dynamic = "force-dynamic";
@@ -25,6 +26,10 @@ export default async function ReminderDetailPage({ params }: { params: Promise<{
   if (!data && !error) notFound();
   const reminder = data as ReminderRow | null;
   const view = reminder ? toReminderView(reminder, todayISO()) : null;
+  const { data: profileData } = reminder?.profile_id
+    ? await supabase.from("item_profiles").select("*").eq("id", reminder.profile_id).eq("user_id", userId).maybeSingle()
+    : { data: null };
+  const profile = profileData as ProfileRow | null;
 
   return (
     <AppShell active="all">
@@ -39,6 +44,8 @@ export default async function ReminderDetailPage({ params }: { params: Promise<{
           <Card.Content>
             <dl className="detail-list">
               <div><dt>Aturan</dt><dd>{view.description}</dd></div>
+              {profile && <div><dt>Profil barang</dt><dd><Link className="text-link" href={`/barang/${profile.id}`}>{profile.name} · {profileCategoryLabels[profile.category]}</Link></dd></div>}
+              {profile?.category === "vehicle" && reminder.schedule_type === "distance" && <div><dt>Odometer sekarang</dt><dd>{new Intl.NumberFormat("id-ID").format(profile.odometer_km ?? 0)} km</dd></div>}
               {reminder.last_completed_at && <div><dt>Terakhir dilakukan</dt><dd><time dateTime={reminder.last_completed_at}>{formatDate(reminder.last_completed_at)}</time></dd></div>}
               {view.dueDate && <div><dt>Jatuh tempo</dt><dd><time dateTime={view.dueDate}>{formatDate(view.dueDate)}</time></dd></div>}
               {reminder.notes && <div><dt>Catatan</dt><dd className="detail-notes">{reminder.notes}</dd></div>}
@@ -48,7 +55,7 @@ export default async function ReminderDetailPage({ params }: { params: Promise<{
             <DeleteReminderButton id={reminder.id} title={reminder.title} location="detail" />
           </Card.Footer>
         </Card>
-        {reminder.notification_cycle_id && <ReminderActions reminder={reminder} pushReady={pushIsConfigured()} />}
+        {reminder.notification_cycle_id && <ReminderActions reminder={reminder} pushReady={pushIsConfigured()} vehicleProfile={profile?.category === "vehicle" ? { id: profile.id, name: profile.name } : undefined} />}
       </>}
     </AppShell>
   );

@@ -1,6 +1,6 @@
 import type { SVGProps } from "react";
 
-export type IconName = "today" | "all" | "history" | "plus" | "arrow" | "calendar" | "inbox" | "check" | "clock" | "repeat" | "distance";
+export type IconName = "today" | "all" | "history" | "items" | "plus" | "arrow" | "calendar" | "inbox" | "check" | "clock" | "repeat" | "distance";
 
 export function Icon({ name, ...props }: SVGProps<SVGSVGElement> & { name: IconName }) {
   const shared = { fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
@@ -8,6 +8,7 @@ export function Icon({ name, ...props }: SVGProps<SVGSVGElement> & { name: IconN
     today: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M7 3v4M17 3v4M3 10h18M8 15h3" /></>,
     all: <><path d="M4 5.5h16M4 12h16M4 18.5h16" /><circle cx="6" cy="5.5" r="1" fill="currentColor" stroke="none" /><circle cx="6" cy="12" r="1" fill="currentColor" stroke="none" /><circle cx="6" cy="18.5" r="1" fill="currentColor" stroke="none" /></>,
     history: <><path d="M3.5 12a8.5 8.5 0 1 0 2.4-5.9M3.5 5v4h4" /><path d="M12 7.5V12l3 2" /></>,
+    items: <><rect x="4" y="7" width="16" height="14" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M4 12h16" /></>,
     plus: <path d="M12 5v14M5 12h14" />,
     arrow: <path d="m9 5 7 7-7 7" />,
     calendar: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M7 3v4M17 3v4M3 10h18" /></>,

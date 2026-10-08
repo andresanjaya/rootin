@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { Button, Card, Input, Label, TextField } from "@heroui/react";
 import { createClient } from "@/lib/supabase/client";
 import { todayISO, type ReminderRow } from "@/lib/reminder-model";
+import { dispatchDueProfileReminders } from "@/lib/profile-push-client";
 
-export function ReminderActions({ reminder, pushReady }: { reminder: ReminderRow; pushReady: boolean }) {
+export function ReminderActions({ reminder, pushReady, vehicleProfile }: { reminder: ReminderRow; pushReady: boolean; vehicleProfile?: { id: string; name: string } }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -36,7 +37,9 @@ export function ReminderActions({ reminder, pushReady }: { reminder: ReminderRow
     if (error) { setMessage("Progres belum tersimpan. Coba lagi."); setBusy(false); return; }
     const updated = data as ReminderRow;
     let pushFailed = false;
-    if (pushReady && updated.notification_enabled) {
+    if (pushReady && vehicleProfile && reminder.schedule_type === "distance") {
+      pushFailed = !(await dispatchDueProfileReminders(vehicleProfile.id, "distance"));
+    } else if (pushReady && updated.notification_enabled) {
       const due = updated.schedule_type === "usage" ? (updated.usage_target !== null && updated.usage_count >= updated.usage_target)
         : (updated.last_odometer_km !== null && updated.distance_interval_km !== null && updated.current_odometer_km !== null && updated.current_odometer_km >= updated.last_odometer_km + updated.distance_interval_km);
       if (due) {
@@ -73,7 +76,7 @@ export function ReminderActions({ reminder, pushReady }: { reminder: ReminderRow
     {reminder.schedule_type === "usage" && (reminder.usage_target !== null && reminder.usage_count >= reminder.usage_target
       ? <p className="settings-help">Target sudah tercapai. Tandai selesai untuk memulai siklus baru.</p>
       : <Button type="button" className="primary-button detail-progress-button" onPress={() => void progress()} isDisabled={busy}>+1 pemakaian</Button>)}
-    {reminder.schedule_type === "distance" && <form className="detail-action-form" onSubmit={progress}><TextField className="field" name="current_odometer" type="number" value={odometer} onChange={setOdometer} isRequired><Label>Odometer sekarang (km)</Label><Input min={reminder.current_odometer_km ?? 0} step={0.1} /></TextField><Button className="primary-button" type="submit" isDisabled={busy}>Simpan odometer</Button></form>}
+    {reminder.schedule_type === "distance" && <form className="detail-action-form" onSubmit={progress}><TextField className="field" name="current_odometer" type="number" value={odometer} onChange={setOdometer} isRequired><Label>Odometer sekarang (km){vehicleProfile ? ` · ${vehicleProfile.name}` : ""}</Label><Input min={reminder.current_odometer_km ?? 0} step={0.1} /></TextField><Button className="primary-button" type="submit" isDisabled={busy}>Simpan odometer</Button>{vehicleProfile && <p className="settings-help">Pembacaan ini digunakan semua reminder jarak pada profil kendaraan. Koreksi nilai yang lebih rendah tersedia pada halaman profil.</p>}</form>}
     <form className="detail-action-form detail-complete-form" onSubmit={complete}><TextField className="field" name="completed_on" type="date" value={completedOn} onChange={setCompletedOn} isRequired><Label>Tanggal selesai</Label><Input /></TextField><Button variant={reminder.schedule_type === "time" ? "primary" : "secondary"} className={reminder.schedule_type === "time" ? "primary-button" : "secondary-button"} type="submit" isDisabled={busy}>Tandai selesai</Button></form>
     <div className="detail-notification"><p><strong>Notifikasi reminder</strong><span>{notificationEnabled ? "Aktif jika perangkat tersambung" : "Mati"}</span></p><Button type="button" variant="secondary" className="secondary-button" onPress={toggleNotification} isDisabled={busy}>{notificationEnabled ? "Matikan" : "Aktifkan"}</Button></div>
     {message && <p className="settings-message" role="status">{message}</p>}

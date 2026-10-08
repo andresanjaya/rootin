@@ -6,6 +6,7 @@ import { Button, Card, FieldError, Input, Label, ListBox, Select, TextArea, Text
 import { createClient } from "@/lib/supabase/client";
 import { reminderInputSchema, toReminderInsert } from "@/lib/reminder-input";
 import { addInterval, type IntervalUnit, type ScheduleType } from "@/lib/reminder-model";
+import { profileCategoryLabels, type ProfileRow } from "@/lib/profile-model";
 
 type FormValues = {
   title: string;
@@ -24,9 +25,11 @@ const initial: FormValues = {
   title: "", category: "", notes: "", schedule_type: "time", last_completed_at: "", interval_value: "3", interval_unit: "month", usage_target: "6", last_odometer_km: "", distance_interval_km: "1000",
 };
 
-export function ReminderForm() {
+export function ReminderForm({ profiles = [], initialProfileId }: { profiles?: ProfileRow[]; initialProfileId?: string }) {
   const router = useRouter();
-  const [values, setValues] = useState<FormValues>(initial);
+  const initialProfile = profiles.find((profile) => profile.id === initialProfileId);
+  const [profileId, setProfileId] = useState(initialProfile?.id ?? "");
+  const [values, setValues] = useState<FormValues>(() => ({ ...initial, last_odometer_km: initialProfile?.category === "vehicle" ? String(initialProfile.odometer_km ?? "") : "" }));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -34,6 +37,16 @@ export function ReminderForm() {
   function set<K extends keyof FormValues>(key: K, value: FormValues[K]) {
     setValues((current) => ({ ...current, [key]: value }));
     setErrors((current) => ({ ...current, [key]: "" }));
+  }
+
+  const selectedProfile = profiles.find((profile) => profile.id === profileId);
+
+  function changeProfile(nextId: string) {
+    setProfileId(nextId);
+    const nextProfile = profiles.find((profile) => profile.id === nextId);
+    if (nextProfile?.category === "vehicle" && values.schedule_type === "distance" && !values.last_odometer_km) {
+      set("last_odometer_km", String(nextProfile.odometer_km ?? ""));
+    }
   }
 
   let preview = "Isi jadwal untuk melihat perkiraan berikutnya.";
@@ -69,14 +82,14 @@ export function ReminderForm() {
     }
 
     const { count } = await supabase.from("reminders").select("id", { count: "exact", head: true }).eq("user_id", user.id);
-    const { error } = await supabase.from("reminders").insert({ ...toReminderInsert(result.data, user.id), notification_enabled: true });
+    const { error } = await supabase.from("reminders").insert({ ...toReminderInsert(result.data, user.id), ...(profileId ? { profile_id: profileId } : {}), notification_enabled: true });
     if (error) {
       setFormError(error.code === "PGRST205" ? "Tabel Rootin belum tersedia di Supabase." : "Reminder belum tersimpan. Periksa koneksi dan coba lagi.");
       setBusy(false);
       return;
     }
 
-    router.replace(count === 0 ? "/semua?notifications=offer" : "/semua");
+    router.replace(profileId ? `/barang/${profileId}` : count === 0 ? "/semua?notifications=offer" : "/semua");
     router.refresh();
   }
 
@@ -85,6 +98,14 @@ export function ReminderForm() {
       <Card className="form-section" variant="default">
         <Card.Header><Card.Title>Aktivitas</Card.Title></Card.Header>
         <Card.Content>
+          {profiles.length > 0 && <Select className="field" value={profileId || "none"} onChange={(value) => changeProfile(value && value !== "none" ? String(value) : "")}>
+            <Label>Profil barang <span className="optional">opsional</span></Label>
+            <Select.Trigger><Select.Value /><Select.Indicator /></Select.Trigger>
+            <Select.Popover><ListBox>
+              <ListBox.Item id="none" textValue="Tanpa profil">Tanpa profil<ListBox.ItemIndicator /></ListBox.Item>
+              {profiles.map((profile) => <ListBox.Item key={profile.id} id={profile.id} textValue={profile.name}>{profile.name} · {profileCategoryLabels[profile.category]}<ListBox.ItemIndicator /></ListBox.Item>)}
+            </ListBox></Select.Popover>
+          </Select>}
           <TextField className="field" name="title" value={values.title} onChange={(value) => set("title", value)} isInvalid={Boolean(errors.title)} isRequired>
             <Label>Nama reminder</Label><Input placeholder="Contoh: Ganti sikat gigi" maxLength={120} />
             {errors.title && <FieldError>{errors.title}</FieldError>}
@@ -101,7 +122,7 @@ export function ReminderForm() {
       <Card className="form-section" variant="default">
         <Card.Header><Card.Title>Aturan pengulangan</Card.Title></Card.Header>
         <Card.Content>
-          <Select className="field" value={values.schedule_type} onChange={(value) => value && set("schedule_type", String(value) as ScheduleType)}>
+          <Select className="field" value={values.schedule_type} onChange={(value) => { if (value) { set("schedule_type", String(value) as ScheduleType); if (value === "distance" && selectedProfile?.category === "vehicle" && !values.last_odometer_km) set("last_odometer_km", String(selectedProfile.odometer_km ?? "")); } }}>
             <Label>Hitung berdasarkan</Label>
             <Select.Trigger><Select.Value /><Select.Indicator /></Select.Trigger>
             <Select.Popover><ListBox>
@@ -140,9 +161,10 @@ export function ReminderForm() {
 
           {values.schedule_type === "distance" && <>
             <TextField className="field" name="last_odometer_km" type="number" value={values.last_odometer_km} onChange={(value) => set("last_odometer_km", value)} isInvalid={Boolean(errors.last_odometer_km)}>
-              <Label>Odometer sekarang (km)</Label><Input min={0} step={0.1} inputMode="decimal" />
+              <Label>{selectedProfile?.category === "vehicle" ? "Odometer dasar servis (km)" : "Odometer sekarang (km)"}</Label><Input min={0} step={0.1} inputMode="decimal" />
               {errors.last_odometer_km && <FieldError>{errors.last_odometer_km}</FieldError>}
             </TextField>
+            {selectedProfile?.category === "vehicle" && <p className="settings-help">Pembacaan sekarang mengikuti profil {selectedProfile.name}: {new Intl.NumberFormat("id-ID").format(selectedProfile.odometer_km ?? 0)} km. Dasar servis reminder tetap terpisah.</p>}
             <TextField className="field" name="distance_interval_km" type="number" value={values.distance_interval_km} onChange={(value) => set("distance_interval_km", value)} isInvalid={Boolean(errors.distance_interval_km)}>
               <Label>Ulangi setiap (km)</Label><Input min={0.1} step={0.1} inputMode="decimal" />
               {errors.distance_interval_km && <FieldError>{errors.distance_interval_km}</FieldError>}

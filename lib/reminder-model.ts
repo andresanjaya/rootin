@@ -5,6 +5,7 @@ export type ReminderStatus = "overdue" | "due" | "soon" | "later" | "manual";
 export type ReminderRow = {
   id: string;
   user_id: string;
+  profile_id?: string | null;
   title: string;
   category: string | null;
   notes: string | null;
