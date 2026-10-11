@@ -8,6 +8,7 @@ export type ProfileRow = {
   name: string;
   category: ProfileCategory;
   notes: string | null;
+  photo_path: string | null;
   odometer_km: number | null;
   archived_at: string | null;
   created_at: string;

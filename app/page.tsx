@@ -30,6 +30,8 @@ export default async function TodayPage() {
         <AddReminderButton />
       </div>
 
+      <Link className="text-link calendar-entry" href="/kalender"><Icon name="calendar" width={18} height={18} /> Lihat kalender jatuh tempo <Icon name="arrow" width={16} height={16} /></Link>
+
       {error ? (
         <DataError />
       ) : reminders.length === 0 ? (

@@ -32,7 +32,7 @@ describe("profile reminders", () => {
   });
 
   it("keeps linked reminders visible when the profile is archived", () => {
-    const profile: ProfileRow = { id: "motor", user_id: "owner", name: "Motor", category: "vehicle", notes: null, odometer_km: 11800, archived_at: "2026-10-08T00:00:00Z", created_at: "2026-10-01T00:00:00Z", updated_at: "2026-10-08T00:00:00Z" };
+    const profile: ProfileRow = { id: "motor", user_id: "owner", name: "Motor", category: "vehicle", notes: null, photo_path: null, odometer_km: 11800, archived_at: "2026-10-08T00:00:00Z", created_at: "2026-10-01T00:00:00Z", updated_at: "2026-10-08T00:00:00Z" };
     expect(partitionProfiles([profile])).toEqual({ active: [], archived: [profile] });
     const views = profileReminderViews("motor", [base], "2026-10-08");
     expect(views).toHaveLength(1);

@@ -1,6 +1,6 @@
 # Rootin
 
-Rootin adalah aplikasi pengingat rutin berdasarkan [PRD](./prd-reminder-pwa-mvp-v1.md). UI memakai HeroUI React v3 dengan Tailwind CSS v4 dan tema hijau Rootin. Aplikasi memakai Supabase Auth dan database untuk reminder pribadi. PWA dan Web Push tersedia setelah konfigurasi server dan migrasi push diterapkan.
+Rootin adalah aplikasi pengingat rutin berdasarkan [PRD](./prd-reminder-pwa-mvp-v1.md). UI memakai HeroUI React v3 dengan Tailwind CSS v4 dan aksen biru Rootin. Aplikasi memakai Supabase Auth dan database untuk reminder pribadi. PWA dan Web Push tersedia setelah konfigurasi server dan migrasi push diterapkan.
 
 ## Menyiapkan Supabase
 
@@ -16,6 +16,14 @@ Untuk mengaktifkan tombol **Hapus** pada daftar dan detail, jalankan [migrasi ha
 Jalankan [migrasi profil barang](./supabase/migrations/20261008010000_item_profiles.sql) di Supabase SQL Editor **setelah migrasi awal, push, dan hapus reminder** sebelum membuka halaman Barang. Migrasi menambah `item_profiles`, `profile_events`, dan relasi `reminders.profile_id` yang opsional. Reminder lama tetap tidak terhubung dan tidak diubah. RLS membatasi profil dan riwayatnya ke pemilik, sedangkan fungsi database mengubah odometer dan pemakaian bersama secara atomik. Jalankan migrasi sebelum deploy UI MVP 2 agar tab Barang tersedia.
 
 Dari tab **Barang**, buat profil Motor (Kendaraan), Jaket (Pakaian), Sikat gigi atau Alat cukur (Perawatan diri). Pada detail profil, buat reminder baru atau hubungkan reminder yang sudah ada. Pembacaan odometer Motor memperbarui semua reminder jarak terkait; nilai dasar servis tiap reminder tetap terpisah. Koreksi odometer yang lebih rendah memerlukan konfirmasi dan dicatat. Catat satu pemakaian Jaket untuk memperbarui reminder pemakaian terkait; tiap reminder memulai siklusnya sendiri setelah ditandai selesai. Profil yang diarsipkan tetap dapat dibuka bersama reminder dan riwayatnya. Reminder tanpa profil tetap tersedia di Hari ini, Semua, dan Riwayat.
+
+## Foto profil barang dan kalender
+
+Jalankan [migrasi foto profil](./supabase/migrations/20261011000000_profile_photos.sql) **setelah migrasi profil barang** sebelum memakai kontrol foto. Migrasi menambah kolom `item_profiles.photo_path` yang opsional, bucket Supabase Storage privat `rootin-profile-photos`, dan kebijakan Storage yang membatasi satu objek foto pada tiap profil milik pengguna. Foto disajikan melalui route yang memeriksa sesi; profil lama tetap tanpa foto. Arsip profil tidak menghapus foto. Batas unggah adalah 4 MB untuk JPG, PNG, atau WebP; foto besar dan HEIC dicoba dikonversi ke JPEG di perangkat sebelum diunggah.
+
+Di **Barang → Buat/Edit profil**, pilih **Ambil foto** atau **Pilih gambar**, periksa pratinjau, lalu simpan. Pada profil yang sudah memiliki foto, gambar dapat diganti atau dihapus dari form yang sama. Jika unggahan gagal sesudah profil baru dibuat, form tetap terbuka dan tombol simpan dapat dicoba lagi tanpa membuat profil duplikat.
+
+Dari **Hari ini → Lihat kalender jatuh tempo**, pilih bulan dan tanggal untuk melihat reminder pada hari tersebut. Daftar **Terlambat** tetap menampilkan jatuh tempo dari bulan lain. Reminder pemakaian dan jarak ditampilkan terpisah karena tidak memiliki tanggal jatuh tempo. Pemilihan tanggal memakai zona waktu perangkat; tunda yang sudah tersimpan mengikuti tanggal efektif dari model reminder. Aksi Tunda belum tersedia pada detail reminder MVP saat ini.
 
 ## Mengaktifkan Web Push
 

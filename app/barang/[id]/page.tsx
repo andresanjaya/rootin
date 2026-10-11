@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { DataError } from "@/components/data-error";
 import { ProfileActions } from "@/components/profile-actions";
+import { ProfilePhoto } from "@/components/profile-photo";
 import { ReminderList } from "@/components/reminder-list";
 import { requireUser } from "@/lib/auth";
 import { getProfileEvents } from "@/lib/profile-data";
@@ -59,7 +60,7 @@ export default async function ProfileDetailPage({ params }: { params: Promise<{ 
 
   return <AppShell active="items">
     <Link className="text-link back-link" href="/barang">← Profil barang</Link>
-    <div className="page-heading profile-detail-heading"><div><p className="eyebrow">PROFIL BARANG</p><h1>{profile.name}<span className="heading-period">.</span></h1><p className="page-intro">{profileCategoryLabels[profile.category]}{profile.archived_at ? " · Diarsipkan" : ""}</p></div><Link className="text-link" href={`/barang/${id}/edit`}>Edit profil</Link></div>
+    <div className="page-heading profile-detail-heading"><div className="profile-detail-intro"><ProfilePhoto profile={profile} size="detail" /><div><p className="eyebrow">PROFIL BARANG</p><h1>{profile.name}<span className="heading-period">.</span></h1><p className="page-intro">{profileCategoryLabels[profile.category]}{profile.archived_at ? " · Diarsipkan" : ""}</p></div></div><Link className="text-link" href={`/barang/${id}/edit`}>Edit profil</Link></div>
 
     <Card className="profile-summary-card" variant="default">
       <Card.Header><Card.Title>Ringkasan</Card.Title>{profile.archived_at && <Chip size="sm" variant="tertiary">Diarsipkan</Chip>}</Card.Header>

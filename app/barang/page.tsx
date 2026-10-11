@@ -4,6 +4,7 @@ import { Card, Chip } from "@heroui/react";
 import { AppShell } from "@/components/app-shell";
 import { DataError } from "@/components/data-error";
 import { EmptyState } from "@/components/empty-state";
+import { ProfilePhoto } from "@/components/profile-photo";
 import { requireUser } from "@/lib/auth";
 import { getProfiles } from "@/lib/profile-data";
 import { partitionProfiles, profileCategoryLabels, profileNearestStatus, profileReminderViews, type ProfileRow } from "@/lib/profile-model";
@@ -19,11 +20,14 @@ function ProfileList({ profiles, reminders, today }: { profiles: ProfileRow[]; r
       const views = profileReminderViews(profile.id, reminders, today);
       return <li key={profile.id}>
         <Card className="profile-list-card" variant="default">
-          <Card.Header>
-            <div className="profile-card-top"><Card.Title><Link className="profile-card-link" href={`/barang/${profile.id}`}>{profile.name}</Link></Card.Title><Chip size="sm" variant="tertiary">{profileCategoryLabels[profile.category]}</Chip></div>
-            <Card.Description>{views.length} reminder aktif</Card.Description>
+          <Card.Header className="profile-list-header">
+            <ProfilePhoto profile={profile} size="thumb" />
+            <div className="profile-list-info">
+              <div className="profile-card-top"><Card.Title><Link className="profile-card-link" href={`/barang/${profile.id}`}>{profile.name}</Link></Card.Title><Chip size="sm" variant="tertiary">{profileCategoryLabels[profile.category]}</Chip></div>
+              <Card.Description>{views.length} reminder aktif</Card.Description>
+              <p className="profile-nearest">{profileNearestStatus(views)}</p>
+            </div>
           </Card.Header>
-          <Card.Content><p className="profile-nearest">{profileNearestStatus(views)}</p></Card.Content>
         </Card>
       </li>;
     })}
