@@ -155,17 +155,24 @@ Untuk menjamin kualitas dan ketahanan aplikasi kelas produksi, arsitektur Rootin
 - Arsitektur mobile tidak memiliki jembatan API privat atau skema bersama dengan Rootin Web.
 - Setiap model data di mobile dirancang spesifik untuk kebutuhan perangkat bergerak (mendukung input offline, sinkronisasi berbasis timestamp, dan penanganan lokal).
 
+### 4.4 Indeks Keputusan Arsitektur (Architectural Decision Records / ADR)
+Seluruh keputusan arsitektur strategis, hasil investigasi spike teknis, dan evaluasi kelayakan platform didokumentasikan secara formal dalam direktori [`docs/decisions/`](decisions/):
+
+- **[ADR 0001: Hasil Spike Teknis & Validasi Platform Mobile (Android & iOS)](decisions/0001-spike-technical-validation.md)** — Status: **Accepted**. Validasi kompatibilitas Flutter 3.29.2 & Dart 3.7.2, SQLite Drift & Durable Outbox, ketahanan notifikasi lokal multi-state (foreground/background/terminated/reboot), Supabase Auth/Storage, serta strategi runner CI/CD lintas platform.
+
 ---
 
 ## 5. Peta 27 Tiket Implementasi (M000 - M027)
 
 Pengembangan Rootin Mobile dibagi ke dalam 28 tiket terstruktur (M000 sampai M027) yang mencakup fase arsitektur, MVP Beta, hingga persiapan rilis produksi:
 
+> **Catatan Validasi Teknis (ROOTIN-M002)**: Hasil validasi spike teknis pada tiket **ROOTIN-M002** yang telah disetujui dalam [ADR 0001](decisions/0001-spike-technical-validation.md) berfungsi sebagai landasan kelayakan platform yang kokoh menuju perancangan arsitektur sistem terinci pada **ROOTIN-M003** (Desain Arsitektur) dan implementasi kerangka kode pada **ROOTIN-M007** (Scaffold).
+
 | ID Tiket | Judul Tiket | Fase / Kategori | Dependensi | Ringkasan Lingkup Kerja |
 | :--- | :--- | :--- | :--- | :--- |
 | **M000** | Discovery & Architecture RFC | Architecture | - | Perumusan RFC arsitektur mobile, evaluasi stack, dan kesepakatan prinsip offline-first. |
 | **M001** | Mobile PRD & Project Overview | Foundation | M000 | Penyusunan PRD komprehensif dan panduan arsitektur (Tiket Ini). |
-| **M002** | Flutter Scaffolding & CI Tooling | Tooling | M001 | Inisialisasi proyek Flutter, konfigurasi linting (`very_good_analysis`), dan GitHub Actions CI. |
+| **M002** | Spike Teknis & Validasi Platform | Tooling & Validation | M001 | Validasi Flutter 3.29.2/Dart 3.7.2, SQLite Drift, notifikasi lokal multi-state, Supabase Auth/Storage, dan strategi CI/CD (ADR 0001). |
 | **M003** | Core Design System & Tokens | UI Foundation | M002 | Fondasi tema, warna, tipografi, komponen tombol/kartu, serta dukungan Dark Mode. |
 | **M004** | Drift SQLite Database Setup | Persistence | M002 | Setup Drift ORM, skema tabel lokal, DAO dasar, dan skrip migrasi lokal. |
 | **M005** | Supabase Auth Integration | Authentication | M004 | Integrasi Auth (Email/Password), manajemen token aman, dan status sesi. |
