@@ -126,6 +126,12 @@ lib/
 â””â”€â”€ main.dart                      # App entry point (bootstrap, zone, runner)
 ```
 
+### 3.3 Dokumen Desain & Kontrak Teknis
+Spesifikasi terinci mengenai arsitektur, basis data, dan kontrak antarmuka didokumentasikan pada:
+- **[ADR 0002: Arsitektur Flutter Modular, Backend Mobile & Kontrak Offline-First](decisions/0002-architecture-offline-first.md)**
+- **[Desain Basis Data: Drift SQLite & Supabase PostgreSQL](05-database-design.md)**
+- **[Desain API: Kontrak REST, RPC Supabase & Koordinasi Notifikasi](06-api-design.md)**
+
 ---
 
 ## 4. Invariant Arsitektur & Prinsip Desain
@@ -159,6 +165,7 @@ Untuk menjamin kualitas dan ketahanan aplikasi kelas produksi, arsitektur Rootin
 Seluruh keputusan arsitektur strategis, hasil investigasi spike teknis, dan evaluasi kelayakan platform didokumentasikan secara formal dalam direktori [`docs/decisions/`](decisions/):
 
 - **[ADR 0001: Hasil Spike Teknis & Validasi Platform Mobile (Android & iOS)](decisions/0001-spike-technical-validation.md)** — Status: **Accepted**. Validasi kompatibilitas Flutter 3.29.2 & Dart 3.7.2, SQLite Drift & Durable Outbox, ketahanan notifikasi lokal multi-state (foreground/background/terminated/reboot), Supabase Auth/Storage, serta strategi runner CI/CD lintas platform.
+- **[ADR 0002: Arsitektur Flutter Modular, Backend Mobile & Kontrak Offline-First](decisions/0002-architecture-offline-first.md)** — Status: **Accepted**. Penetapan arsitektur Flutter modular berbasis lapisan ringkas (Presentation, Domain, Data, Core), pola Single Source of Truth (SSOT) lokal Drift SQLite, Durable Outbox Queue dengan exponential backoff & jitter, resolusi konflik Revision & Last-Write-Wins (LWW) dengan tombstone soft-delete, kontrak pemisahan Calendar Date vs Instant UTC, serta isolasi total dari Rootin Web.
 
 ---
 
@@ -171,9 +178,9 @@ Pengembangan Rootin Mobile dibagi ke dalam 28 tiket terstruktur (M000 sampai M02
 | ID Tiket | Judul Tiket | Fase / Kategori | Dependensi | Ringkasan Lingkup Kerja |
 | :--- | :--- | :--- | :--- | :--- |
 | **M000** | Discovery & Architecture RFC | Architecture | - | Perumusan RFC arsitektur mobile, evaluasi stack, dan kesepakatan prinsip offline-first. |
-| **M001** | Mobile PRD & Project Overview | Foundation | M000 | Penyusunan PRD komprehensif dan panduan arsitektur (Tiket Ini). |
+| **M001** | Mobile PRD & Project Overview | Foundation | M000 | Penyusunan PRD komprehensif dan panduan arsitektur. |
 | **M002** | Spike Teknis & Validasi Platform | Tooling & Validation | M001 | Validasi Flutter 3.29.2/Dart 3.7.2, SQLite Drift, notifikasi lokal multi-state, Supabase Auth/Storage, dan strategi CI/CD (ADR 0001). |
-| **M003** | Core Design System & Tokens | UI Foundation | M002 | Fondasi tema, warna, tipografi, komponen tombol/kartu, serta dukungan Dark Mode. |
+| **M003** | Desain Arsitektur & Kontrak Offline-First | Architecture | M002 | Perancangan arsitektur Flutter modular, SSOT lokal, Durable Outbox, skema Drift & Supabase, kontrak API/RPC, dan ADR 0002 (Tiket Ini). |
 | **M004** | Drift SQLite Database Setup | Persistence | M002 | Setup Drift ORM, skema tabel lokal, DAO dasar, dan skrip migrasi lokal. |
 | **M005** | Supabase Auth Integration | Authentication | M004 | Integrasi Auth (Email/Password), manajemen token aman, dan status sesi. |
 | **M006** | User Profile & Dynamic Timezone | Core Feature | M005 | Manajemen profil, deteksi zona waktu perangkat, dan dwibahasa (ID/EN). |
