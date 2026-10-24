@@ -42,16 +42,16 @@ Aplikasi menggunakan struktur kontainer tunggal berbasis `StatefulShellRoute.ind
 
 ```
 +--------------------------------------------------------------------+
-+‚                   ROOT APP SHELL (StatefulShellRoute)              +‚
-+”-------------------------------------------------------------------+˜
-                                    +‚
-     +---------------+¬-------------+¼-------------+¬--------------+
-     v               v               v             v             v
-+-----------+  +----------+  +----------+  +----------+  +----------+
-+‚  Tab 1:   +‚ +‚  Tab 2:   +‚ +‚  Tab 3:   +‚ +‚  Tab 4:   +‚ +‚  Tab 5:   +‚
-+‚ Hari Ini  +‚ +‚ Pengingat +‚ +‚  Barang   +‚ +‚ Kalender  +‚ +‚Pengaturan+‚
-+‚  /today   +‚ +‚/reminders +‚ +‚  /items   +‚ +‚ /calendar +‚ +‚ /settings +‚
-+”-----------+˜ +”----------+˜ +”----------+˜ +”----------+˜ +”----------+˜
+|                   ROOT APP SHELL (StatefulShellRoute)              |
++--------------------------------------------------------------------+
+                                    |
+     +---------------+--------------+--------------+---------------+
+     v               v              v              v               v
++-----------+  +----------+   +----------+   +----------+    +----------+
+|  Tab 1:   |  |  Tab 2:  |   |  Tab 3:  |   |  Tab 4:  |    |  Tab 5:  |
+| Hari Ini  |  |Pengingat |   |  Barang  |   | Kalender |    |Pengaturan|
+|  /today   |  |/reminders|   |  /items  |   |/calendar |    |/settings |
++-----------+  +----------+   +----------+   +----------+    +----------+
 ```
 
 #### Diagram Hubungan Informasi Antarmuka
@@ -120,21 +120,21 @@ Untuk menjaga alur kerja pengguna tetap efisien, aksi operasional tidak memaksa 
 #### B. Modal Sheet: Pembaruan Odometer Kendaraan (`UpdateOdometerSheet`)
 - **Pemicu**: Tombol "Update Odometer" pada kartu kendaraan di tab `/today` atau `/items/:id`.
 - **Struktur Antarmuka**:
-  ```
+```
   +---------------------------------------+
-  +‚               +¬-----+¬                 +‚  <- Handle bar
-  +‚ Perbarui Odometer Kendaraan         +‚
-  +‚ Toyota Avanza (B 1234 CD)           +‚
-  +œ---------------------------------------+¤
-  +‚ Odometer Terakhir : 42.300 km       +‚
-  +‚                                     +‚
-  +‚ [ Angka Odometer Baru (km) ]        +‚
-  +‚ [ 43.850                ]           +‚
-  +‚ -> Penambahan: +1.550 km             +‚
-  +‚                                     +‚
-  +‚ [[v]] Simpan Pembaruan Odometer       +‚
-  +”--------------------------------------+˜
-  ```
+  |                [=====]                |  <- Handle bar
+  | Perbarui Odometer Kendaraan           |
+  | Toyota Avanza (B 1234 CD)             |
+  +---------------------------------------+
+  | Odometer Terakhir : 42.300 km         |
+  |                                       |
+  | [ Angka Odometer Baru (km) ]          |
+  | [ 43.850                ]             |
+  | -> Penambahan: +1.550 km              |
+  |                                       |
+  | [  Simpan Pembaruan Odometer  ]       |
+  +---------------------------------------+
+```
 - **Validasi Bisnis**:
   - Jika angka baru < angka lama: Memunculkan peringatan kuning (*Warning*): *"Angka odometer lebih rendah dari catatan sebelumnya (42.300 km). Lanjutkan jika ada penggantian speedometer atau koreksi salah input."* (Pengguna diberi opsi konfirmasi eksplisit).
   - Menyimpan mutasi ke Drift SQLite dan secara otomatis memicu pembaruan kalkulasi sisa jarak (*cascading recalculation*) pada seluruh reminder jarak yang terikat pada kendaraan tersebut.
@@ -181,23 +181,23 @@ Tingkat Risiko 4 (Kritis)     -> Hapus Akun Pengguna          -> Re-autentikasi 
 #### Spesifikasi Dialog Hapus Profil Barang (Tingkat Risiko 3)
 ```
 +---------------------------------------+
-+‚  Hapus Barang Ini Secara Permanen?   +‚
-+œ--------------------------------------+¤
-+‚ Tindakan ini akan menghapus barang  +‚
-+‚ "Honda Vario 160", beserta:          +‚
-+‚ * 4 pengingat servis aktif           +‚
-+‚ * 12 catatan riwayat pemeliharaan    +‚
-+‚ * 2 foto galeri privat              +‚
-+‚                                     +‚
-+‚ Data yang dihapus tidak dapat        +‚
-+‚ dipulihkan kembali.                  +‚
-+‚                                     +‚
-+‚ Ketik "Honda Vario 160" untuk        +‚
-+‚ mengonfirmasi:                       +‚
-+‚ [ Honda Vario 160                 ] +‚
-+‚                                     +‚
-+‚ [    Batal    ]  [ Hapus Permanen ] +‚  <- Tombol aktif jika teks cocok
-+”--------------------------------------+˜
+|  Hapus Barang Ini Secara Permanen?    |
++---------------------------------------+
+| Tindakan ini akan menghapus barang    |
+| "Honda Vario 160", beserta:           |
+| * 4 pengingat servis aktif            |
+| * 12 catatan riwayat pemeliharaan     |
+| * 2 foto galeri privat                |
+|                                       |
+| Data yang dihapus tidak dapat         |
+| dipulihkan kembali.                   |
+|                                       |
+| Ketik "Honda Vario 160" untuk         |
+| mengonfirmasi:                        |
+| [ Honda Vario 160                 ]   |
+|                                       |
+| [    Batal    ]  [ Hapus Permanen ]   |  <- Tombol aktif jika teks cocok
++---------------------------------------+
 ```
 
 ---
@@ -498,9 +498,46 @@ graph TD
     SessionCheck -->|Token Kadaluarsa| RefreshFlow[Coba Refresh Token Otomatis di Background via GoTrue]
     RefreshFlow -->|Refresh Gagal Total| SoftLogout[Tampilkan Modal Lembut: 'Sesi berakhir, silakan verifikasi ulang email Anda' - Data lokal TETAP AMAN]
 
+    ActiveBranch --> SwitchCheck{Pengguna Ganti Akun / Logout?}
+    SwitchCheck -->|Periksa Outbox| OutboxCheck{Ada Antrean Outbox Pending?}
+    OutboxCheck -->|Ya| WarnOutbox[Tampilkan Modal Peringatan: 'Masih ada perubahan yang belum tersinkron ke cloud. Sinkronkan sekarang atau data lokal akan dibersihkan?']
+    OutboxCheck -->|Tidak / Dikonfirmasi| ClearLocal[Bersihkan Database Drift SQLite Lokal & Flutter Secure Storage Sesi Akun Sebelumnya]
+    ClearLocal --> InitNewUser[Autentikasi Akun Baru -> Bootstrap Skema Lokal Bersih & Unduh Data Baru dari Cloud]
+
     ActiveBranch --> DangerAction{Pengguna Minta Hapus Akun?}
-    DangerAction -->|Ya, Konfirmasi Ganda| DeleteAccountFlow[1. Panggil RPC Supabase delete_user_account<br/>2. Hapus seluruh file storage<br/>3. Hapus database lokal Drift SQLite<br/>4. Bersihkan Secure Storage<br/>5. Navigasi ke Onboarding]
+    DangerAction -->|Ya, Konfirmasi Ganda| DeleteAccountFlow[1. Panggil RPC Supabase delete_user_account<br/>2. Hapus seluruh file storage aset<br/>3. Hapus database lokal Drift SQLite<br/>4. Bersihkan Secure Storage<br/>5. Navigasi ke Layar Onboarding]
 ```
+
+#### 3.7.1 Jalur Empty State (Kondisi Kosong Edukatif)
+- **Tampilan Tab `/today`**: Jika tidak ada tugas servis yang overdue atau jatuh tempo dalam 7 hari mendatang, layar tidak dibiarkan putih kosong. Ditampilkan ilustrasi peralatan dalam kondisi terawat, label teks *"Semua peralatan dalam kondisi prima"*, dan tombol CTA sekunder *"Lihat Kalender Mendatang"* atau `+ Buat Pengingat`.
+- **Tampilan Tab `/reminders`**: Menampilkan panduan cepat 3 langkah membuat reminder (Waktu, Pemakaian, atau Jarak) dengan tombol CTA utama `+ Tambah Pengingat`.
+- **Tampilan Tab `/items`**: Menampilkan ilustrasi katalog dengan pesan *"Belum ada barang terdaftar. Reminder tetap bisa dibuat mandiri tanpa profil barang"*, dilengkapi tombol `+ Tambah Barang Baru`.
+
+#### 3.7.2 Jalur Loading Skeleton (Pencegahan Layout Shift)
+- Saat data dibaca dari Drift SQLite (cold boot pertama) atau pemuatan halaman detail, antarmuka tidak menggunakan *circular spinner* di tengah layar yang memblokir pandangan.
+- Menggunakan **Shimmer Skeleton Card** yang memiliki proporsi dimensi 1:1 terhadap kartu pengingat asli (tinggi kartu, posisi chip filter, dan letak tombol aksi) untuk mengeliminasi lonjakan visual (*cumulative layout shift*).
+
+#### 3.7.3 Jalur Banner Offline & Indikator Pending Outbox
+- **Banner Status**: Ketika konektivitas jaringan terputus (airplane mode atau sinyal hilang), bilah banner tipis berwarna amber muncul di bagian atas layar: *"Mode Offline — Seluruh perubahan tersimpan aman di perangkat"*. Banner tidak menutupi tombol navigasi dan tidak memblokir input formulir.
+- **Badging Outbox**: Pada tab Pengaturan (`/settings`), terdapat badge penghitung real-time (misal: `3 Pending Sync`) yang mengindikasikan berapa banyak mutasi lokal yang sedang menunggu koneksi internet untuk dikirim ke Supabase.
+
+#### 3.7.4 Jalur Penanganan Error & Pemulihan Konflik (Conflict Recovery)
+- **Strategi Resolusi Konflik**: Menggunakan aturan **Last-Write-Wins (LWW)** deterministik berbasis timestamp UTC `updated_at` dan nomor sekuensial `version`. Jika terdapat pembaruan dari perangkat lain yang lebih baru, baris lokal diselaraskan secara otomatis di latar belakang tanpa melempar pop-up kesalahan yang membingungkan pengguna.
+- **Retry dengan Exponential Backoff**: Mutasi outbox yang gagal akibat galat server (HTTP 5xx) dijadwalkan ulang secara otomatis dengan jeda eksponensial (2s, 4s, 8s, 16s, hingga batas maksimal 60 detik) sebelum menandai status retry pada kartu audit.
+
+#### 3.7.5 Jalur Ganti Akun & Isolasi Data Lokal (Account Switch)
+- **Pencegahan Kebocoran Data Antar-Pengguna**: Mengingat database Drift SQLite berada di media penyimpanan lokal perangkat, perpindahan akun (*Account Switch / Logout*) mewajibkan pembersihan total state lokal untuk menjamin privasi.
+- **Pengecekan Outbox Sebelum Logout**: Jika masih ada antrean mutasi outbox lokal yang belum tersinkronisasi ke cloud, sistem memunculkan dialog konfirmasi kritis: *"Perhatian: Ada 2 perubahan lokal yang belum terunggah ke cloud. Melanjutkan keluar akan membatalkan perubahan tersebut."* Opsi yang diberikan: `Batal`, `Coba Sinkron Sekarang`, atau `Tetap Keluar & Hapus Data Lokal`.
+- **Bootstrap Sesi Baru**: Setelah berhasil login dengan akun baru, database lokal diinisialisasi ulang dari kondisi bersih dan memicu sinkronisasi satu arah dari Supabase (*initial pull*).
+
+#### 3.7.6 Jalur Penghapusan Akun Permanen (Right to be Forgotten)
+- Mematuhi standar privasi data dan regulasi toko aplikasi (Apple App Store & Google Play):
+  1. Pengguna wajib melewati dialog konfirmasi bertingkat dan mengetik teks `"HAPUS AKUN"` secara presisi.
+  2. Klien memanggil fungsi aman Supabase RPC `delete_user_account()`.
+  3. Menghapus seluruh file foto privat pada Supabase Storage.
+  4. Menghapus file database lokal `app.db` (Drift SQLite) dari sandbox aplikasi.
+  5. Menghapus seluruh token JWT dan kunci enkripsi dari Flutter Secure Storage.
+  6. Mengarahkan pengguna kembali ke alur Onboarding awal.
 
 ---
 
