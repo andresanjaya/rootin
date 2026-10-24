@@ -133,6 +133,7 @@ Spesifikasi terinci mengenai arsitektur, antarmuka pengguna, sistem desain, basi
 - **[Sistem Desain & Token Desain Mobile (Mobile Design System & Tokens)](04-mobile-design-system.md)**
 - **[Desain Basis Data: Drift SQLite & Supabase PostgreSQL](05-database-design.md)**
 - **[Desain API: Kontrak REST, RPC Supabase & Koordinasi Notifikasi](06-api-design.md)**
+- **[Prototipe High-Fidelity, Hasil Uji Kegunaan & Spesifikasi Handoff Flutter](07-prototype-and-usability.md)**
 
 ---
 
