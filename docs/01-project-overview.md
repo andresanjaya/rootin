@@ -127,8 +127,10 @@ lib/
 ```
 
 ### 3.3 Dokumen Desain & Kontrak Teknis
-Spesifikasi terinci mengenai arsitektur, basis data, dan kontrak antarmuka didokumentasikan pada:
+Spesifikasi terinci mengenai arsitektur, antarmuka pengguna, sistem desain, basis data, dan kontrak antarmuka didokumentasikan pada:
 - **[ADR 0002: Arsitektur Flutter Modular, Backend Mobile & Kontrak Offline-First](decisions/0002-architecture-offline-first.md)**
+- **[Arsitektur Informasi & Alur Pengguna (Information Architecture & User Flows)](03-mobile-ux.md)**
+- **[Sistem Desain & Token Desain Mobile (Mobile Design System & Tokens)](04-mobile-design-system.md)**
 - **[Desain Basis Data: Drift SQLite & Supabase PostgreSQL](05-database-design.md)**
 - **[Desain API: Kontrak REST, RPC Supabase & Koordinasi Notifikasi](06-api-design.md)**
 
