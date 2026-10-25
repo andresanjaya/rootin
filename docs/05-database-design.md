@@ -1,5 +1,29 @@
 # Desain Basis Data: Drift SQLite & Supabase PostgreSQL
 
+> **Implementasi ROOTIN-M009 (#8, 25 Oktober 2026):** DDL dan RPC yang berlaku ada di
+> `supabase/migrations/20261025000000_mobile_backend.sql`; contoh SQL lama di bawah
+> adalah rancangan historis, bukan kode yang dapat dijalankan. Test lokal:
+> `npx supabase db reset --local` dan `npx supabase test db --local`.
+> Tabel server: `items`, `reminders`, `reminder_logs`, `progress_events`,
+> `user_preferences`, `processed_operations`. Foto disimpan di bucket privat
+> `item-photos` dengan batas 2 MiB, MIME jpeg/png/webp dan path
+> `{user_id}/{item_id}/{file_uuid}.{ext}`; baca/unggah/hapus memerlukan item milik pengguna.
+> Semua tabel mempunyai RLS baca berdasarkan `auth.uid() = user_id`; authenticated
+> tidak memperoleh grant tulis tabel. Penulisan hanya melalui RPC dengan pemeriksaan
+> pemilik dan relasi komposit `(id,user_id)`. Riwayat tidak dapat diedit/hapus,
+> termasuk ketika item diarsipkan atau ditombstone; penghapusan akun oleh auth
+> tetap menghapus data melalui FK cascade. Tidak ada endpoint hard-delete item.
+> `operation_id` unik global dan dipartisi secara logis menurut pemilik; retry
+> identik mengembalikan **hasil asli**, bukan status `duplicate_ignored`.
+> Mencoba ID dari akun lain atau mengubah payload retry ditolak. Konflik versi
+> menolak tulis dan mengembalikan `server_version`; **bukan LWW**. Urutan lock
+> item lalu reminder, termasuk completion/progress, dan advisory lock operasi
+> mencegah retry konkuren menggandakan event.
+> Pull menggunakan kursor keyset `(changed_at, rank, id)`, bukan timestamp tunggal;
+> pengambilan satu halaman secara berulang dapat kehilangan perubahan yang
+> ditulis mundur ke timestamp lebih awal hanya bila jam server dimanipulasi.
+> Data pending outbox lokal tidak dihapus saat konflik sampai client menyelesaikannya.
+
 * **Status**: Accepted
 * **Tanggal**: 2026-10-24
 * **Tiket Referensi**: ROOTIN-M003 (GitHub Issue [#2](https://github.com/andresanjaya/rootin/issues/2))

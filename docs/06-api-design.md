@@ -1,5 +1,45 @@
 # Desain API: Kontrak REST, RPC Supabase & Koordinasi Notifikasi
 
+> **Kontrak backend terimplementasi ROOTIN-M009 (#8, 25 Oktober 2026).**
+> `supabase/migrations/20261025000000_mobile_backend.sql` adalah sumber kebenaran
+> bila contoh permintaan/response historis di bawah berbeda. Push adalah satu
+> transaksi atomik untuk seluruh batch (0–100 operasi); error validasi/otorisasi
+> mengembalikan error PostgREST dan rollback seluruh batch, bukan `validation_failed`
+> per operasi. Satu `operation_id` global per mutasi: retry dengan request identik
+> mengembalikan response mutasi pertama (`accepted` atau `conflict_rejected`),
+> sedangkan perubahan isi request atau pemilik ditolak. `version` pada `update`,
+> `archive`, `delete`, `link` dan `completion` adalah versi server yang diharapkan,
+> sedangkan `insert` mensyaratkan versi 1; konflik mengembalikan `server_version`.
+> Gunakan `operation_id` di JSON, bukan header `X-Idempotency-Key` untuk RPC batch.
+>
+> Entitas dan aksi push: `item` (`insert`, `update`, `archive`, `delete`),
+> `reminder` (`insert`, `update`, `link`, `archive`, `delete`),
+> `preference` (`insert`, `update`; `record_id = user_id`),
+> `progress` (`insert`; `kind=usage`, `item_id`, `reminder_id`, `amount` positif,
+> atau `kind=odometer`, `item_id`, `amount` sebagai pembacaan absolut non-menurun),
+> dan `completion` (`insert`; `item_id`, `reminder_id`, `completed_at` instant,
+> `completion_date` tanggal kalender, opsional biaya/odometer/catatan).
+> `record_id` progress/completion menjadi ID UUID event/log permanen. `link`
+> menggunakan `payload.item_id` baru dan tidak mengubah histori completion lama.
+> `archive` item menonaktifkan reminder terkait; `delete` adalah tombstone,
+> menghapus item juga menombstone reminder terkait,
+> dan mempertahankan riwayat. Completion waktu menghitung tanggal berikutnya
+> dari `completion_date`, menjepit hari akhir bulan; usage reset hanya reminder
+> terkait dan mileage menggunakan odometer completion. `strict_schedule`
+> menghitung dari target_date sebelumnya; completion bertanggal sebelum completion
+> terakhir tetap menambah log tetapi tidak memundurkan siklus. Progress usage
+> setelah instant completion tetap dipertahankan saat reset siklus.
+>
+> Pull: `POST /rest/v1/rpc/sync_pull_changes` body
+> `{ "p_cursor": null, "p_limit": 500 }` (limit 1–500); response
+> `{ "changes": [{ "entity_type": "item", "record": {...} }],
+> "next_cursor": { "changed_at": "...", "rank": 1, "id": "..." } }`.
+> `next_cursor` dari halaman kosong sama dengan kursor masukan. Kursor ini
+> opaque bagi klien: simpan persis yang diterima, terapkan halaman ke SQLite
+> atomik sebelum menyimpan checkpoint, ulangi hingga halaman kosong.
+> Termasuk tombstone item/reminder, log, progress event dan preferensi;
+> isolasi menggunakan user_id dari sesi JWT. Endpoint belum dipakai klien Flutter.
+
 * **Status**: Accepted
 * **Tanggal**: 2026-10-24
 * **Tiket Referensi**: ROOTIN-M003 (GitHub Issue [#2](https://github.com/andresanjaya/rootin/issues/2))
