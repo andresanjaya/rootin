@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rootin_mobile/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:rootin_mobile/l10n/generated/app_localizations.dart';
 
 /// Screen for updating / resetting user password
 class ResetPasswordScreen extends ConsumerStatefulWidget {
@@ -37,7 +38,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Kata sandi berhasil diperbarui!')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.passwordUpdated)),
       );
       context.go('/');
     } else {
@@ -46,7 +47,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       final message =
           error != null
               ? error.toString()
-              : 'Gagal memperbarui kata sandi. Silakan coba lagi.';
+              : AppLocalizations.of(context)!.passwordUpdateFailed;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(message),
@@ -59,11 +60,12 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState.isLoading;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Kata Sandi Baru')),
+      appBar: AppBar(title: Text(l.newPassword)),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -74,7 +76,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Perbarui Kata Sandi',
+                    l.updatePassword,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: theme.colorScheme.onSurface,
@@ -82,7 +84,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Masukkan kata sandi baru untuk akun Anda (minimal 6 karakter)',
+                    l.newPasswordDescription,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -94,9 +96,11 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     obscureText: _obscurePassword,
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
-                      labelText: 'Kata Sandi Baru',
+                      labelText: l.newPassword,
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
+                        tooltip:
+                            _obscurePassword ? l.showPassword : l.hidePassword,
                         icon: Icon(
                           _obscurePassword
                               ? Icons.visibility_outlined
@@ -111,10 +115,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Kata sandi baru wajib diisi';
+                        return l.newPasswordRequired;
                       }
                       if (value.length < 6) {
-                        return 'Kata sandi minimal 6 karakter';
+                        return l.passwordShort;
                       }
                       return null;
                     },
@@ -127,9 +131,13 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     textInputAction: TextInputAction.done,
                     onFieldSubmitted: (_) => _submit(),
                     decoration: InputDecoration(
-                      labelText: 'Konfirmasi Kata Sandi Baru',
+                      labelText: l.confirmNewPassword,
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
+                        tooltip:
+                            _obscureConfirmPassword
+                                ? l.showPassword
+                                : l.hidePassword,
                         icon: Icon(
                           _obscureConfirmPassword
                               ? Icons.visibility_outlined
@@ -144,10 +152,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Konfirmasi kata sandi wajib diisi';
+                        return l.confirmRequired;
                       }
                       if (value != _passwordController.text) {
-                        return 'Kata sandi tidak cocok';
+                        return l.passwordMismatch;
                       }
                       return null;
                     },
@@ -166,7 +174,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                 color: Colors.white,
                               ),
                             )
-                            : const Text('Simpan Kata Sandi'),
+                            : Text(l.savePassword),
                   ),
                 ],
               ),

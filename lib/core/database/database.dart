@@ -16,7 +16,14 @@ part 'database.g.dart';
 
 /// Central Drift database instance for Rootin Mobile.
 @DriftDatabase(
-  tables: [Items, Reminders, ReminderLogs, SyncOutbox, SyncMetadata],
+  tables: [
+    Items,
+    Reminders,
+    ReminderLogs,
+    SyncOutbox,
+    SyncMetadata,
+    UserPreferences,
+  ],
   daos: [ItemsDao, RemindersDao, ReminderLogsDao, OutboxDao],
 )
 class AppDatabase extends _$AppDatabase {
@@ -30,7 +37,7 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase.defaults() => AppDatabase();
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -50,7 +57,7 @@ class AppDatabase extends _$AppDatabase {
       await _createCustomIndexes();
     },
     onUpgrade: (Migrator m, int from, int to) async {
-      // ponytail: schemaVersion=1 without incremental migrations; add when bumping schemaVersion.
+      if (from < 2) await m.createTable(userPreferences);
     },
   );
 
@@ -138,6 +145,8 @@ class AppDatabase extends _$AppDatabase {
       await (delete(items)..where((t) => t.userId.equals(userId))).go();
       await (delete(syncOutbox)..where((t) => t.userId.equals(userId))).go();
       await (delete(syncMetadata)..where((t) => t.userId.equals(userId))).go();
+      await (delete(userPreferences)
+        ..where((t) => t.userId.equals(userId))).go();
     });
   }
 }

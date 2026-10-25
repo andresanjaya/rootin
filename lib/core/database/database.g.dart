@@ -4183,6 +4183,392 @@ class SyncMetadataCompanion extends UpdateCompanion<SyncMetadataData> {
   }
 }
 
+class $UserPreferencesTable extends UserPreferences
+    with TableInfo<$UserPreferencesTable, UserPreference> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserPreferencesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localeMeta = const VerificationMeta('locale');
+  @override
+  late final GeneratedColumn<String> locale = GeneratedColumn<String>(
+    'locale',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _distanceUnitMeta = const VerificationMeta(
+    'distanceUnit',
+  );
+  @override
+  late final GeneratedColumn<String> distanceUnit = GeneratedColumn<String>(
+    'distance_unit',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('km'),
+  );
+  static const VerificationMeta _timezoneOverrideMeta = const VerificationMeta(
+    'timezoneOverride',
+  );
+  @override
+  late final GeneratedColumn<String> timezoneOverride = GeneratedColumn<String>(
+    'timezone_override',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _reminderTimeMeta = const VerificationMeta(
+    'reminderTime',
+  );
+  @override
+  late final GeneratedColumn<String> reminderTime = GeneratedColumn<String>(
+    'reminder_time',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('09:00'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    userId,
+    locale,
+    distanceUnit,
+    timezoneOverride,
+    reminderTime,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'user_preferences';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UserPreference> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('locale')) {
+      context.handle(
+        _localeMeta,
+        locale.isAcceptableOrUnknown(data['locale']!, _localeMeta),
+      );
+    }
+    if (data.containsKey('distance_unit')) {
+      context.handle(
+        _distanceUnitMeta,
+        distanceUnit.isAcceptableOrUnknown(
+          data['distance_unit']!,
+          _distanceUnitMeta,
+        ),
+      );
+    }
+    if (data.containsKey('timezone_override')) {
+      context.handle(
+        _timezoneOverrideMeta,
+        timezoneOverride.isAcceptableOrUnknown(
+          data['timezone_override']!,
+          _timezoneOverrideMeta,
+        ),
+      );
+    }
+    if (data.containsKey('reminder_time')) {
+      context.handle(
+        _reminderTimeMeta,
+        reminderTime.isAcceptableOrUnknown(
+          data['reminder_time']!,
+          _reminderTimeMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {userId};
+  @override
+  UserPreference map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserPreference(
+      userId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}user_id'],
+          )!,
+      locale: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}locale'],
+      ),
+      distanceUnit:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}distance_unit'],
+          )!,
+      timezoneOverride: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}timezone_override'],
+      ),
+      reminderTime:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}reminder_time'],
+          )!,
+    );
+  }
+
+  @override
+  $UserPreferencesTable createAlias(String alias) {
+    return $UserPreferencesTable(attachedDatabase, alias);
+  }
+}
+
+class UserPreference extends DataClass implements Insertable<UserPreference> {
+  final String userId;
+  final String? locale;
+  final String distanceUnit;
+  final String? timezoneOverride;
+  final String reminderTime;
+  const UserPreference({
+    required this.userId,
+    this.locale,
+    required this.distanceUnit,
+    this.timezoneOverride,
+    required this.reminderTime,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['user_id'] = Variable<String>(userId);
+    if (!nullToAbsent || locale != null) {
+      map['locale'] = Variable<String>(locale);
+    }
+    map['distance_unit'] = Variable<String>(distanceUnit);
+    if (!nullToAbsent || timezoneOverride != null) {
+      map['timezone_override'] = Variable<String>(timezoneOverride);
+    }
+    map['reminder_time'] = Variable<String>(reminderTime);
+    return map;
+  }
+
+  UserPreferencesCompanion toCompanion(bool nullToAbsent) {
+    return UserPreferencesCompanion(
+      userId: Value(userId),
+      locale:
+          locale == null && nullToAbsent ? const Value.absent() : Value(locale),
+      distanceUnit: Value(distanceUnit),
+      timezoneOverride:
+          timezoneOverride == null && nullToAbsent
+              ? const Value.absent()
+              : Value(timezoneOverride),
+      reminderTime: Value(reminderTime),
+    );
+  }
+
+  factory UserPreference.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserPreference(
+      userId: serializer.fromJson<String>(json['userId']),
+      locale: serializer.fromJson<String?>(json['locale']),
+      distanceUnit: serializer.fromJson<String>(json['distanceUnit']),
+      timezoneOverride: serializer.fromJson<String?>(json['timezoneOverride']),
+      reminderTime: serializer.fromJson<String>(json['reminderTime']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'userId': serializer.toJson<String>(userId),
+      'locale': serializer.toJson<String?>(locale),
+      'distanceUnit': serializer.toJson<String>(distanceUnit),
+      'timezoneOverride': serializer.toJson<String?>(timezoneOverride),
+      'reminderTime': serializer.toJson<String>(reminderTime),
+    };
+  }
+
+  UserPreference copyWith({
+    String? userId,
+    Value<String?> locale = const Value.absent(),
+    String? distanceUnit,
+    Value<String?> timezoneOverride = const Value.absent(),
+    String? reminderTime,
+  }) => UserPreference(
+    userId: userId ?? this.userId,
+    locale: locale.present ? locale.value : this.locale,
+    distanceUnit: distanceUnit ?? this.distanceUnit,
+    timezoneOverride:
+        timezoneOverride.present
+            ? timezoneOverride.value
+            : this.timezoneOverride,
+    reminderTime: reminderTime ?? this.reminderTime,
+  );
+  UserPreference copyWithCompanion(UserPreferencesCompanion data) {
+    return UserPreference(
+      userId: data.userId.present ? data.userId.value : this.userId,
+      locale: data.locale.present ? data.locale.value : this.locale,
+      distanceUnit:
+          data.distanceUnit.present
+              ? data.distanceUnit.value
+              : this.distanceUnit,
+      timezoneOverride:
+          data.timezoneOverride.present
+              ? data.timezoneOverride.value
+              : this.timezoneOverride,
+      reminderTime:
+          data.reminderTime.present
+              ? data.reminderTime.value
+              : this.reminderTime,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserPreference(')
+          ..write('userId: $userId, ')
+          ..write('locale: $locale, ')
+          ..write('distanceUnit: $distanceUnit, ')
+          ..write('timezoneOverride: $timezoneOverride, ')
+          ..write('reminderTime: $reminderTime')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(userId, locale, distanceUnit, timezoneOverride, reminderTime);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserPreference &&
+          other.userId == this.userId &&
+          other.locale == this.locale &&
+          other.distanceUnit == this.distanceUnit &&
+          other.timezoneOverride == this.timezoneOverride &&
+          other.reminderTime == this.reminderTime);
+}
+
+class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
+  final Value<String> userId;
+  final Value<String?> locale;
+  final Value<String> distanceUnit;
+  final Value<String?> timezoneOverride;
+  final Value<String> reminderTime;
+  final Value<int> rowid;
+  const UserPreferencesCompanion({
+    this.userId = const Value.absent(),
+    this.locale = const Value.absent(),
+    this.distanceUnit = const Value.absent(),
+    this.timezoneOverride = const Value.absent(),
+    this.reminderTime = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  UserPreferencesCompanion.insert({
+    required String userId,
+    this.locale = const Value.absent(),
+    this.distanceUnit = const Value.absent(),
+    this.timezoneOverride = const Value.absent(),
+    this.reminderTime = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : userId = Value(userId);
+  static Insertable<UserPreference> custom({
+    Expression<String>? userId,
+    Expression<String>? locale,
+    Expression<String>? distanceUnit,
+    Expression<String>? timezoneOverride,
+    Expression<String>? reminderTime,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (userId != null) 'user_id': userId,
+      if (locale != null) 'locale': locale,
+      if (distanceUnit != null) 'distance_unit': distanceUnit,
+      if (timezoneOverride != null) 'timezone_override': timezoneOverride,
+      if (reminderTime != null) 'reminder_time': reminderTime,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  UserPreferencesCompanion copyWith({
+    Value<String>? userId,
+    Value<String?>? locale,
+    Value<String>? distanceUnit,
+    Value<String?>? timezoneOverride,
+    Value<String>? reminderTime,
+    Value<int>? rowid,
+  }) {
+    return UserPreferencesCompanion(
+      userId: userId ?? this.userId,
+      locale: locale ?? this.locale,
+      distanceUnit: distanceUnit ?? this.distanceUnit,
+      timezoneOverride: timezoneOverride ?? this.timezoneOverride,
+      reminderTime: reminderTime ?? this.reminderTime,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (locale.present) {
+      map['locale'] = Variable<String>(locale.value);
+    }
+    if (distanceUnit.present) {
+      map['distance_unit'] = Variable<String>(distanceUnit.value);
+    }
+    if (timezoneOverride.present) {
+      map['timezone_override'] = Variable<String>(timezoneOverride.value);
+    }
+    if (reminderTime.present) {
+      map['reminder_time'] = Variable<String>(reminderTime.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserPreferencesCompanion(')
+          ..write('userId: $userId, ')
+          ..write('locale: $locale, ')
+          ..write('distanceUnit: $distanceUnit, ')
+          ..write('timezoneOverride: $timezoneOverride, ')
+          ..write('reminderTime: $reminderTime, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4191,6 +4577,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ReminderLogsTable reminderLogs = $ReminderLogsTable(this);
   late final $SyncOutboxTable syncOutbox = $SyncOutboxTable(this);
   late final $SyncMetadataTable syncMetadata = $SyncMetadataTable(this);
+  late final $UserPreferencesTable userPreferences = $UserPreferencesTable(
+    this,
+  );
   late final ItemsDao itemsDao = ItemsDao(this as AppDatabase);
   late final RemindersDao remindersDao = RemindersDao(this as AppDatabase);
   late final ReminderLogsDao reminderLogsDao = ReminderLogsDao(
@@ -4207,6 +4596,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     reminderLogs,
     syncOutbox,
     syncMetadata,
+    userPreferences,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -6756,6 +7146,232 @@ typedef $$SyncMetadataTableProcessedTableManager =
       SyncMetadataData,
       PrefetchHooks Function()
     >;
+typedef $$UserPreferencesTableCreateCompanionBuilder =
+    UserPreferencesCompanion Function({
+      required String userId,
+      Value<String?> locale,
+      Value<String> distanceUnit,
+      Value<String?> timezoneOverride,
+      Value<String> reminderTime,
+      Value<int> rowid,
+    });
+typedef $$UserPreferencesTableUpdateCompanionBuilder =
+    UserPreferencesCompanion Function({
+      Value<String> userId,
+      Value<String?> locale,
+      Value<String> distanceUnit,
+      Value<String?> timezoneOverride,
+      Value<String> reminderTime,
+      Value<int> rowid,
+    });
+
+class $$UserPreferencesTableFilterComposer
+    extends Composer<_$AppDatabase, $UserPreferencesTable> {
+  $$UserPreferencesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get locale => $composableBuilder(
+    column: $table.locale,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get distanceUnit => $composableBuilder(
+    column: $table.distanceUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get timezoneOverride => $composableBuilder(
+    column: $table.timezoneOverride,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reminderTime => $composableBuilder(
+    column: $table.reminderTime,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$UserPreferencesTableOrderingComposer
+    extends Composer<_$AppDatabase, $UserPreferencesTable> {
+  $$UserPreferencesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get locale => $composableBuilder(
+    column: $table.locale,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get distanceUnit => $composableBuilder(
+    column: $table.distanceUnit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get timezoneOverride => $composableBuilder(
+    column: $table.timezoneOverride,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reminderTime => $composableBuilder(
+    column: $table.reminderTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UserPreferencesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UserPreferencesTable> {
+  $$UserPreferencesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get locale =>
+      $composableBuilder(column: $table.locale, builder: (column) => column);
+
+  GeneratedColumn<String> get distanceUnit => $composableBuilder(
+    column: $table.distanceUnit,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get timezoneOverride => $composableBuilder(
+    column: $table.timezoneOverride,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get reminderTime => $composableBuilder(
+    column: $table.reminderTime,
+    builder: (column) => column,
+  );
+}
+
+class $$UserPreferencesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UserPreferencesTable,
+          UserPreference,
+          $$UserPreferencesTableFilterComposer,
+          $$UserPreferencesTableOrderingComposer,
+          $$UserPreferencesTableAnnotationComposer,
+          $$UserPreferencesTableCreateCompanionBuilder,
+          $$UserPreferencesTableUpdateCompanionBuilder,
+          (
+            UserPreference,
+            BaseReferences<
+              _$AppDatabase,
+              $UserPreferencesTable,
+              UserPreference
+            >,
+          ),
+          UserPreference,
+          PrefetchHooks Function()
+        > {
+  $$UserPreferencesTableTableManager(
+    _$AppDatabase db,
+    $UserPreferencesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () =>
+                  $$UserPreferencesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () => $$UserPreferencesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer:
+              () => $$UserPreferencesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> userId = const Value.absent(),
+                Value<String?> locale = const Value.absent(),
+                Value<String> distanceUnit = const Value.absent(),
+                Value<String?> timezoneOverride = const Value.absent(),
+                Value<String> reminderTime = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UserPreferencesCompanion(
+                userId: userId,
+                locale: locale,
+                distanceUnit: distanceUnit,
+                timezoneOverride: timezoneOverride,
+                reminderTime: reminderTime,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String userId,
+                Value<String?> locale = const Value.absent(),
+                Value<String> distanceUnit = const Value.absent(),
+                Value<String?> timezoneOverride = const Value.absent(),
+                Value<String> reminderTime = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UserPreferencesCompanion.insert(
+                userId: userId,
+                locale: locale,
+                distanceUnit: distanceUnit,
+                timezoneOverride: timezoneOverride,
+                reminderTime: reminderTime,
+                rowid: rowid,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          BaseReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$UserPreferencesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UserPreferencesTable,
+      UserPreference,
+      $$UserPreferencesTableFilterComposer,
+      $$UserPreferencesTableOrderingComposer,
+      $$UserPreferencesTableAnnotationComposer,
+      $$UserPreferencesTableCreateCompanionBuilder,
+      $$UserPreferencesTableUpdateCompanionBuilder,
+      (
+        UserPreference,
+        BaseReferences<_$AppDatabase, $UserPreferencesTable, UserPreference>,
+      ),
+      UserPreference,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -6770,4 +7386,6 @@ class $AppDatabaseManager {
       $$SyncOutboxTableTableManager(_db, _db.syncOutbox);
   $$SyncMetadataTableTableManager get syncMetadata =>
       $$SyncMetadataTableTableManager(_db, _db.syncMetadata);
+  $$UserPreferencesTableTableManager get userPreferences =>
+      $$UserPreferencesTableTableManager(_db, _db.userPreferences);
 }

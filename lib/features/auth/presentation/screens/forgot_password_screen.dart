@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rootin_mobile/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:rootin_mobile/l10n/generated/app_localizations.dart';
 
 /// Screen for requesting a password reset email
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
@@ -42,7 +43,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       final message =
           error != null
               ? error.toString()
-              : 'Gagal mengirim tautan reset. Silakan coba lagi.';
+              : AppLocalizations.of(context)!.resetLinkFailed;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(message),
@@ -55,11 +56,12 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState.isLoading;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Lupa Kata Sandi')),
+      appBar: AppBar(title: Text(l.forgotPassword)),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -77,7 +79,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'Tautan Terkirim',
+                          l.linkSent,
                           textAlign: TextAlign.center,
                           style: theme.textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.bold,
@@ -86,7 +88,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Kami telah mengirimkan petunjuk pemulihan kata sandi ke ${_emailController.text}. Silakan periksa kotak masuk atau spam email Anda.',
+                          l.linkSentDescription(_emailController.text),
                           textAlign: TextAlign.center,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
@@ -102,7 +104,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                               context.go('/auth/login');
                             }
                           },
-                          child: const Text('Kembali ke Masuk'),
+                          child: Text(l.backToLogin),
                         ),
                       ],
                     )
@@ -112,7 +114,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            'Atur Ulang Kata Sandi',
+                            l.resetPassword,
                             style: theme.textTheme.headlineSmall?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: theme.colorScheme.onSurface,
@@ -120,7 +122,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Masukkan email yang terdaftar untuk menerima tautan pembaruan kata sandi',
+                            l.resetDescription,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -132,18 +134,18 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                             keyboardType: TextInputType.emailAddress,
                             textInputAction: TextInputAction.done,
                             onFieldSubmitted: (_) => _submit(),
-                            decoration: const InputDecoration(
-                              labelText: 'Email',
-                              hintText: 'nama@domain.com',
-                              prefixIcon: Icon(Icons.email_outlined),
+                            decoration: InputDecoration(
+                              labelText: l.email,
+                              hintText: l.emailHint,
+                              prefixIcon: const Icon(Icons.email_outlined),
                             ),
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
-                                return 'Email wajib diisi';
+                                return l.emailRequired;
                               }
                               if (!value.contains('@') ||
                                   !value.contains('.')) {
-                                return 'Format email tidak valid';
+                                return l.emailInvalid;
                               }
                               return null;
                             },
@@ -162,7 +164,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                                         color: Colors.white,
                                       ),
                                     )
-                                    : const Text('Kirim Tautan Reset'),
+                                    : Text(l.sendResetLink),
                           ),
                           const SizedBox(height: 16),
                           TextButton(
@@ -174,7 +176,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                                 context.go('/auth/login');
                               }
                             },
-                            child: const Text('Batal'),
+                            child: Text(l.cancel),
                           ),
                         ],
                       ),

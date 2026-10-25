@@ -8,13 +8,20 @@ import 'package:rootin_mobile/features/auth/presentation/screens/forgot_password
 import 'package:rootin_mobile/features/auth/presentation/screens/login_screen.dart';
 import 'package:rootin_mobile/features/auth/presentation/screens/register_screen.dart';
 import 'package:rootin_mobile/features/auth/presentation/screens/reset_password_screen.dart';
+import 'package:rootin_mobile/l10n/generated/app_localizations.dart';
 
 Widget createTestWidget(Widget child, {InMemoryAuthRepository? repo}) {
   return ProviderScope(
     overrides: [
       if (repo != null) authRepositoryProvider.overrideWithValue(repo),
     ],
-    child: MaterialApp(theme: AppTheme.light(), home: child),
+    child: MaterialApp(
+      theme: AppTheme.light(),
+      locale: const Locale('id'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: child,
+    ),
   );
 }
 

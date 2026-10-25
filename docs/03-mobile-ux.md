@@ -103,6 +103,8 @@ graph TD
 | **Tab 4: Kalender**<br>`/calendar` | **Tampilan Agenda Bulanan & Mingguan** | - `/calendar/day/:date` (*Agenda Harian*)<br>- *Navigasi langsung ke Reminder Detail* | - Kalender interaktif dengan indikator titik warna status (Merah: Overdue, Oranye: Warning, Netral: Terjadwal)<br>- Daftar agenda di bawah kalender yang reaktif terhadap tanggal yang diketuk |
 | **Tab 5: Pengaturan**<br>`/settings` | **Pusat Preferensi & Manajemen Akun** | - `/settings/account` (*Profil & Sesi*)<br>- `/settings/notifications` (*Izin & Jam*)<br>- `/settings/sync` (*Detail Outbox*)<br>- `/settings/language` (ID / EN)<br>- *Dialog Hapus Akun (Danger Zone)* | - Kartu avatar & identitas email pengguna<br>- Switch tema (Sistem, Terang, Gelap)<br>- Indikator konektivitas & jumlah antrean sinkronisasi lokal<br>- Zona Bahaya (*Destructive Zone*) |
 
+Implementasi M021: halaman `/settings` dapat dicapai dari ikon pengaturan di beranda; memilih bahasa perangkat/Indonesia/English, km/mi, zona waktu perangkat atau override IANA, dan jam dinding pengingat per akun. Nilai disimpan lokal pada perangkat ini; jadwal notifikasi dan sinkronisasi preferensi antarperangkat belum tersedia (M019/kontrak sinkronisasi berikutnya). String layar autentikasi dan beranda menggunakan ARB ID/EN; panjang teks mengikuti ukuran font sistem.
+
 ---
 
 ### 2.3 Desain Modal Sheets & Dialog Aksi Cepat

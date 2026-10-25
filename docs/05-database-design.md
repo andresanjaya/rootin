@@ -688,3 +688,20 @@ class AppDatabase extends _$AppDatabase {
 ### 6.2 Aturan Integritas Migrasi
 1. **Tidak Ada Penghapusan Kolom Destruktif**: Kolom yang tidak lagi digunakan ditandai *deprecated* sebelum dihapus pada rilis mayor.
 2. **Uji Validasi Skema Otomatis**: Setiap versi skema baru wajib menyertakan pengujian migrasi menggunakan `drift_dev:schema test` untuk memverifikasi bahwa data dari `schemaVersion n` bermigrasi sempurna ke `schemaVersion n+1`.
+# Kontrak lokal M021 (Drift schemaVersion 2)
+
+Migrasi aditif v1→v2 membuat `user_preferences` (`user_id` primary key,
+`locale` null untuk bahasa perangkat atau `id`/`en`, `distance_unit` `km`/`mi`,
+`timezone_override` null untuk perangkat atau nama IANA, `reminder_time` `HH:mm`
+default `09:00`). Pengaturan milik satu akun pada satu perangkat, **tidak** masuk
+outbox atau Supabase; perubahan akun tidak boleh menampilkan preferensi akun lain.
+Upgrade tidak menyalin/menghapus item, reminder, log, maupun antrean outbox.
+
+Calendar date disimpan `YYYY-MM-DD` tanpa offset (tanggal selesai/target); instant
+disimpan ISO 8601 UTC dengan `Z` (waktu kejadian/audit). Konversi jam dinding
+memakai zona IANA efektif: override akun atau identifier perangkat dari native
+Android/iOS, dibaca kembali saat aplikasi resume. Waktu yang tidak ada saat DST
+spring-forward dilewati; waktu ganda fall-back memilih instant paling awal.
+Reminder berbasis pemakaian/jarak tidak diberi tanggal kalender rekaan. Perubahan
+zona/waktu memancarkan state untuk scheduler di tiket berikutnya; belum ada alarm
+yang dipasang atau di-reschedule oleh M021.

@@ -8,6 +8,8 @@ import 'package:rootin_mobile/features/auth/presentation/screens/forgot_password
 import 'package:rootin_mobile/features/auth/presentation/screens/login_screen.dart';
 import 'package:rootin_mobile/features/auth/presentation/screens/register_screen.dart';
 import 'package:rootin_mobile/features/auth/presentation/screens/reset_password_screen.dart';
+import 'package:rootin_mobile/features/settings/settings_screen.dart';
+import 'package:rootin_mobile/l10n/generated/app_localizations.dart';
 
 /// Adapter to convert a [Stream] into a [Listenable] for GoRouter refresh.
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -57,7 +59,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/',
         name: 'home',
-        builder: (context, state) => const _PlaceholderScreen(title: 'Home'),
+        builder: (context, state) => const _PlaceholderScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
       GoRoute(
         path: '/auth/login',
@@ -85,22 +92,26 @@ final routerProvider = Provider<GoRouter>((ref) {
 
 /// Placeholder screen for initial scaffold
 class _PlaceholderScreen extends ConsumerWidget {
-  const _PlaceholderScreen({required this.title});
-
-  final String title;
+  const _PlaceholderScreen();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
+    final l = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(l.home),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: l.settings,
+            onPressed: () => context.push('/settings'),
+          ),
           IconButton(
             key: const Key('home_logout_button'),
             icon: const Icon(Icons.logout),
-            tooltip: 'Keluar',
+            tooltip: l.logout,
             onPressed:
                 () => ref.read(authControllerProvider.notifier).signOut(),
           ),
@@ -119,8 +130,8 @@ class _PlaceholderScreen extends ConsumerWidget {
             const SizedBox(height: 8),
             Text(
               user?.email != null
-                  ? 'Masuk sebagai: ${user!.email}'
-                  : 'Offline-first maintenance reminder',
+                  ? l.signedInAs(user!.email!)
+                  : l.offlineDescription,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ],

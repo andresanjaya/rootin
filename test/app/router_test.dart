@@ -10,6 +10,15 @@ import 'package:rootin_mobile/features/auth/presentation/screens/login_screen.da
 import 'package:rootin_mobile/features/auth/presentation/screens/register_screen.dart';
 
 void main() {
+  setUp(() {
+    TestWidgetsFlutterBinding.ensureInitialized()
+        .platformDispatcher
+        .localesTestValue = [const Locale('id')];
+  });
+  tearDown(() {
+    TestWidgetsFlutterBinding.ensureInitialized().platformDispatcher
+        .clearLocalesTestValue();
+  });
   group('Router and Redirect Guards', () {
     testWidgets('unauthenticated user is redirected to /auth/login', (
       tester,
