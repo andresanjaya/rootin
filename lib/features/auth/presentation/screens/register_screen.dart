@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rootin_mobile/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:rootin_mobile/l10n/generated/app_localizations.dart';
 
 /// Screen for user registration
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -45,7 +46,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       final message =
           error != null
               ? error.toString()
-              : 'Gagal mendaftar. Silakan coba lagi.';
+              : AppLocalizations.of(context)!.registerFailed;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(message),
@@ -54,11 +55,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Pendaftaran berhasil! Silakan periksa email Anda atau masuk.',
-          ),
-        ),
+        SnackBar(content: Text(AppLocalizations.of(context)!.registerSuccess)),
       );
     }
   }
@@ -66,11 +63,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState.isLoading;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Daftar Akun')),
+      appBar: AppBar(title: Text(l.registerAccount)),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -81,7 +79,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Buat Akun Rootin',
+                    l.createAccount,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: theme.colorScheme.onSurface,
@@ -89,7 +87,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Kelola jadwal perawatan barang dan kendaraan Anda secara teratur',
+                    l.registerDescription,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -100,17 +98,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      hintText: 'nama@domain.com',
-                      prefixIcon: Icon(Icons.email_outlined),
+                    decoration: InputDecoration(
+                      labelText: l.email,
+                      hintText: l.emailHint,
+                      prefixIcon: const Icon(Icons.email_outlined),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Email wajib diisi';
+                        return l.emailRequired;
                       }
                       if (!value.contains('@') || !value.contains('.')) {
-                        return 'Format email tidak valid';
+                        return l.emailInvalid;
                       }
                       return null;
                     },
@@ -122,9 +120,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     obscureText: _obscurePassword,
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
-                      labelText: 'Kata Sandi',
+                      labelText: l.password,
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
+                        tooltip:
+                            _obscurePassword ? l.showPassword : l.hidePassword,
                         icon: Icon(
                           _obscurePassword
                               ? Icons.visibility_outlined
@@ -139,10 +139,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Kata sandi wajib diisi';
+                        return l.passwordRequired;
                       }
                       if (value.length < 6) {
-                        return 'Kata sandi minimal 6 karakter';
+                        return l.passwordShort;
                       }
                       return null;
                     },
@@ -155,9 +155,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     textInputAction: TextInputAction.done,
                     onFieldSubmitted: (_) => _submit(),
                     decoration: InputDecoration(
-                      labelText: 'Konfirmasi Kata Sandi',
+                      labelText: l.confirmPassword,
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
+                        tooltip:
+                            _obscureConfirmPassword
+                                ? l.showPassword
+                                : l.hidePassword,
                         icon: Icon(
                           _obscureConfirmPassword
                               ? Icons.visibility_outlined
@@ -172,10 +176,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Konfirmasi kata sandi wajib diisi';
+                        return l.confirmRequired;
                       }
                       if (value != _passwordController.text) {
-                        return 'Kata sandi tidak cocok';
+                        return l.passwordMismatch;
                       }
                       return null;
                     },
@@ -194,16 +198,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 color: Colors.white,
                               ),
                             )
-                            : const Text('Daftar'),
+                            : Text(l.register),
                   ),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Sudah memiliki akun?',
-                        style: theme.textTheme.bodyMedium,
-                      ),
+                      Text(l.hasAccount, style: theme.textTheme.bodyMedium),
                       TextButton(
                         key: const Key('go_to_login_button'),
                         onPressed: () {
@@ -213,7 +214,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             context.go('/auth/login');
                           }
                         },
-                        child: const Text('Masuk'),
+                        child: Text(l.login),
                       ),
                     ],
                   ),

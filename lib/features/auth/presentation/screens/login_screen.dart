@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rootin_mobile/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:rootin_mobile/l10n/generated/app_localizations.dart';
 
 /// Screen for user login
 class LoginScreen extends ConsumerStatefulWidget {
@@ -40,7 +41,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       final state = ref.read(authControllerProvider);
       final error = state.error;
       final message =
-          error != null ? error.toString() : 'Gagal masuk. Silakan coba lagi.';
+          error != null
+              ? error.toString()
+              : AppLocalizations.of(context)!.loginFailed;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(message),
@@ -53,6 +56,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState.isLoading;
 
@@ -83,7 +87,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Masuk ke akun Anda untuk mengelola pengingat pemeliharaan',
+                    l.loginDescription,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
@@ -95,17 +99,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      hintText: 'nama@domain.com',
-                      prefixIcon: Icon(Icons.email_outlined),
+                    decoration: InputDecoration(
+                      labelText: l.email,
+                      hintText: l.emailHint,
+                      prefixIcon: const Icon(Icons.email_outlined),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Email wajib diisi';
+                        return l.emailRequired;
                       }
                       if (!value.contains('@') || !value.contains('.')) {
-                        return 'Format email tidak valid';
+                        return l.emailInvalid;
                       }
                       return null;
                     },
@@ -118,9 +122,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     textInputAction: TextInputAction.done,
                     onFieldSubmitted: (_) => _submit(),
                     decoration: InputDecoration(
-                      labelText: 'Kata Sandi',
+                      labelText: l.password,
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
+                        tooltip:
+                            _obscurePassword ? l.showPassword : l.hidePassword,
                         icon: Icon(
                           _obscurePassword
                               ? Icons.visibility_outlined
@@ -135,10 +141,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Kata sandi wajib diisi';
+                        return l.passwordRequired;
                       }
                       if (value.length < 6) {
-                        return 'Kata sandi minimal 6 karakter';
+                        return l.passwordShort;
                       }
                       return null;
                     },
@@ -149,7 +155,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     child: TextButton(
                       key: const Key('forgot_password_button'),
                       onPressed: () => context.push('/auth/forgot-password'),
-                      child: const Text('Lupa Kata Sandi?'),
+                      child: Text(l.forgotPasswordQuestion),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -166,20 +172,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 color: Colors.white,
                               ),
                             )
-                            : const Text('Masuk'),
+                            : Text(l.login),
                   ),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Belum memiliki akun?',
-                        style: theme.textTheme.bodyMedium,
-                      ),
+                      Text(l.noAccount, style: theme.textTheme.bodyMedium),
                       TextButton(
                         key: const Key('go_to_register_button'),
                         onPressed: () => context.push('/auth/register'),
-                        child: const Text('Daftar'),
+                        child: Text(l.register),
                       ),
                     ],
                   ),

@@ -147,3 +147,22 @@ class SyncMetadata extends Table {
   @override
   Set<Column> get primaryKey => {key, userId};
 }
+
+/// Device-local preferences scoped by authenticated user; never sent to outbox.
+class UserPreferences extends Table {
+  TextColumn get userId => text()();
+  TextColumn get locale => text().nullable()();
+  TextColumn get distanceUnit => text().withDefault(const Constant('km'))();
+  TextColumn get timezoneOverride => text().nullable()();
+  TextColumn get reminderTime => text().withDefault(const Constant('09:00'))();
+
+  @override
+  Set<Column> get primaryKey => {userId};
+
+  @override
+  List<String> get customConstraints => [
+    "CHECK (locale IS NULL OR locale IN ('id', 'en'))",
+    "CHECK (distance_unit IN ('km', 'mi'))",
+    "CHECK (reminder_time GLOB '[0-2][0-9]:[0-5][0-9]' AND reminder_time BETWEEN '00:00' AND '23:59')",
+  ];
+}
