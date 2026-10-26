@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:drift/drift.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rootin_mobile/core/database/database.dart';
 import 'package:rootin_mobile/core/database/database_providers.dart';
@@ -192,8 +195,63 @@ final outboxSummaryProvider = StreamProvider<OutboxSummary>((ref) {
   );
 });
 
-final localTodayProvider = Provider<DateTime?>((ref) {
+final reminderClockProvider = Provider<DateTime Function()>(
+  (ref) => DateTime.now,
+);
+
+Duration untilNextDay(DateTime now, String zone) {
+  final location = locationFor(zone);
+  final wall = tz.TZDateTime.from(now, location);
+  final midnight = tz.TZDateTime(location, wall.year, wall.month, wall.day + 1);
+  return midnight.difference(now);
+}
+
+final _localTodayRefreshProvider = StateNotifierProvider<LocalToday, int>((
+  ref,
+) {
   final zone = ref.watch(effectiveTimezoneProvider);
-  if (zone == null) return null;
-  return todayInZone(DateTime.now(), zone);
+  return LocalToday(zone, ref.watch(reminderClockProvider));
 });
+
+final localTodayProvider = Provider<DateTime?>((ref) {
+  ref.watch(_localTodayRefreshProvider);
+  final zone = ref.watch(effectiveTimezoneProvider);
+  return zone == null
+      ? null
+      : todayInZone(ref.watch(reminderClockProvider)(), zone);
+});
+
+class LocalToday extends StateNotifier<int> with WidgetsBindingObserver {
+  LocalToday(this.zone, this.now) : super(0) {
+    WidgetsBinding.instance.addObserver(this);
+    refresh();
+  }
+
+  final String? zone;
+  final DateTime Function() now;
+  Timer? _timer;
+
+  void refresh() {
+    _timer?.cancel();
+    if (zone == null) return;
+    final instant = now();
+    state++;
+    final delay = untilNextDay(instant, zone!);
+    _timer = Timer(
+      delay > Duration.zero ? delay : const Duration(seconds: 1),
+      refresh,
+    );
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) refresh();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+}

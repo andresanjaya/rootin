@@ -74,7 +74,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerFailed => 'Could not sign up. Please try again.';
 
   @override
-  String get registerSuccess => 'Registration successful! Check your email or sign in.';
+  String get registerSuccess =>
+      'Registration successful! Check your email or sign in.';
 
   @override
   String get registerAccount => 'Create account';
@@ -83,7 +84,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createAccount => 'Create a Rootin account';
 
   @override
-  String get registerDescription => 'Keep track of maintenance for your belongings and vehicles';
+  String get registerDescription =>
+      'Keep track of maintenance for your belongings and vehicles';
 
   @override
   String get confirmPassword => 'Confirm password';
@@ -118,7 +120,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resetPassword => 'Reset password';
 
   @override
-  String get resetDescription => 'Enter your registered email to receive a password reset link';
+  String get resetDescription =>
+      'Enter your registered email to receive a password reset link';
 
   @override
   String get sendResetLink => 'Send reset link';
@@ -130,7 +133,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordUpdated => 'Password updated!';
 
   @override
-  String get passwordUpdateFailed => 'Could not update your password. Please try again.';
+  String get passwordUpdateFailed =>
+      'Could not update your password. Please try again.';
 
   @override
   String get newPassword => 'New password';
@@ -139,7 +143,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updatePassword => 'Update password';
 
   @override
-  String get newPasswordDescription => 'Enter a new password (at least 6 characters)';
+  String get newPasswordDescription =>
+      'Enter a new password (at least 6 characters)';
 
   @override
   String get newPasswordRequired => 'New password is required';
@@ -187,7 +192,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reminderTime => 'Reminder time';
 
   @override
-  String get localOnly => 'These preferences are stored on this device. Notification scheduling is not available yet.';
+  String get localOnly =>
+      'These preferences are stored on this device. Notification scheduling is not available yet.';
 
   @override
   String get save => 'Save';
@@ -336,4 +342,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get syncStatusUnavailable => 'Local sync queue status unavailable';
+
+  @override
+  String get connectivityUnknown => 'Connectivity unknown';
 }

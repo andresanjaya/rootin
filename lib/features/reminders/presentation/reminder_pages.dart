@@ -366,7 +366,7 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
           child: Text(l.pendingSync(value.pending)),
         ),
         AsyncError() => Text(l.syncStatusUnavailable),
-        _ => const SizedBox.shrink(),
+        _ => Text(l.connectivityUnknown),
       };
 
   String _detail(

@@ -59,13 +59,17 @@ void main() {
     version: 1,
   );
 
-  Widget page(String section, List<ReminderEntry> entries) => ProviderScope(
+  Widget page(
+    String section,
+    List<ReminderEntry> entries, {
+    bool emptyQueue = false,
+  }) => ProviderScope(
     overrides: [
       localTodayProvider.overrideWithValue(DateTime.utc(2026, 10, 25)),
       reminderFeedProvider.overrideWith((ref) => Stream.value(entries)),
       outboxSummaryProvider.overrideWith(
         (ref) => Stream.value(
-          const OutboxSummary(pending: 0, failed: 2, conflict: 0),
+          OutboxSummary(pending: 0, failed: emptyQueue ? 0 : 2, conflict: 0),
         ),
       ),
     ],
@@ -125,5 +129,13 @@ void main() {
 
     expect(find.text('Reminder active'), findsOneWidget);
     expect(find.text('Reminder archived'), findsNothing);
+  });
+
+  testWidgets('empty local queue does not imply online connectivity', (
+    tester,
+  ) async {
+    await tester.pumpWidget(page('today', [], emptyQueue: true));
+    await tester.pumpAndSettle();
+    expect(find.text('Connectivity unknown'), findsOneWidget);
   });
 }

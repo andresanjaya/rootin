@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart' show Value;
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rootin_mobile/core/database/database.dart';
@@ -7,8 +8,53 @@ import 'package:rootin_mobile/features/auth/data/repositories/in_memory_auth_rep
 import 'package:rootin_mobile/features/auth/domain/entities/auth_user.dart';
 import 'package:rootin_mobile/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:rootin_mobile/features/reminders/data/reminder_feed.dart';
+import 'package:rootin_mobile/features/settings/settings_provider.dart';
 
 void main() {
+  test('next local midnight uses actual timezone offset across DST', () {
+    expect(
+      untilNextDay(DateTime.utc(2026, 3, 8, 5), 'America/New_York'),
+      const Duration(hours: 23),
+    );
+    expect(
+      untilNextDay(DateTime.utc(2026, 11, 1, 4), 'America/New_York'),
+      const Duration(hours: 25),
+    );
+    expect(
+      untilNextDay(DateTime.utc(2026, 10, 25, 16, 59), 'Asia/Jakarta'),
+      const Duration(minutes: 1),
+    );
+  });
+
+  testWidgets('local day changes at midnight and refreshes when app resumes', (
+    tester,
+  ) async {
+    var now = DateTime.utc(2026, 10, 25, 16, 59, 59);
+    late WidgetRef ref;
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          effectiveTimezoneProvider.overrideWithValue('Asia/Jakarta'),
+          reminderClockProvider.overrideWithValue(() => now),
+        ],
+        child: Consumer(
+          builder: (context, widgetRef, child) {
+            ref = widgetRef;
+            return const SizedBox();
+          },
+        ),
+      ),
+    );
+    expect(ref.read(localTodayProvider), DateTime.utc(2026, 10, 25));
+    now = DateTime.utc(2026, 10, 25, 17);
+    await tester.pump(const Duration(seconds: 1));
+    expect(ref.read(localTodayProvider), DateTime.utc(2026, 10, 26));
+    now = DateTime.utc(2026, 10, 26, 17);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    expect(ref.read(localTodayProvider), DateTime.utc(2026, 10, 27));
+    await tester.pumpWidget(const SizedBox());
+  });
+
   test(
     'calendar status uses effective day, ignores invalid and non-time dates',
     () {
