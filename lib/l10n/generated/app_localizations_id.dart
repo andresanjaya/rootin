@@ -217,4 +217,88 @@ class AppLocalizationsId extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get today => 'Hari ini';
+
+  @override
+  String get reminders => 'Pengingat';
+
+  @override
+  String get items => 'Barang';
+
+  @override
+  String get calendar => 'Kalender';
+
+  @override
+  String get history => 'Riwayat';
+
+  @override
+  String get noItems => 'Belum ada barang';
+
+  @override
+  String get noHistory => 'Belum ada pengingat yang selesai';
+
+  @override
+  String get completed => 'Selesai';
+
+  @override
+  String get noReminders => 'Tidak ada pengingat yang cocok';
+
+  @override
+  String get noScheduledReminders => 'Tidak ada pengingat terjadwal';
+
+  @override
+  String get loadFailed => 'Gagal memuat data lokal';
+
+  @override
+  String get timezoneUnavailable =>
+      'Atur zona waktu yang valid untuk melihat pengingat';
+
+  @override
+  String get searchReminders => 'Cari pengingat atau barang';
+
+  @override
+  String get type => 'Jenis';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get allTypes => 'Semua jenis';
+
+  @override
+  String get timeType => 'Waktu';
+
+  @override
+  String get usageType => 'Pemakaian';
+
+  @override
+  String get mileageType => 'Jarak tempuh';
+
+  @override
+  String get allStatuses => 'Semua status';
+
+  @override
+  String get overdue => 'Terlambat';
+
+  @override
+  String get dueToday => 'Jatuh tempo hari ini';
+
+  @override
+  String get soon => 'Segera';
+
+  @override
+  String get later => 'Nanti';
+
+  @override
+  String get noDate => 'Tanpa tanggal kalender';
+
+  @override
+  String get unknown => 'Tidak diketahui';
+
+  @override
+  String pendingSync(int count) {
+    return '$count perubahan menunggu sinkronisasi';
+  }
 }

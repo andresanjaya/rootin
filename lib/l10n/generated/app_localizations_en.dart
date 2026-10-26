@@ -215,4 +215,87 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get reminders => 'Reminders';
+
+  @override
+  String get items => 'Items';
+
+  @override
+  String get calendar => 'Calendar';
+
+  @override
+  String get history => 'History';
+
+  @override
+  String get noItems => 'No items yet';
+
+  @override
+  String get noHistory => 'No completed reminders yet';
+
+  @override
+  String get completed => 'Completed';
+
+  @override
+  String get noReminders => 'No matching reminders';
+
+  @override
+  String get noScheduledReminders => 'No scheduled reminders';
+
+  @override
+  String get loadFailed => 'Could not load local data';
+
+  @override
+  String get timezoneUnavailable => 'Set a valid time zone to view reminders';
+
+  @override
+  String get searchReminders => 'Search reminders or items';
+
+  @override
+  String get type => 'Type';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get allTypes => 'All types';
+
+  @override
+  String get timeType => 'Time';
+
+  @override
+  String get usageType => 'Usage';
+
+  @override
+  String get mileageType => 'Mileage';
+
+  @override
+  String get allStatuses => 'All statuses';
+
+  @override
+  String get overdue => 'Overdue';
+
+  @override
+  String get dueToday => 'Due today';
+
+  @override
+  String get soon => 'Due soon';
+
+  @override
+  String get later => 'Later';
+
+  @override
+  String get noDate => 'No calendar date';
+
+  @override
+  String get unknown => 'Unknown';
+
+  @override
+  String pendingSync(int count) {
+    return '$count pending changes';
+  }
 }

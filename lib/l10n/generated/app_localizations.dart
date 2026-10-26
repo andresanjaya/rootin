@@ -475,6 +475,168 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'{count, plural, =0{Tidak ada pengingat} one{1 pengingat} other{{count} pengingat}}'**
   String reminderCount(int count);
+
+  /// No description provided for @today.
+  ///
+  /// In id, this message translates to:
+  /// **'Hari ini'**
+  String get today;
+
+  /// No description provided for @reminders.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengingat'**
+  String get reminders;
+
+  /// No description provided for @items.
+  ///
+  /// In id, this message translates to:
+  /// **'Barang'**
+  String get items;
+
+  /// No description provided for @calendar.
+  ///
+  /// In id, this message translates to:
+  /// **'Kalender'**
+  String get calendar;
+
+  /// No description provided for @history.
+  ///
+  /// In id, this message translates to:
+  /// **'Riwayat'**
+  String get history;
+
+  /// No description provided for @noItems.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada barang'**
+  String get noItems;
+
+  /// No description provided for @noHistory.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada pengingat yang selesai'**
+  String get noHistory;
+
+  /// No description provided for @completed.
+  ///
+  /// In id, this message translates to:
+  /// **'Selesai'**
+  String get completed;
+
+  /// No description provided for @noReminders.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak ada pengingat yang cocok'**
+  String get noReminders;
+
+  /// No description provided for @noScheduledReminders.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak ada pengingat terjadwal'**
+  String get noScheduledReminders;
+
+  /// No description provided for @loadFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal memuat data lokal'**
+  String get loadFailed;
+
+  /// No description provided for @timezoneUnavailable.
+  ///
+  /// In id, this message translates to:
+  /// **'Atur zona waktu yang valid untuk melihat pengingat'**
+  String get timezoneUnavailable;
+
+  /// No description provided for @searchReminders.
+  ///
+  /// In id, this message translates to:
+  /// **'Cari pengingat atau barang'**
+  String get searchReminders;
+
+  /// No description provided for @type.
+  ///
+  /// In id, this message translates to:
+  /// **'Jenis'**
+  String get type;
+
+  /// No description provided for @status.
+  ///
+  /// In id, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @allTypes.
+  ///
+  /// In id, this message translates to:
+  /// **'Semua jenis'**
+  String get allTypes;
+
+  /// No description provided for @timeType.
+  ///
+  /// In id, this message translates to:
+  /// **'Waktu'**
+  String get timeType;
+
+  /// No description provided for @usageType.
+  ///
+  /// In id, this message translates to:
+  /// **'Pemakaian'**
+  String get usageType;
+
+  /// No description provided for @mileageType.
+  ///
+  /// In id, this message translates to:
+  /// **'Jarak tempuh'**
+  String get mileageType;
+
+  /// No description provided for @allStatuses.
+  ///
+  /// In id, this message translates to:
+  /// **'Semua status'**
+  String get allStatuses;
+
+  /// No description provided for @overdue.
+  ///
+  /// In id, this message translates to:
+  /// **'Terlambat'**
+  String get overdue;
+
+  /// No description provided for @dueToday.
+  ///
+  /// In id, this message translates to:
+  /// **'Jatuh tempo hari ini'**
+  String get dueToday;
+
+  /// No description provided for @soon.
+  ///
+  /// In id, this message translates to:
+  /// **'Segera'**
+  String get soon;
+
+  /// No description provided for @later.
+  ///
+  /// In id, this message translates to:
+  /// **'Nanti'**
+  String get later;
+
+  /// No description provided for @noDate.
+  ///
+  /// In id, this message translates to:
+  /// **'Tanpa tanggal kalender'**
+  String get noDate;
+
+  /// No description provided for @unknown.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak diketahui'**
+  String get unknown;
+
+  /// No description provided for @pendingSync.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} perubahan menunggu sinkronisasi'**
+  String pendingSync(int count);
 }
 
 class _AppLocalizationsDelegate
