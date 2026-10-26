@@ -56,39 +56,93 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      ShellRoute(
-        builder: (context, state, child) => ReminderShell(child: child),
-        routes: [
-          GoRoute(
-            path: '/',
-            name: 'home',
-            builder: (context, state) => const ReminderPage(section: 'today'),
+      StatefulShellRoute.indexedStack(
+        builder:
+            (context, state, navigationShell) =>
+                ReminderShell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/today',
+                name: 'home',
+                builder:
+                    (context, state) => const ReminderPage(section: 'today'),
+                routes: [
+                  GoRoute(
+                    path: 'history',
+                    builder:
+                        (context, state) =>
+                            const ReminderPage(section: 'history'),
+                  ),
+                ],
+              ),
+            ],
           ),
-          GoRoute(
-            path: '/reminders',
-            builder:
-                (context, state) => const ReminderPage(section: 'reminders'),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/reminders',
+                builder:
+                    (context, state) =>
+                        const ReminderPage(section: 'reminders'),
+                routes: [
+                  GoRoute(
+                    path: 'history',
+                    builder:
+                        (context, state) =>
+                            const ReminderPage(section: 'history'),
+                  ),
+                ],
+              ),
+            ],
           ),
-          GoRoute(
-            path: '/items',
-            builder: (context, state) => const ReminderPage(section: 'items'),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/items',
+                builder:
+                    (context, state) => const ReminderPage(section: 'items'),
+                routes: [
+                  GoRoute(
+                    path: 'history',
+                    builder:
+                        (context, state) =>
+                            const ReminderPage(section: 'history'),
+                  ),
+                ],
+              ),
+            ],
           ),
-          GoRoute(
-            path: '/calendar',
-            builder:
-                (context, state) => const ReminderPage(section: 'calendar'),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/calendar',
+                builder:
+                    (context, state) => const ReminderPage(section: 'calendar'),
+                routes: [
+                  GoRoute(
+                    path: 'history',
+                    builder:
+                        (context, state) =>
+                            const ReminderPage(section: 'history'),
+                  ),
+                ],
+              ),
+            ],
           ),
-          GoRoute(
-            path: '/settings',
-            name: 'settings',
-            builder: (context, state) => const SettingsScreen(),
-          ),
-          GoRoute(
-            path: '/history',
-            builder: (context, state) => const ReminderPage(section: 'history'),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/settings',
+                name: 'settings',
+                builder: (context, state) => const SettingsScreen(),
+              ),
+            ],
           ),
         ],
       ),
+      GoRoute(path: '/', redirect: (context, state) => '/today'),
       GoRoute(
         path: '/auth/login',
         name: 'login',

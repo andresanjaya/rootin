@@ -7,8 +7,8 @@ import 'package:rootin_mobile/features/settings/settings_provider.dart';
 import 'package:rootin_mobile/l10n/generated/app_localizations.dart';
 
 class ReminderShell extends ConsumerWidget {
-  const ReminderShell({required this.child, super.key});
-  final Widget child;
+  const ReminderShell({required this.navigationShell, super.key});
+  final StatefulNavigationShell navigationShell;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -20,7 +20,6 @@ class ReminderShell extends ConsumerWidget {
       l.calendar,
       l.settings,
     ];
-    final paths = ['/', '/reminders', '/items', '/calendar', '/settings'];
     final icons = [
       Icons.today_outlined,
       Icons.notifications_outlined,
@@ -28,15 +27,18 @@ class ReminderShell extends ConsumerWidget {
       Icons.calendar_month_outlined,
       Icons.settings_outlined,
     ];
-    final path = GoRouterState.of(context).uri.path;
-    final index = paths.indexOf(path).clamp(0, 4);
+    final index = navigationShell.currentIndex;
     final wide = MediaQuery.sizeOf(context).width >= 700;
+    void selectBranch(int selected) => navigationShell.goBranch(
+      selected,
+      initialLocation: selected == navigationShell.currentIndex,
+    );
     final navigation = NavigationRail(
       selectedIndex: index,
       labelType: NavigationRailLabelType.all,
-      onDestinationSelected: (i) => context.go(paths[i]),
+      onDestinationSelected: selectBranch,
       destinations: [
-        for (var i = 0; i < paths.length; i++)
+        for (var i = 0; i < destinations.length; i++)
           NavigationRailDestination(
             icon: Icon(icons[i]),
             label: Text(destinations[i]),
@@ -45,7 +47,9 @@ class ReminderShell extends ConsumerWidget {
     );
     return Scaffold(
       body: SafeArea(
-        child: Row(children: [if (wide) navigation, Expanded(child: child)]),
+        child: Row(
+          children: [if (wide) navigation, Expanded(child: navigationShell)],
+        ),
       ),
       floatingActionButton:
           index == 0
@@ -63,9 +67,9 @@ class ReminderShell extends ConsumerWidget {
               : SafeArea(
                 child: NavigationBar(
                   selectedIndex: index,
-                  onDestinationSelected: (i) => context.go(paths[i]),
+                  onDestinationSelected: selectBranch,
                   destinations: [
-                    for (var i = 0; i < paths.length; i++)
+                    for (var i = 0; i < destinations.length; i++)
                       NavigationDestination(
                         icon: Icon(icons[i]),
                         label: destinations[i],
@@ -89,6 +93,8 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
   String query = '';
   String type = 'all';
   String status = 'all';
+  String activity = 'active';
+  String category = 'all';
 
   @override
   Widget build(BuildContext context) {
@@ -104,11 +110,20 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
       appBar: AppBar(
         title: Text(title),
         actions: [
+          IconButton(
+            key: const Key('refresh_local_data_button'),
+            icon: const Icon(Icons.refresh),
+            tooltip: l.refreshLocalData,
+            onPressed: _refreshLocalData,
+          ),
           if (widget.section != 'history')
             IconButton(
               icon: const Icon(Icons.history),
               tooltip: l.history,
-              onPressed: () => context.push('/history'),
+              onPressed:
+                  () => context.push(
+                    '${GoRouterState.of(context).uri.path}/history',
+                  ),
             ),
         ],
       ),
@@ -118,6 +133,24 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
         _ => _reminders(l),
       },
     );
+  }
+
+  Future<void> _refreshLocalData() async {
+    switch (widget.section) {
+      case 'items':
+        ref.invalidate(visibleItemsProvider);
+        await ref.read(visibleItemsProvider.future);
+      case 'history':
+        ref.invalidate(historyProvider);
+        await ref.read(historyProvider.future);
+      default:
+        ref.invalidate(reminderFeedProvider);
+        ref.invalidate(outboxSummaryProvider);
+        await Future.wait([
+          ref.read(reminderFeedProvider.future),
+          ref.read(outboxSummaryProvider.future),
+        ]);
+    }
   }
 
   Widget _items(AppLocalizations l) => ref
@@ -164,7 +197,7 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
     final today = ref.watch(localTodayProvider);
     final zone = ref.watch(effectiveTimezoneProvider);
     final feed = ref.watch(reminderFeedProvider);
-    final pending = ref.watch(pendingOutboxProvider);
+    final outbox = ref.watch(outboxSummaryProvider);
     return feed.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (_, _) => _message(l.loadFailed),
@@ -174,6 +207,18 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
             entries.where((entry) {
                 final reminder = entry.reminder;
                 final state = entryState(entry, today, zone);
+                final active = reminder.isActive && !entry.item.isArchived;
+                if (widget.section != 'reminders' && !active) return false;
+                if (widget.section == 'reminders' &&
+                    activity == 'active' &&
+                    !active) {
+                  return false;
+                }
+                if (widget.section == 'reminders' &&
+                    activity == 'archived' &&
+                    active) {
+                  return false;
+                }
                 if (widget.section == 'calendar' &&
                     reminderDay(reminder, zone) == null) {
                   return false;
@@ -186,6 +231,9 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
                 }
                 if (type != 'all' && reminder.engineType != type) return false;
                 if (status != 'all' && state.name != status) return false;
+                if (category != 'all' && entry.item.category != category) {
+                  return false;
+                }
                 return reminder.name.toLowerCase().contains(
                       query.toLowerCase(),
                     ) ||
@@ -195,11 +243,7 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            if (pending.valueOrNull != null && pending.valueOrNull! > 0)
-              Semantics(
-                liveRegion: true,
-                child: Text(l.pendingSync(pending.valueOrNull!)),
-              ),
+            _outboxStatus(l, outbox),
             if (widget.section == 'reminders') ...[
               TextField(
                 decoration: InputDecoration(
@@ -244,6 +288,39 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
                     ],
                     onChanged: (value) => setState(() => status = value!),
                   ),
+                  DropdownButton<String>(
+                    key: const Key('reminder_activity_filter'),
+                    value: activity,
+                    items: [
+                      DropdownMenuItem(
+                        value: 'active',
+                        child: Text(l.activeReminders),
+                      ),
+                      DropdownMenuItem(
+                        value: 'archived',
+                        child: Text(l.archivedReminders),
+                      ),
+                    ],
+                    onChanged: (value) => setState(() => activity = value!),
+                  ),
+                  DropdownButton<String>(
+                    key: const Key('reminder_category_filter'),
+                    value: category,
+                    items: [
+                      DropdownMenuItem(
+                        value: 'all',
+                        child: Text(l.allCategories),
+                      ),
+                      for (final value
+                          in (entries
+                              .map((entry) => entry.item.category)
+                              .toSet()
+                              .toList()
+                            ..sort()))
+                        DropdownMenuItem(value: value, child: Text(value)),
+                    ],
+                    onChanged: (value) => setState(() => category = value!),
+                  ),
                 ],
               ),
             ],
@@ -255,6 +332,14 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
               ),
             for (final entry in filtered)
               ListTile(
+                leading:
+                    reminderProgress(entry) == ReminderProgress.warning
+                        ? Icon(
+                          Icons.warning_amber_rounded,
+                          color: Theme.of(context).colorScheme.tertiary,
+                          semanticLabel: l.warning,
+                        )
+                        : null,
                 title: Text(entry.reminder.name),
                 subtitle: Text(
                   '${entry.item.name} · ${_detail(l, entry, today, zone)}',
@@ -266,6 +351,24 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
     );
   }
 
+  Widget _outboxStatus(AppLocalizations l, AsyncValue<OutboxSummary> outbox) =>
+      switch (outbox) {
+        AsyncData(:final value) when value.failed > 0 => Semantics(
+          liveRegion: true,
+          child: Text(l.failedSync(value.failed)),
+        ),
+        AsyncData(:final value) when value.conflict > 0 => Semantics(
+          liveRegion: true,
+          child: Text(l.conflictedSync(value.conflict)),
+        ),
+        AsyncData(:final value) when value.pending > 0 => Semantics(
+          liveRegion: true,
+          child: Text(l.pendingSync(value.pending)),
+        ),
+        AsyncError() => Text(l.syncStatusUnavailable),
+        _ => const SizedBox.shrink(),
+      };
+
   String _detail(
     AppLocalizations l,
     ReminderEntry entry,
@@ -274,13 +377,27 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
   ) {
     final reminder = entry.reminder;
     if (reminder.engineType == 'usage') {
-      return '${l.usageType}: ${reminder.usageCounter ?? l.unknown} / ${reminder.usageThreshold ?? l.unknown} ${reminder.usageUnit ?? ''} · ${_status(l, entryState(entry, today, zone))}';
+      final count = reminder.usageCounter;
+      final threshold = reminder.usageThreshold;
+      final remaining =
+          count == null || threshold == null
+              ? null
+              : (threshold - count).clamp(0, threshold);
+      return '${l.usageType}: ${count ?? l.unknown} / ${threshold ?? l.unknown} ${reminder.usageUnit ?? ''} · ${remaining == null ? l.unknown : l.remainingUsage(remaining)} · ${_progress(l, reminderProgress(entry))}';
     }
     if (reminder.engineType == 'mileage') {
       final current = entry.item.currentOdometer;
       final baseline = reminder.lastServiceOdometer;
       final interval = reminder.intervalKm;
-      return '${l.mileageType}: ${current == null || baseline == null ? l.unknown : (current - baseline).clamp(0, current)} / ${interval ?? l.unknown} km · ${_status(l, entryState(entry, today, zone))}';
+      final progress =
+          current == null || baseline == null
+              ? null
+              : (current - baseline).clamp(0, interval ?? current);
+      final remaining =
+          current == null || baseline == null || interval == null
+              ? null
+              : (baseline + interval - current).clamp(0, interval);
+      return '${l.mileageType}: ${progress ?? l.unknown} / ${interval ?? l.unknown} km · ${remaining == null ? l.unknown : l.remainingDistance(remaining)} · ${_progress(l, reminderProgress(entry))}';
     }
     final day = reminderDay(reminder, zone);
     return '${_status(l, reminderState(reminder, today, zone))}${day == null ? '' : ' · ${formatDay(day)}'}';
@@ -296,6 +413,14 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
     ReminderState.later => l.later,
     ReminderState.noDate => l.noDate,
   };
+
+  String _progress(AppLocalizations l, ReminderProgress progress) =>
+      switch (progress) {
+        ReminderProgress.normal => l.normal,
+        ReminderProgress.warning => l.warning,
+        ReminderProgress.due => l.due,
+        ReminderProgress.unknown => l.unknown,
+      };
 
   Widget _message(String text) => Center(
     child: Padding(

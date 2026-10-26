@@ -78,7 +78,11 @@ void main() {
             userPreferencesProvider.overrideWith((ref) => Stream.value(null)),
             localTodayProvider.overrideWithValue(DateTime.utc(2026, 10, 25)),
             reminderFeedProvider.overrideWith((ref) => Stream.value([])),
-            pendingOutboxProvider.overrideWith((ref) => Stream.value(0)),
+            outboxSummaryProvider.overrideWith(
+              (ref) => Stream.value(
+                const OutboxSummary(pending: 0, failed: 0, conflict: 0),
+              ),
+            ),
           ],
           child: const RootinApp(),
         ),
@@ -111,7 +115,11 @@ void main() {
           reminderFeedProvider.overrideWith((ref) => Stream.value([])),
           visibleItemsProvider.overrideWith((ref) => Stream.value([])),
           historyProvider.overrideWith((ref) => Stream.value([])),
-          pendingOutboxProvider.overrideWith((ref) => Stream.value(0)),
+          outboxSummaryProvider.overrideWith(
+            (ref) => Stream.value(
+              const OutboxSummary(pending: 0, failed: 0, conflict: 0),
+            ),
+          ),
         ],
       );
       await tester.pumpWidget(
@@ -136,6 +144,11 @@ void main() {
       await tester.tap(find.byTooltip('History'));
       await tester.pumpAndSettle();
       expect(find.text('No completed reminders yet'), findsOneWidget);
+      await tester.tap(find.text('Items').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Reminders').last);
+      await tester.pumpAndSettle();
+      expect(find.text('No completed reminders yet'), findsOneWidget);
       await tester.pumpWidget(const SizedBox());
       container.dispose();
       repo.dispose();
@@ -158,7 +171,11 @@ void main() {
             userPreferencesProvider.overrideWith((ref) => Stream.value(null)),
             localTodayProvider.overrideWithValue(DateTime.utc(2026, 10, 25)),
             reminderFeedProvider.overrideWith((ref) => Stream.value([])),
-            pendingOutboxProvider.overrideWith((ref) => Stream.value(0)),
+            outboxSummaryProvider.overrideWith(
+              (ref) => Stream.value(
+                const OutboxSummary(pending: 0, failed: 0, conflict: 0),
+              ),
+            ),
           ],
         );
 
@@ -198,7 +215,11 @@ void main() {
             userPreferencesProvider.overrideWith((ref) => Stream.value(null)),
             localTodayProvider.overrideWithValue(DateTime.utc(2026, 10, 25)),
             reminderFeedProvider.overrideWith((ref) => Stream.value([])),
-            pendingOutboxProvider.overrideWith((ref) => Stream.value(0)),
+            outboxSummaryProvider.overrideWith(
+              (ref) => Stream.value(
+                const OutboxSummary(pending: 0, failed: 0, conflict: 0),
+              ),
+            ),
           ],
           child: const RootinApp(),
         ),

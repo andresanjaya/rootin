@@ -62,8 +62,7 @@ import 'app_localizations_id.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -71,8 +70,7 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -84,18 +82,17 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
-    Locale('id'),
+    Locale('id')
   ];
 
   /// No description provided for @home.
@@ -506,6 +503,12 @@ abstract class AppLocalizations {
   /// **'Riwayat'**
   String get history;
 
+  /// No description provided for @refreshLocalData.
+  ///
+  /// In id, this message translates to:
+  /// **'Muat ulang data lokal'**
+  String get refreshLocalData;
+
   /// No description provided for @noItems.
   ///
   /// In id, this message translates to:
@@ -572,6 +575,12 @@ abstract class AppLocalizations {
   /// **'Semua jenis'**
   String get allTypes;
 
+  /// No description provided for @allCategories.
+  ///
+  /// In id, this message translates to:
+  /// **'Semua kategori'**
+  String get allCategories;
+
   /// No description provided for @timeType.
   ///
   /// In id, this message translates to:
@@ -632,15 +641,74 @@ abstract class AppLocalizations {
   /// **'Tidak diketahui'**
   String get unknown;
 
+  /// No description provided for @activeReminders.
+  ///
+  /// In id, this message translates to:
+  /// **'Aktif'**
+  String get activeReminders;
+
+  /// No description provided for @archivedReminders.
+  ///
+  /// In id, this message translates to:
+  /// **'Nonaktif / diarsipkan'**
+  String get archivedReminders;
+
+  /// No description provided for @normal.
+  ///
+  /// In id, this message translates to:
+  /// **'Normal'**
+  String get normal;
+
+  /// No description provided for @warning.
+  ///
+  /// In id, this message translates to:
+  /// **'Peringatan'**
+  String get warning;
+
+  /// No description provided for @due.
+  ///
+  /// In id, this message translates to:
+  /// **'Jatuh tempo'**
+  String get due;
+
+  /// No description provided for @remainingUsage.
+  ///
+  /// In id, this message translates to:
+  /// **'Sisa {count}'**
+  String remainingUsage(int count);
+
+  /// No description provided for @remainingDistance.
+  ///
+  /// In id, this message translates to:
+  /// **'Sisa {distance} km'**
+  String remainingDistance(int distance);
+
   /// No description provided for @pendingSync.
   ///
   /// In id, this message translates to:
-  /// **'{count} perubahan menunggu sinkronisasi'**
+  /// **'{count} perubahan lokal menunggu sinkronisasi'**
   String pendingSync(int count);
+
+  /// No description provided for @failedSync.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} perubahan lokal gagal disinkronkan'**
+  String failedSync(int count);
+
+  /// No description provided for @conflictedSync.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} perubahan lokal mengalami konflik'**
+  String conflictedSync(int count);
+
+  /// No description provided for @syncStatusUnavailable.
+  ///
+  /// In id, this message translates to:
+  /// **'Status antrean sinkronisasi lokal tidak tersedia'**
+  String get syncStatusUnavailable;
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -649,26 +717,25 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'id'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'id'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'en':
-      return AppLocalizationsEn();
-    case 'id':
-      return AppLocalizationsId();
+    case 'en': return AppLocalizationsEn();
+    case 'id': return AppLocalizationsId();
   }
 
   throw FlutterError(
     'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
+    'that was used.'
   );
 }

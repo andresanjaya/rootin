@@ -15,6 +15,20 @@ class ReminderEntry {
 
 enum ReminderState { overdue, due, soon, later, noDate }
 
+enum ReminderProgress { normal, warning, due, unknown }
+
+class OutboxSummary {
+  const OutboxSummary({
+    required this.pending,
+    required this.failed,
+    required this.conflict,
+  });
+
+  final int pending;
+  final int failed;
+  final int conflict;
+}
+
 // ponytail: invalid legacy dates remain undated instead of crashing the whole feed;
 // add a data repair flow when editing reminders is available.
 DateTime? reminderDay(Reminder reminder, [String? zone]) {
@@ -77,6 +91,35 @@ ReminderState entryState(ReminderEntry entry, DateTime today, [String? zone]) {
   return reminderState(reminder, today, zone);
 }
 
+ReminderProgress reminderProgress(ReminderEntry entry) {
+  final reminder = entry.reminder;
+  if (reminder.engineType == 'usage') {
+    final count = reminder.usageCounter;
+    final threshold = reminder.usageThreshold;
+    if (count == null || threshold == null || threshold <= 0) {
+      return ReminderProgress.unknown;
+    }
+    if (count >= threshold) return ReminderProgress.due;
+    return count / threshold >= 0.8
+        ? ReminderProgress.warning
+        : ReminderProgress.normal;
+  }
+  if (reminder.engineType == 'mileage') {
+    final current = entry.item.currentOdometer;
+    final baseline = reminder.lastServiceOdometer;
+    final interval = reminder.intervalKm;
+    if (current == null || baseline == null || interval == null) {
+      return ReminderProgress.unknown;
+    }
+    final remaining = baseline + interval - current;
+    if (remaining <= 0) return ReminderProgress.due;
+    return remaining <= 500
+        ? ReminderProgress.warning
+        : ReminderProgress.normal;
+  }
+  return ReminderProgress.unknown;
+}
+
 int compareEntries(
   ReminderEntry a,
   ReminderEntry b,
@@ -109,9 +152,7 @@ final reminderFeedProvider = StreamProvider<List<ReminderEntry>>((ref) {
     db.reminders.userId.equals(userId) &
         db.items.userId.equals(userId) &
         db.reminders.deletedAt.isNull() &
-        db.reminders.isActive.equals(true) &
-        db.items.deletedAt.isNull() &
-        db.items.isArchived.equals(false),
+        db.items.deletedAt.isNull(),
   );
   return query.watch().map(
     (rows) => [
@@ -133,13 +174,22 @@ final historyProvider = StreamProvider<List<ReminderLog>>((ref) {
   return ref.watch(reminderLogsDaoProvider).watchLogs(userId);
 });
 
-final pendingOutboxProvider = StreamProvider<int>((ref) {
+final outboxSummaryProvider = StreamProvider<OutboxSummary>((ref) {
   final userId = ref.watch(currentUserProvider)?.id;
-  if (userId == null) return Stream.value(0);
+  if (userId == null) {
+    return Stream.value(
+      const OutboxSummary(pending: 0, failed: 0, conflict: 0),
+    );
+  }
   final db = ref.watch(appDatabaseProvider);
-  return (db.select(db.syncOutbox)..where(
-    (t) => t.userId.equals(userId) & t.status.equals('pending'),
-  )).watch().map((rows) => rows.length);
+  return (db.select(db.syncOutbox)
+    ..where((t) => t.userId.equals(userId))).watch().map(
+    (rows) => OutboxSummary(
+      pending: rows.where((row) => row.status == 'pending').length,
+      failed: rows.where((row) => row.status == 'failed').length,
+      conflict: rows.where((row) => row.status == 'conflict').length,
+    ),
+  );
 });
 
 final localTodayProvider = Provider<DateTime?>((ref) {

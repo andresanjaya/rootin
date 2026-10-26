@@ -103,6 +103,27 @@ void main() {
       );
       expect(reminderDay(mileage), isNull);
 
+      final usageWarning = reminder('usage-warning', 'usage', null).copyWith(
+        usageCounter: const Value(80),
+        usageThreshold: const Value(100),
+      );
+      expect(
+        reminderProgress(ReminderEntry(usageWarning, item)),
+        ReminderProgress.warning,
+      );
+      final mileageWarning = reminder(
+        'mileage-warning',
+        'mileage',
+        null,
+      ).copyWith(
+        lastServiceOdometer: const Value(100),
+        intervalKm: const Value(500),
+      );
+      expect(
+        reminderProgress(ReminderEntry(mileageWarning, item)),
+        ReminderProgress.warning,
+      );
+
       final overdue = reminder('overdue', 'time', '2026-10-24');
       final later = reminder('later', 'time', '2026-11-03');
       expect(
@@ -117,7 +138,7 @@ void main() {
   );
 
   test(
-    'Drift feed isolates users and excludes archived or deleted parents',
+    'Drift feed isolates users, retains archives, and excludes deleted data',
     () async {
       final db = AppDatabase.inMemory();
       final auth = InMemoryAuthRepository(
@@ -162,7 +183,18 @@ void main() {
           );
         }
         final feed = await container.read(reminderFeedProvider.future);
-        expect(feed.map((entry) => entry.reminder.id), ['live']);
+        expect(
+          feed.map((entry) => entry.reminder.id),
+          containsAll(['live', 'archived']),
+        );
+        expect(
+          feed.map((entry) => entry.reminder.id),
+          isNot(contains('deleted')),
+        );
+        expect(
+          feed.map((entry) => entry.reminder.id),
+          isNot(contains('other')),
+        );
       } finally {
         container.dispose();
         auth.dispose();
