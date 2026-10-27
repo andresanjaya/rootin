@@ -74,8 +74,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerFailed => 'Could not sign up. Please try again.';
 
   @override
-  String get registerSuccess =>
-      'Registration successful! Check your email or sign in.';
+  String get registerSuccess => 'Registration successful! Check your email or sign in.';
 
   @override
   String get registerAccount => 'Create account';
@@ -84,8 +83,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createAccount => 'Create a Rootin account';
 
   @override
-  String get registerDescription =>
-      'Keep track of maintenance for your belongings and vehicles';
+  String get registerDescription => 'Keep track of maintenance for your belongings and vehicles';
 
   @override
   String get confirmPassword => 'Confirm password';
@@ -120,8 +118,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resetPassword => 'Reset password';
 
   @override
-  String get resetDescription =>
-      'Enter your registered email to receive a password reset link';
+  String get resetDescription => 'Enter your registered email to receive a password reset link';
 
   @override
   String get sendResetLink => 'Send reset link';
@@ -133,8 +130,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordUpdated => 'Password updated!';
 
   @override
-  String get passwordUpdateFailed =>
-      'Could not update your password. Please try again.';
+  String get passwordUpdateFailed => 'Could not update your password. Please try again.';
 
   @override
   String get newPassword => 'New password';
@@ -143,8 +139,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updatePassword => 'Update password';
 
   @override
-  String get newPasswordDescription =>
-      'Enter a new password (at least 6 characters)';
+  String get newPasswordDescription => 'Enter a new password (at least 6 characters)';
 
   @override
   String get newPasswordRequired => 'New password is required';
@@ -192,8 +187,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reminderTime => 'Reminder time';
 
   @override
-  String get localOnly =>
-      'These preferences are stored on this device. Notification scheduling is not available yet.';
+  String get localOnly => 'These preferences are stored on this device. Notification scheduling is not available yet.';
 
   @override
   String get save => 'Save';
@@ -215,4 +209,134 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get reminders => 'Reminders';
+
+  @override
+  String get items => 'Items';
+
+  @override
+  String get calendar => 'Calendar';
+
+  @override
+  String get history => 'History';
+
+  @override
+  String get refreshLocalData => 'Refresh local data';
+
+  @override
+  String get noItems => 'No items yet';
+
+  @override
+  String get noHistory => 'No completed reminders yet';
+
+  @override
+  String get completed => 'Completed';
+
+  @override
+  String get noReminders => 'No matching reminders';
+
+  @override
+  String get noScheduledReminders => 'No scheduled reminders';
+
+  @override
+  String get loadFailed => 'Could not load local data';
+
+  @override
+  String get timezoneUnavailable => 'Set a valid time zone to view reminders';
+
+  @override
+  String get searchReminders => 'Search reminders or items';
+
+  @override
+  String get type => 'Type';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get allTypes => 'All types';
+
+  @override
+  String get allCategories => 'All categories';
+
+  @override
+  String get timeType => 'Time';
+
+  @override
+  String get usageType => 'Usage';
+
+  @override
+  String get mileageType => 'Mileage';
+
+  @override
+  String get allStatuses => 'All statuses';
+
+  @override
+  String get overdue => 'Overdue';
+
+  @override
+  String get dueToday => 'Due today';
+
+  @override
+  String get soon => 'Due soon';
+
+  @override
+  String get later => 'Later';
+
+  @override
+  String get noDate => 'No calendar date';
+
+  @override
+  String get unknown => 'Unknown';
+
+  @override
+  String get activeReminders => 'Active';
+
+  @override
+  String get archivedReminders => 'Inactive / archived';
+
+  @override
+  String get normal => 'Normal';
+
+  @override
+  String get warning => 'Warning';
+
+  @override
+  String get due => 'Due';
+
+  @override
+  String remainingUsage(int count) {
+    return '$count remaining';
+  }
+
+  @override
+  String remainingDistance(int distance, String unit) {
+    return '$distance $unit remaining';
+  }
+
+  @override
+  String pendingSync(int count) {
+    return '$count pending local changes';
+  }
+
+  @override
+  String failedSync(int count) {
+    return '$count local changes failed to sync';
+  }
+
+  @override
+  String conflictedSync(int count) {
+    return '$count local changes have conflicts';
+  }
+
+  @override
+  String get syncStatusUnavailable => 'Local sync queue status unavailable';
+
+  @override
+  String get connectivityUnknown => 'Connectivity unknown';
 }

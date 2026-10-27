@@ -11,7 +11,6 @@ final deviceTimezoneProvider = StateNotifierProvider<DeviceTimezone, String?>((
   ref,
 ) {
   final notifier = DeviceTimezone()..refresh();
-  ref.onDispose(notifier.dispose);
   return notifier;
 });
 

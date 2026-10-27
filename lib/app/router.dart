@@ -8,8 +8,8 @@ import 'package:rootin_mobile/features/auth/presentation/screens/forgot_password
 import 'package:rootin_mobile/features/auth/presentation/screens/login_screen.dart';
 import 'package:rootin_mobile/features/auth/presentation/screens/register_screen.dart';
 import 'package:rootin_mobile/features/auth/presentation/screens/reset_password_screen.dart';
+import 'package:rootin_mobile/features/reminders/presentation/reminder_pages.dart';
 import 'package:rootin_mobile/features/settings/settings_screen.dart';
-import 'package:rootin_mobile/l10n/generated/app_localizations.dart';
 
 /// Adapter to convert a [Stream] into a [Listenable] for GoRouter refresh.
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -56,16 +56,93 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(
-        path: '/',
-        name: 'home',
-        builder: (context, state) => const _PlaceholderScreen(),
+      StatefulShellRoute.indexedStack(
+        builder:
+            (context, state, navigationShell) =>
+                ReminderShell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/today',
+                name: 'home',
+                builder:
+                    (context, state) => const ReminderPage(section: 'today'),
+                routes: [
+                  GoRoute(
+                    path: 'history',
+                    builder:
+                        (context, state) =>
+                            const ReminderPage(section: 'history'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/reminders',
+                builder:
+                    (context, state) =>
+                        const ReminderPage(section: 'reminders'),
+                routes: [
+                  GoRoute(
+                    path: 'history',
+                    builder:
+                        (context, state) =>
+                            const ReminderPage(section: 'history'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/items',
+                builder:
+                    (context, state) => const ReminderPage(section: 'items'),
+                routes: [
+                  GoRoute(
+                    path: 'history',
+                    builder:
+                        (context, state) =>
+                            const ReminderPage(section: 'history'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/calendar',
+                builder:
+                    (context, state) => const ReminderPage(section: 'calendar'),
+                routes: [
+                  GoRoute(
+                    path: 'history',
+                    builder:
+                        (context, state) =>
+                            const ReminderPage(section: 'history'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/settings',
+                name: 'settings',
+                builder: (context, state) => const SettingsScreen(),
+              ),
+            ],
+          ),
+        ],
       ),
-      GoRoute(
-        path: '/settings',
-        name: 'settings',
-        builder: (context, state) => const SettingsScreen(),
-      ),
+      GoRoute(path: '/', redirect: (context, state) => '/today'),
       GoRoute(
         path: '/auth/login',
         name: 'login',
@@ -89,54 +166,3 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
-
-/// Placeholder screen for initial scaffold
-class _PlaceholderScreen extends ConsumerWidget {
-  const _PlaceholderScreen();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserProvider);
-    final l = AppLocalizations.of(context)!;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l.home),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            tooltip: l.settings,
-            onPressed: () => context.push('/settings'),
-          ),
-          IconButton(
-            key: const Key('home_logout_button'),
-            icon: const Icon(Icons.logout),
-            tooltip: l.logout,
-            onPressed:
-                () => ref.read(authControllerProvider.notifier).signOut(),
-          ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.assignment_outlined, size: 64),
-            const SizedBox(height: 16),
-            Text(
-              'Rootin Mobile',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              user?.email != null
-                  ? l.signedInAs(user!.email!)
-                  : l.offlineDescription,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

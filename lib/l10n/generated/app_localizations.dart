@@ -62,8 +62,7 @@ import 'app_localizations_id.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -71,8 +70,7 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -84,18 +82,17 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
-    Locale('id'),
+    Locale('id')
   ];
 
   /// No description provided for @home.
@@ -475,10 +472,249 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'{count, plural, =0{Tidak ada pengingat} one{1 pengingat} other{{count} pengingat}}'**
   String reminderCount(int count);
+
+  /// No description provided for @today.
+  ///
+  /// In id, this message translates to:
+  /// **'Hari ini'**
+  String get today;
+
+  /// No description provided for @reminders.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengingat'**
+  String get reminders;
+
+  /// No description provided for @items.
+  ///
+  /// In id, this message translates to:
+  /// **'Barang'**
+  String get items;
+
+  /// No description provided for @calendar.
+  ///
+  /// In id, this message translates to:
+  /// **'Kalender'**
+  String get calendar;
+
+  /// No description provided for @history.
+  ///
+  /// In id, this message translates to:
+  /// **'Riwayat'**
+  String get history;
+
+  /// No description provided for @refreshLocalData.
+  ///
+  /// In id, this message translates to:
+  /// **'Muat ulang data lokal'**
+  String get refreshLocalData;
+
+  /// No description provided for @noItems.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada barang'**
+  String get noItems;
+
+  /// No description provided for @noHistory.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada pengingat yang selesai'**
+  String get noHistory;
+
+  /// No description provided for @completed.
+  ///
+  /// In id, this message translates to:
+  /// **'Selesai'**
+  String get completed;
+
+  /// No description provided for @noReminders.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak ada pengingat yang cocok'**
+  String get noReminders;
+
+  /// No description provided for @noScheduledReminders.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak ada pengingat terjadwal'**
+  String get noScheduledReminders;
+
+  /// No description provided for @loadFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal memuat data lokal'**
+  String get loadFailed;
+
+  /// No description provided for @timezoneUnavailable.
+  ///
+  /// In id, this message translates to:
+  /// **'Atur zona waktu yang valid untuk melihat pengingat'**
+  String get timezoneUnavailable;
+
+  /// No description provided for @searchReminders.
+  ///
+  /// In id, this message translates to:
+  /// **'Cari pengingat atau barang'**
+  String get searchReminders;
+
+  /// No description provided for @type.
+  ///
+  /// In id, this message translates to:
+  /// **'Jenis'**
+  String get type;
+
+  /// No description provided for @status.
+  ///
+  /// In id, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @allTypes.
+  ///
+  /// In id, this message translates to:
+  /// **'Semua jenis'**
+  String get allTypes;
+
+  /// No description provided for @allCategories.
+  ///
+  /// In id, this message translates to:
+  /// **'Semua kategori'**
+  String get allCategories;
+
+  /// No description provided for @timeType.
+  ///
+  /// In id, this message translates to:
+  /// **'Waktu'**
+  String get timeType;
+
+  /// No description provided for @usageType.
+  ///
+  /// In id, this message translates to:
+  /// **'Pemakaian'**
+  String get usageType;
+
+  /// No description provided for @mileageType.
+  ///
+  /// In id, this message translates to:
+  /// **'Jarak tempuh'**
+  String get mileageType;
+
+  /// No description provided for @allStatuses.
+  ///
+  /// In id, this message translates to:
+  /// **'Semua status'**
+  String get allStatuses;
+
+  /// No description provided for @overdue.
+  ///
+  /// In id, this message translates to:
+  /// **'Terlambat'**
+  String get overdue;
+
+  /// No description provided for @dueToday.
+  ///
+  /// In id, this message translates to:
+  /// **'Jatuh tempo hari ini'**
+  String get dueToday;
+
+  /// No description provided for @soon.
+  ///
+  /// In id, this message translates to:
+  /// **'Segera'**
+  String get soon;
+
+  /// No description provided for @later.
+  ///
+  /// In id, this message translates to:
+  /// **'Nanti'**
+  String get later;
+
+  /// No description provided for @noDate.
+  ///
+  /// In id, this message translates to:
+  /// **'Tanpa tanggal kalender'**
+  String get noDate;
+
+  /// No description provided for @unknown.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak diketahui'**
+  String get unknown;
+
+  /// No description provided for @activeReminders.
+  ///
+  /// In id, this message translates to:
+  /// **'Aktif'**
+  String get activeReminders;
+
+  /// No description provided for @archivedReminders.
+  ///
+  /// In id, this message translates to:
+  /// **'Nonaktif / diarsipkan'**
+  String get archivedReminders;
+
+  /// No description provided for @normal.
+  ///
+  /// In id, this message translates to:
+  /// **'Normal'**
+  String get normal;
+
+  /// No description provided for @warning.
+  ///
+  /// In id, this message translates to:
+  /// **'Peringatan'**
+  String get warning;
+
+  /// No description provided for @due.
+  ///
+  /// In id, this message translates to:
+  /// **'Jatuh tempo'**
+  String get due;
+
+  /// No description provided for @remainingUsage.
+  ///
+  /// In id, this message translates to:
+  /// **'Sisa {count}'**
+  String remainingUsage(int count);
+
+  /// No description provided for @remainingDistance.
+  ///
+  /// In id, this message translates to:
+  /// **'Sisa {distance} {unit}'**
+  String remainingDistance(int distance, String unit);
+
+  /// No description provided for @pendingSync.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} perubahan lokal menunggu sinkronisasi'**
+  String pendingSync(int count);
+
+  /// No description provided for @failedSync.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} perubahan lokal gagal disinkronkan'**
+  String failedSync(int count);
+
+  /// No description provided for @conflictedSync.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} perubahan lokal mengalami konflik'**
+  String conflictedSync(int count);
+
+  /// No description provided for @syncStatusUnavailable.
+  ///
+  /// In id, this message translates to:
+  /// **'Status antrean sinkronisasi lokal tidak tersedia'**
+  String get syncStatusUnavailable;
+
+  /// No description provided for @connectivityUnknown.
+  ///
+  /// In id, this message translates to:
+  /// **'Koneksi tidak diketahui'**
+  String get connectivityUnknown;
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -487,26 +723,25 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'id'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'id'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'en':
-      return AppLocalizationsEn();
-    case 'id':
-      return AppLocalizationsId();
+    case 'en': return AppLocalizationsEn();
+    case 'id': return AppLocalizationsId();
   }
 
   throw FlutterError(
     'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
+    'that was used.'
   );
 }
