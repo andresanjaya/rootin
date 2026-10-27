@@ -188,7 +188,12 @@ final outboxSummaryProvider = StreamProvider<OutboxSummary>((ref) {
   return (db.select(db.syncOutbox)
     ..where((t) => t.userId.equals(userId))).watch().map(
     (rows) => OutboxSummary(
-      pending: rows.where((row) => row.status == 'pending').length,
+      pending:
+          rows
+              .where(
+                (row) => row.status == 'pending' || row.status == 'processing',
+              )
+              .length,
       failed: rows.where((row) => row.status == 'failed').length,
       conflict: rows.where((row) => row.status == 'conflict').length,
     ),

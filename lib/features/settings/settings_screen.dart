@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rootin_mobile/core/database/database_providers.dart';
+import 'package:rootin_mobile/core/sync/mobile_sync.dart';
 import 'package:rootin_mobile/core/time/calendar_clock.dart';
 import 'package:rootin_mobile/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:rootin_mobile/features/settings/settings_provider.dart';
@@ -119,6 +120,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               },
             ),
             Text(l.localOnly),
+            const SizedBox(height: 12),
+            FilledButton.tonal(
+              onPressed: () async {
+                try {
+                  await ref.read(mobileSyncProvider).run();
+                } catch (_) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(l.syncFailed)));
+                  }
+                }
+              },
+              child: Text(l.syncNow),
+            ),
+            _conflicts(l),
             const SizedBox(height: 16),
             FilledButton(
               onPressed: () async {
@@ -153,6 +170,70 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _conflicts(AppLocalizations l) {
+    final userId = ref.watch(currentUserProvider)?.id;
+    if (userId == null) return const SizedBox.shrink();
+    final db = ref.watch(appDatabaseProvider);
+    return StreamBuilder(
+      stream:
+          (db.select(db.syncOutbox)
+            ..where((row) => row.userId.equals(userId))).watch(),
+      builder: (context, snapshot) {
+        final conflicts =
+            snapshot.data?.where((row) => row.status == 'conflict').toList() ??
+            [];
+        return Column(
+          children: [
+            for (final row in conflicts)
+              ListTile(
+                title: Text(
+                  l.resolveConflict('${row.entityType} ${row.recordId}'),
+                ),
+                subtitle: Text(row.errorMessage ?? l.conflictedSync(1)),
+                trailing: TextButton(
+                  onPressed: () async {
+                    final discard = await showDialog<bool>(
+                      context: context,
+                      builder:
+                          (dialogContext) => AlertDialog(
+                            title: Text(l.useServerVersion),
+                            content: Text(l.conflictWarning),
+                            actions: [
+                              TextButton(
+                                onPressed:
+                                    () => Navigator.pop(dialogContext, false),
+                                child: Text(l.cancel),
+                              ),
+                              TextButton(
+                                onPressed:
+                                    () => Navigator.pop(dialogContext, true),
+                                child: Text(l.useServerVersion),
+                              ),
+                            ],
+                          ),
+                    );
+                    if (discard != true || !context.mounted) return;
+                    try {
+                      await ref
+                          .read(mobileSyncProvider)
+                          .acceptServer(userId, row.id);
+                    } catch (_) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(l.syncFailed)));
+                      }
+                    }
+                  },
+                  child: Text(l.useServerVersion),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }

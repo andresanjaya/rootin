@@ -455,3 +455,18 @@ Sistem operasi membatasi jumlah alarm terjadwal yang dapat didaftarkan (misal: i
 
 #### Aturan Anti-Duplikasi:
 Ketika remote push tiba di perangkat, background handler membaca `occurrence_id`. Jika rekaman lokal menunjukkan reminder dengan `occurrence_id` tersebut telah ditandai selesai (*completed*) atau telah dijadwalkan oleh alarm lokal, pesan push diabaikan tanpa menampilkan banner peringatan ganda kepada pengguna.
+# ROOTIN-M018: catatan wire contract klien (27 Oktober 2026)
+
+Klien mengirim `sync_push_mutations` dengan satu operasi per panggilan RPC,
+berurutan sesuai ID outbox; setiap retry membawa objek request yang sama.
+Hasil nyata `accepted` menghapus antrean; replay mengembalikan hasil pertama
+(`accepted` atau `conflict_rejected`), bukan `duplicate_ignored`.
+`conflict_rejected` menyimpan antrean untuk keputusan pengguna, bukan LWW
+otomatis. Kesalahan RPC batch merupakan exception dan antrean tetap tersedia.
+`sync_pull_changes` mengembalikan baris terkini, bukan riwayat setiap revisi;
+kursor `{changed_at,rank,id}` hanya dipakai untuk halaman dalam satu refresh.
+Klien mengulang dari awal pada refresh berikutnya agar pembaruan rekaman yang
+pernah dibaca tetap dapat ditemukan. Pull memverifikasi `user_id` dan
+menyimpan checkpoint atomik bersama seluruh snapshot. Contoh lama di bawah yang
+menyebut header `X-Idempotency-Key`, `duplicate_ignored`, `validation_failed`
+dan LWW tidak menggambarkan RPC terimplementasi. ADR accepted lama tidak diubah.

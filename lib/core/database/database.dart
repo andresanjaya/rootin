@@ -140,6 +140,9 @@ class AppDatabase extends _$AppDatabase {
   /// Completely clears all data for a specific user (account switch or logout wipe).
   Future<void> clearAllUserData(String userId) async {
     await transaction(() async {
+      if ((await outboxDao.getAllMutations(userId)).isNotEmpty) {
+        throw StateError('Cannot erase unsynchronized operations');
+      }
       await (delete(reminderLogs)..where((t) => t.userId.equals(userId))).go();
       await (delete(reminders)..where((t) => t.userId.equals(userId))).go();
       await (delete(items)..where((t) => t.userId.equals(userId))).go();

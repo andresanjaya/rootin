@@ -705,3 +705,28 @@ spring-forward dilewati; waktu ganda fall-back memilih instant paling awal.
 Reminder berbasis pemakaian/jarak tidak diberi tanggal kalender rekaan. Perubahan
 zona/waktu memancarkan state untuk scheduler di tiket berikutnya; belum ada alarm
 yang dipasang atau di-reschedule oleh M021.
+# ROOTIN-M018: implementasi klien sync (27 Oktober 2026)
+
+`lib/core/sync/mobile_sync.dart` mengirim operasi outbox berdasarkan `id` secara
+FIFO, satu per RPC. Penulis mutasi baru harus menyimpan **seluruh request RPC**
+(`operation_id`, `record_id`, `entity_type`, `operation_type`, `version` server
+yang diharapkan, `payload`) di `payload_json` dalam transaksi bersama perubahan
+lokal. Request tersebut tidak boleh dibuat ulang dengan UUID/versi/timestamp
+baru saat retry. Entri lama berisi payload saja hanya bisa diproses otomatis
+untuk insert item/reminder versi 1; aksi lain ditahan `failed` untuk pemulihan
+manual. Entri `processing` setelah crash dicoba lagi dengan identitas sama;
+`conflict`/`failed` menahan FIFO hingga keputusan eksplisit. `acceptServer`
+hanya tersedia untuk konflik terakhir agar tidak membuang mutasi dependennya.
+
+Pull menyimpan kursor JSON di `sync_metadata` per `user_id` dan menerapkan
+seluruh snapshot paginasi beserta checkpoint dalam satu transaksi SQLite. RPC pull yang ada
+menyajikan snapshot versi terakhir setiap baris (bukan log perubahan), sehingga
+setiap sesi refresh mengulang snapshot dari awal: kursor lanjut hanya untuk
+paginasi sesi itu. Snapshot lebih dari 10.000 perubahan ditolak agar tidak
+menumpuk tanpa batas di memori; tidak ada checkpoint parsial. Entri outbox
+yang belum diselesaikan tidak ditimpa snapshot.
+Data lokal dipisah melalui `user_id`; logout tidak menghapus antrean. Metode
+`clearAllUserData` menolak penghapusan selama antrean user belum kosong.
+Sinkronisasi dipicu refresh layar; belum ada sinkronisasi background atau
+penjadwalan notifikasi. Tabel lokal belum memodelkan `progress_event` ataupun
+preferensi server: data tersebut tidak diproyeksikan ke Drift dalam tahap ini.

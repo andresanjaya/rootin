@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rootin_mobile/core/sync/mobile_sync.dart';
 import 'package:rootin_mobile/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:rootin_mobile/features/reminders/data/reminder_feed.dart';
 import 'package:rootin_mobile/features/settings/settings_provider.dart';
@@ -136,6 +137,11 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
   }
 
   Future<void> _refreshLocalData() async {
+    try {
+      await ref.read(mobileSyncProvider).run();
+    } catch (_) {
+      // Offline refresh still shows durable local data and unsent operations.
+    }
     switch (widget.section) {
       case 'items':
         ref.invalidate(visibleItemsProvider);

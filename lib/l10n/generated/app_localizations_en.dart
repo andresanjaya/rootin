@@ -339,4 +339,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get connectivityUnknown => 'Connectivity unknown';
+
+  @override
+  String get syncNow => 'Sync now';
+
+  @override
+  String get syncFailed => 'Sync unavailable. Local changes remain saved.';
+
+  @override
+  String get useServerVersion => 'Use server version';
+
+  @override
+  String get conflictWarning => 'Discard this local change and load server data? This cannot be undone.';
+
+  @override
+  String resolveConflict(String entity) {
+    return 'Resolve conflict for $entity';
+  }
 }

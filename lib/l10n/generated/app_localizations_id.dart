@@ -339,4 +339,21 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get connectivityUnknown => 'Koneksi tidak diketahui';
+
+  @override
+  String get syncNow => 'Sinkronkan sekarang';
+
+  @override
+  String get syncFailed => 'Sinkronisasi tidak tersedia. Perubahan lokal tetap tersimpan.';
+
+  @override
+  String get useServerVersion => 'Pakai versi server';
+
+  @override
+  String get conflictWarning => 'Buang perubahan lokal ini dan muat data server? Tindakan ini tidak dapat dibatalkan.';
+
+  @override
+  String resolveConflict(String entity) {
+    return 'Atasi konflik untuk $entity';
+  }
 }
