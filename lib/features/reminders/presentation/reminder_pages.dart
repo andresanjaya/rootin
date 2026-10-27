@@ -162,14 +162,13 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
             (items) =>
                 items.isEmpty
                     ? _message(l.noItems)
-                    : ListView(
-                      children: [
-                        for (final item in items)
-                          ListTile(
-                            title: Text(item.name),
-                            subtitle: Text(item.category),
+                    : ListView.builder(
+                      itemCount: items.length,
+                      itemBuilder:
+                          (context, index) => ListTile(
+                            title: Text(items[index].name),
+                            subtitle: Text(items[index].category),
                           ),
-                      ],
                     ),
       );
 
@@ -182,14 +181,13 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
             (logs) =>
                 logs.isEmpty
                     ? _message(l.noHistory)
-                    : ListView(
-                      children: [
-                        for (final log in logs)
-                          ListTile(
-                            title: Text(log.completionDate),
-                            subtitle: Text(log.notes ?? l.completed),
+                    : ListView.builder(
+                      itemCount: logs.length,
+                      itemBuilder:
+                          (context, index) => ListTile(
+                            title: Text(logs[index].completionDate),
+                            subtitle: Text(logs[index].notes ?? l.completed),
                           ),
-                      ],
                     ),
       );
 
@@ -240,112 +238,127 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
                     entry.item.name.toLowerCase().contains(query.toLowerCase());
               }).toList()
               ..sort((a, b) => compareEntries(a, b, today, zone));
-        return ListView(
+        final hasFilters = widget.section == 'reminders';
+        final headerCount = hasFilters ? 2 : 1;
+        return ListView.builder(
           padding: const EdgeInsets.all(16),
-          children: [
-            _outboxStatus(l, outbox),
-            if (widget.section == 'reminders') ...[
-              TextField(
-                decoration: InputDecoration(
-                  labelText: l.searchReminders,
-                  prefixIcon: const Icon(Icons.search),
-                ),
-                onChanged: (value) => setState(() => query = value),
-              ),
-              Wrap(
-                spacing: 8,
+          itemCount: headerCount + (filtered.isEmpty ? 1 : filtered.length),
+          itemBuilder: (context, index) {
+            if (index == 0) return _outboxStatus(l, outbox);
+            if (hasFilters && index == 1) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  DropdownButton<String>(
-                    value: type,
-                    hint: Text(l.type),
-                    items: [
-                      DropdownMenuItem(value: 'all', child: Text(l.allTypes)),
-                      DropdownMenuItem(value: 'time', child: Text(l.timeType)),
-                      DropdownMenuItem(
-                        value: 'usage',
-                        child: Text(l.usageType),
-                      ),
-                      DropdownMenuItem(
-                        value: 'mileage',
-                        child: Text(l.mileageType),
-                      ),
-                    ],
-                    onChanged: (value) => setState(() => type = value!),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: l.searchReminders,
+                      prefixIcon: const Icon(Icons.search),
+                    ),
+                    onChanged: (value) => setState(() => query = value),
                   ),
-                  DropdownButton<String>(
-                    value: status,
-                    hint: Text(l.status),
-                    items: [
-                      DropdownMenuItem(
-                        value: 'all',
-                        child: Text(l.allStatuses),
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      DropdownButton<String>(
+                        value: type,
+                        hint: Text(l.type),
+                        items: [
+                          DropdownMenuItem(
+                            value: 'all',
+                            child: Text(l.allTypes),
+                          ),
+                          DropdownMenuItem(
+                            value: 'time',
+                            child: Text(l.timeType),
+                          ),
+                          DropdownMenuItem(
+                            value: 'usage',
+                            child: Text(l.usageType),
+                          ),
+                          DropdownMenuItem(
+                            value: 'mileage',
+                            child: Text(l.mileageType),
+                          ),
+                        ],
+                        onChanged: (value) => setState(() => type = value!),
                       ),
-                      for (final state in ReminderState.values)
-                        DropdownMenuItem(
-                          value: state.name,
-                          child: Text(_status(l, state)),
-                        ),
+                      DropdownButton<String>(
+                        value: status,
+                        hint: Text(l.status),
+                        items: [
+                          DropdownMenuItem(
+                            value: 'all',
+                            child: Text(l.allStatuses),
+                          ),
+                          for (final state in ReminderState.values)
+                            DropdownMenuItem(
+                              value: state.name,
+                              child: Text(_status(l, state)),
+                            ),
+                        ],
+                        onChanged: (value) => setState(() => status = value!),
+                      ),
+                      DropdownButton<String>(
+                        key: const Key('reminder_activity_filter'),
+                        value: activity,
+                        items: [
+                          DropdownMenuItem(
+                            value: 'active',
+                            child: Text(l.activeReminders),
+                          ),
+                          DropdownMenuItem(
+                            value: 'archived',
+                            child: Text(l.archivedReminders),
+                          ),
+                        ],
+                        onChanged: (value) => setState(() => activity = value!),
+                      ),
+                      DropdownButton<String>(
+                        key: const Key('reminder_category_filter'),
+                        value: category,
+                        items: [
+                          DropdownMenuItem(
+                            value: 'all',
+                            child: Text(l.allCategories),
+                          ),
+                          for (final value
+                              in (entries
+                                  .map((entry) => entry.item.category)
+                                  .toSet()
+                                  .toList()
+                                ..sort()))
+                            DropdownMenuItem(value: value, child: Text(value)),
+                        ],
+                        onChanged: (value) => setState(() => category = value!),
+                      ),
                     ],
-                    onChanged: (value) => setState(() => status = value!),
-                  ),
-                  DropdownButton<String>(
-                    key: const Key('reminder_activity_filter'),
-                    value: activity,
-                    items: [
-                      DropdownMenuItem(
-                        value: 'active',
-                        child: Text(l.activeReminders),
-                      ),
-                      DropdownMenuItem(
-                        value: 'archived',
-                        child: Text(l.archivedReminders),
-                      ),
-                    ],
-                    onChanged: (value) => setState(() => activity = value!),
-                  ),
-                  DropdownButton<String>(
-                    key: const Key('reminder_category_filter'),
-                    value: category,
-                    items: [
-                      DropdownMenuItem(
-                        value: 'all',
-                        child: Text(l.allCategories),
-                      ),
-                      for (final value
-                          in (entries
-                              .map((entry) => entry.item.category)
-                              .toSet()
-                              .toList()
-                            ..sort()))
-                        DropdownMenuItem(value: value, child: Text(value)),
-                    ],
-                    onChanged: (value) => setState(() => category = value!),
                   ),
                 ],
-              ),
-            ],
-            if (filtered.isEmpty)
-              _message(
+              );
+            }
+            if (filtered.isEmpty) {
+              return _message(
                 widget.section == 'calendar'
                     ? l.noScheduledReminders
                     : l.noReminders,
+              );
+            }
+            final entry = filtered[index - headerCount];
+            return ListTile(
+              leading:
+                  reminderProgress(entry) == ReminderProgress.warning
+                      ? Icon(
+                        Icons.warning_amber_rounded,
+                        color: Theme.of(context).colorScheme.tertiary,
+                        semanticLabel: l.warning,
+                      )
+                      : null,
+              title: Text(entry.reminder.name),
+              subtitle: Text(
+                '${entry.item.name} · ${_detail(l, entry, today, zone)}',
               ),
-            for (final entry in filtered)
-              ListTile(
-                leading:
-                    reminderProgress(entry) == ReminderProgress.warning
-                        ? Icon(
-                          Icons.warning_amber_rounded,
-                          color: Theme.of(context).colorScheme.tertiary,
-                          semanticLabel: l.warning,
-                        )
-                        : null,
-                title: Text(entry.reminder.name),
-                subtitle: Text(
-                  '${entry.item.name} · ${_detail(l, entry, today, zone)}',
-                ),
-              ),
-          ],
+            );
+          },
         );
       },
     );
@@ -353,18 +366,19 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
 
   Widget _outboxStatus(AppLocalizations l, AsyncValue<OutboxSummary> outbox) =>
       switch (outbox) {
-        AsyncData(:final value) when value.failed > 0 => Semantics(
-          liveRegion: true,
-          child: Text(l.failedSync(value.failed)),
-        ),
-        AsyncData(:final value) when value.conflict > 0 => Semantics(
-          liveRegion: true,
-          child: Text(l.conflictedSync(value.conflict)),
-        ),
-        AsyncData(:final value) when value.pending > 0 => Semantics(
-          liveRegion: true,
-          child: Text(l.pendingSync(value.pending)),
-        ),
+        AsyncData(:final value)
+            when value.failed > 0 || value.conflict > 0 || value.pending > 0 =>
+          Semantics(
+            liveRegion: true,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (value.failed > 0) Text(l.failedSync(value.failed)),
+                if (value.conflict > 0) Text(l.conflictedSync(value.conflict)),
+                if (value.pending > 0) Text(l.pendingSync(value.pending)),
+              ],
+            ),
+          ),
         AsyncError() => Text(l.syncStatusUnavailable),
         _ => Text(l.connectivityUnknown),
       };
@@ -386,6 +400,11 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
       return '${l.usageType}: ${count ?? l.unknown} / ${threshold ?? l.unknown} ${reminder.usageUnit ?? ''} · ${remaining == null ? l.unknown : l.remainingUsage(remaining)} · ${_progress(l, reminderProgress(entry))}';
     }
     if (reminder.engineType == 'mileage') {
+      final unit =
+          ref.watch(userPreferencesProvider).valueOrNull?.distanceUnit == 'mi'
+              ? 'mi'
+              : 'km';
+      int display(int km) => unit == 'mi' ? (km / 1.609344).round() : km;
       final current = entry.item.currentOdometer;
       final baseline = reminder.lastServiceOdometer;
       final interval = reminder.intervalKm;
@@ -397,7 +416,7 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
           current == null || baseline == null || interval == null
               ? null
               : (baseline + interval - current).clamp(0, interval);
-      return '${l.mileageType}: ${progress ?? l.unknown} / ${interval ?? l.unknown} km · ${remaining == null ? l.unknown : l.remainingDistance(remaining)} · ${_progress(l, reminderProgress(entry))}';
+      return '${l.mileageType}: ${progress == null ? l.unknown : display(progress)} / ${interval == null ? l.unknown : display(interval)} $unit · ${remaining == null ? l.unknown : l.remainingDistance(display(remaining), unit)} · ${_progress(l, reminderProgress(entry))}';
     }
     final day = reminderDay(reminder, zone);
     return '${_status(l, reminderState(reminder, today, zone))}${day == null ? '' : ' · ${formatDay(day)}'}';

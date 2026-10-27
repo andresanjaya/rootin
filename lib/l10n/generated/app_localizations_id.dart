@@ -26,8 +26,7 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get loginDescription =>
-      'Masuk ke akun Anda untuk mengelola pengingat pemeliharaan';
+  String get loginDescription => 'Masuk ke akun Anda untuk mengelola pengingat pemeliharaan';
 
   @override
   String get email => 'Email';
@@ -75,8 +74,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get registerFailed => 'Gagal mendaftar. Silakan coba lagi.';
 
   @override
-  String get registerSuccess =>
-      'Pendaftaran berhasil! Silakan periksa email Anda atau masuk.';
+  String get registerSuccess => 'Pendaftaran berhasil! Silakan periksa email Anda atau masuk.';
 
   @override
   String get registerAccount => 'Daftar Akun';
@@ -85,8 +83,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get createAccount => 'Buat Akun Rootin';
 
   @override
-  String get registerDescription =>
-      'Kelola jadwal perawatan barang dan kendaraan Anda secara teratur';
+  String get registerDescription => 'Kelola jadwal perawatan barang dan kendaraan Anda secara teratur';
 
   @override
   String get confirmPassword => 'Konfirmasi Kata Sandi';
@@ -104,8 +101,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get forgotPassword => 'Lupa Kata Sandi';
 
   @override
-  String get resetLinkFailed =>
-      'Gagal mengirim tautan reset. Silakan coba lagi.';
+  String get resetLinkFailed => 'Gagal mengirim tautan reset. Silakan coba lagi.';
 
   @override
   String get linkSent => 'Tautan Terkirim';
@@ -122,8 +118,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get resetPassword => 'Atur Ulang Kata Sandi';
 
   @override
-  String get resetDescription =>
-      'Masukkan email yang terdaftar untuk menerima tautan pembaruan kata sandi';
+  String get resetDescription => 'Masukkan email yang terdaftar untuk menerima tautan pembaruan kata sandi';
 
   @override
   String get sendResetLink => 'Kirim Tautan Reset';
@@ -135,8 +130,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get passwordUpdated => 'Kata sandi berhasil diperbarui!';
 
   @override
-  String get passwordUpdateFailed =>
-      'Gagal memperbarui kata sandi. Silakan coba lagi.';
+  String get passwordUpdateFailed => 'Gagal memperbarui kata sandi. Silakan coba lagi.';
 
   @override
   String get newPassword => 'Kata Sandi Baru';
@@ -145,8 +139,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get updatePassword => 'Perbarui Kata Sandi';
 
   @override
-  String get newPasswordDescription =>
-      'Masukkan kata sandi baru untuk akun Anda (minimal 6 karakter)';
+  String get newPasswordDescription => 'Masukkan kata sandi baru untuk akun Anda (minimal 6 karakter)';
 
   @override
   String get newPasswordRequired => 'Kata sandi baru wajib diisi';
@@ -194,8 +187,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get reminderTime => 'Waktu pengingat';
 
   @override
-  String get localOnly =>
-      'Preferensi ini tersimpan di perangkat ini. Penjadwalan notifikasi belum tersedia.';
+  String get localOnly => 'Preferensi ini tersimpan di perangkat ini. Penjadwalan notifikasi belum tersedia.';
 
   @override
   String get save => 'Simpan';
@@ -255,8 +247,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get loadFailed => 'Gagal memuat data lokal';
 
   @override
-  String get timezoneUnavailable =>
-      'Atur zona waktu yang valid untuk melihat pengingat';
+  String get timezoneUnavailable => 'Atur zona waktu yang valid untuk melihat pengingat';
 
   @override
   String get searchReminders => 'Cari pengingat atau barang';
@@ -324,8 +315,8 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String remainingDistance(int distance) {
-    return 'Sisa $distance km';
+  String remainingDistance(int distance, String unit) {
+    return 'Sisa $distance $unit';
   }
 
   @override
@@ -344,8 +335,7 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get syncStatusUnavailable =>
-      'Status antrean sinkronisasi lokal tidak tersedia';
+  String get syncStatusUnavailable => 'Status antrean sinkronisasi lokal tidak tersedia';
 
   @override
   String get connectivityUnknown => 'Koneksi tidak diketahui';

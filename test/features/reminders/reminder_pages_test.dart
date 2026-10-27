@@ -1,13 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rootin_mobile/core/database/database.dart';
 import 'package:rootin_mobile/features/reminders/data/reminder_feed.dart';
 import 'package:rootin_mobile/features/reminders/presentation/reminder_pages.dart';
+import 'package:rootin_mobile/features/settings/settings_provider.dart';
 import 'package:rootin_mobile/l10n/generated/app_localizations.dart';
 
 void main() {
-  Item item(String id, {bool archived = false}) => Item(
+  Item item(String id, {bool archived = false, int? odometer}) => Item(
     id: id,
     userId: 'user',
     name: 'Item $id',
@@ -17,7 +20,7 @@ void main() {
     serialOrPlateNumber: null,
     purchaseDate: null,
     hasOdometer: false,
-    currentOdometer: null,
+    currentOdometer: odometer,
     photoLocalPath: null,
     photoRemotePath: null,
     notes: null,
@@ -34,6 +37,8 @@ void main() {
     bool active = true,
     int? usageCounter,
     int? usageThreshold,
+    int? baseline,
+    int? intervalKm,
   }) => Reminder(
     id: id,
     userId: 'user',
@@ -49,8 +54,8 @@ void main() {
     usageCounter: usageCounter,
     usageThreshold: usageThreshold,
     usageUnit: engine == 'usage' ? 'hours' : null,
-    lastServiceOdometer: null,
-    intervalKm: null,
+    lastServiceOdometer: baseline,
+    intervalKm: intervalKm,
     snoozeUntil: null,
     isActive: active,
     createdAt: '',
@@ -63,18 +68,29 @@ void main() {
     String section,
     List<ReminderEntry> entries, {
     bool emptyQueue = false,
+    OutboxSummary? queue,
+    Stream<UserPreference?>? preferences,
+    Locale locale = const Locale('en'),
   }) => ProviderScope(
     overrides: [
       localTodayProvider.overrideWithValue(DateTime.utc(2026, 10, 25)),
       reminderFeedProvider.overrideWith((ref) => Stream.value(entries)),
       outboxSummaryProvider.overrideWith(
         (ref) => Stream.value(
-          OutboxSummary(pending: 0, failed: emptyQueue ? 0 : 2, conflict: 0),
+          queue ??
+              OutboxSummary(
+                pending: 0,
+                failed: emptyQueue ? 0 : 2,
+                conflict: 0,
+              ),
         ),
+      ),
+      userPreferencesProvider.overrideWith(
+        (ref) => preferences ?? Stream.value(null),
       ),
     ],
     child: MaterialApp(
-      locale: const Locale('en'),
+      locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: ReminderPage(section: section),
@@ -138,4 +154,124 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Connectivity unknown'), findsOneWidget);
   });
+
+  testWidgets('large feed builds visible tiles lazily and scrolls', (
+    tester,
+  ) async {
+    final entries = [
+      for (var i = 0; i < 550; i++)
+        ReminderEntry(
+          reminder(i.toString().padLeft(3, '0')),
+          item(i.toString().padLeft(3, '0')),
+        ),
+    ];
+    await tester.pumpWidget(page('reminders', entries));
+    await tester.pumpAndSettle();
+    expect(find.byType(ListView), findsOneWidget);
+    expect(
+      tester.widget<ListView>(find.byType(ListView)).childrenDelegate,
+      isA<SliverChildBuilderDelegate>(),
+    );
+    expect(find.text('Reminder 549'), findsNothing);
+    expect(find.text('Reminder 000'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Reminder 549'),
+      1000,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Reminder 549'), findsOneWidget);
+    expect(find.byType(ListTile).evaluate().length, lessThan(550));
+  });
+
+  testWidgets('all outbox counts visible together as live status', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(
+      page(
+        'today',
+        [],
+        queue: const OutboxSummary(pending: 3, failed: 2, conflict: 1),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('2 local changes failed to sync'), findsOneWidget);
+    expect(find.text('1 local changes have conflicts'), findsOneWidget);
+    expect(find.text('3 pending local changes'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is Semantics && widget.properties.liveRegion == true,
+      ),
+      findsOneWidget,
+    );
+    handle.dispose();
+  });
+
+  testWidgets(
+    'distance display responds to preference changes without changing km thresholds',
+    (tester) async {
+      final preferences = StreamController<UserPreference?>.broadcast();
+      addTearDown(preferences.close);
+      final entry = ReminderEntry(
+        reminder('mileage', engine: 'mileage', baseline: 1000, intervalKm: 161),
+        item('mileage', odometer: 1080),
+      );
+      await tester.pumpWidget(
+        page('reminders', [entry], preferences: preferences.stream),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('80 / 161 km · 81 km remaining'),
+        findsOneWidget,
+      );
+      preferences.add(preference('mi'));
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('50 / 100 mi · 50 mi remaining'),
+        findsOneWidget,
+      );
+      preferences.add(preference('km'));
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('80 / 161 km · 81 km remaining'),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'unknown and zero distance remain distinguishable in Indonesian',
+    (tester) async {
+      final unknown = ReminderEntry(
+        reminder('unknown', engine: 'mileage'),
+        item('unknown'),
+      );
+      final zero = ReminderEntry(
+        reminder('zero', engine: 'mileage', baseline: 0, intervalKm: 0),
+        item('zero', odometer: 0),
+      );
+      await tester.pumpWidget(
+        page(
+          'reminders',
+          [unknown, zero],
+          locale: const Locale('id'),
+          preferences: Stream.value(preference('mi')),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('Tidak diketahui / Tidak diketahui mi'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('0 / 0 mi · Sisa 0 mi'), findsOneWidget);
+    },
+  );
 }
+
+UserPreference preference(String unit) => UserPreference(
+  userId: 'user',
+  locale: null,
+  distanceUnit: unit,
+  timezoneOverride: null,
+  reminderTime: '09:00',
+);
