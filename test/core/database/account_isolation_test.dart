@@ -214,6 +214,9 @@ void main() {
     test(
       'clearAllUserData clears only target user data and preserves other users',
       () async {
+        await expectLater(db.clearAllUserData(userA), throwsStateError);
+        expect(await db.outboxDao.getAllMutations(userA), hasLength(1));
+        await db.outboxDao.deleteMutationsForUser(userA);
         await db.clearAllUserData(userA);
 
         // Verify User A has 0 records left

@@ -274,4 +274,5 @@ UserPreference preference(String unit) => UserPreference(
   distanceUnit: unit,
   timezoneOverride: null,
   reminderTime: '09:00',
+  version: 0,
 );

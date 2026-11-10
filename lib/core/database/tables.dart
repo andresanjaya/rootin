@@ -110,6 +110,20 @@ class ReminderLogs extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Immutable server progress events, kept to deduplicate cross-device replay.
+class ProgressEvents extends Table {
+  TextColumn get id => text()();
+  TextColumn get userId => text()();
+  TextColumn get itemId => text().references(Items, #id)();
+  TextColumn get reminderId => text().nullable().references(Reminders, #id)();
+  TextColumn get kind => text()();
+  IntColumn get amount => integer()();
+  TextColumn get recordedAt => text()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 /// Durable outbox table for local mutation queue.
 @DataClassName('SyncOutboxData')
 class SyncOutbox extends Table {
@@ -128,7 +142,7 @@ class SyncOutbox extends Table {
 
   @override
   List<String> get customConstraints => [
-    "CHECK (entity_type IN ('item', 'reminder', 'reminder_log'))",
+    "CHECK (entity_type IN ('item', 'reminder', 'reminder_log', 'progress', 'completion', 'preference'))",
     "CHECK (operation_type IN ('insert', 'update', 'delete'))",
     "CHECK (status IN ('pending', 'processing', 'failed', 'conflict'))",
   ];
@@ -148,13 +162,14 @@ class SyncMetadata extends Table {
   Set<Column> get primaryKey => {key, userId};
 }
 
-/// Device-local preferences scoped by authenticated user; never sent to outbox.
+/// User preferences; reminder time remains device-local.
 class UserPreferences extends Table {
   TextColumn get userId => text()();
   TextColumn get locale => text().nullable()();
   TextColumn get distanceUnit => text().withDefault(const Constant('km'))();
   TextColumn get timezoneOverride => text().nullable()();
   TextColumn get reminderTime => text().withDefault(const Constant('09:00'))();
+  IntColumn get version => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column> get primaryKey => {userId};

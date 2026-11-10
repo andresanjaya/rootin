@@ -30,15 +30,26 @@
 > terakhir tetap menambah log tetapi tidak memundurkan siklus. Progress usage
 > setelah instant completion tetap dipertahankan saat reset siklus.
 >
-> Pull: `POST /rest/v1/rpc/sync_pull_changes` body
+> Pull setelah migrasi `20261027000000_mobile_sync_changes.sql`:
+> `POST /rest/v1/rpc/sync_pull_changes` body
 > `{ "p_cursor": null, "p_limit": 500 }` (limit 1–500); response
 > `{ "changes": [{ "entity_type": "item", "record": {...} }],
-> "next_cursor": { "changed_at": "...", "rank": 1, "id": "..." } }`.
-> `next_cursor` dari halaman kosong sama dengan kursor masukan. Kursor ini
-> opaque bagi klien: simpan persis yang diterima, terapkan halaman ke SQLite
-> atomik sebelum menyimpan checkpoint, ulangi hingga halaman kosong.
+> "next_cursor": { "sequence": 1 } }`.
+> Cursor urutan log permanen per user; halaman kosong mengembalikan kursor
+> terakhir (atau sequence 0 untuk awal). Simpan checkpoint per halaman dan
+> terapkan perubahan dalam satu transaksi SQLite. Jangan maju melewati
+> perubahan yang tertahan oleh mutasi lokal; ulangi halaman tersebut setelah
+> antrean terselesaikan. Log backend tidak boleh dipangkas sebelum semua
+> perangkat aktif mengakui checkpoint; belum ada kebijakan pruning.
 > Termasuk tombstone item/reminder, log, progress event dan preferensi;
-> isolasi menggunakan user_id dari sesi JWT. Endpoint belum dipakai klien Flutter.
+> isolasi menggunakan user_id dari sesi JWT. Klien Flutter memakai RPC ini.
+
+> Preferensi yang disinkronkan: locale, distance_unit, time_zone; reminder_time
+> tetap lokal perangkat. Simpan request push immutable bersama perubahan lokal.
+> Result `accepted` menutup operasi hanya setelah transaksi SQLite menyimpan
+> versi server; pull merekonsiliasi nilai final. Status koneksi berbeda dari
+> antrean pending/failed/conflict; M019 menambahkan hook rekonsiliasi jadwal
+> notifikasi setelah commit pull/perubahan lokal, tanpa scheduler di M018.
 
 * **Status**: Accepted
 * **Tanggal**: 2026-10-24
@@ -455,3 +466,18 @@ Sistem operasi membatasi jumlah alarm terjadwal yang dapat didaftarkan (misal: i
 
 #### Aturan Anti-Duplikasi:
 Ketika remote push tiba di perangkat, background handler membaca `occurrence_id`. Jika rekaman lokal menunjukkan reminder dengan `occurrence_id` tersebut telah ditandai selesai (*completed*) atau telah dijadwalkan oleh alarm lokal, pesan push diabaikan tanpa menampilkan banner peringatan ganda kepada pengguna.
+# ROOTIN-M018: catatan wire contract klien (27 Oktober 2026)
+
+Klien mengirim `sync_push_mutations` dengan satu operasi per panggilan RPC,
+berurutan sesuai ID outbox; setiap retry membawa objek request yang sama.
+Hasil nyata `accepted` menghapus antrean; replay mengembalikan hasil pertama
+(`accepted` atau `conflict_rejected`), bukan `duplicate_ignored`.
+`conflict_rejected` menyimpan antrean untuk keputusan pengguna, bukan LWW
+otomatis. Kesalahan RPC batch merupakan exception dan antrean tetap tersedia.
+`sync_pull_changes` mengembalikan baris terkini, bukan riwayat setiap revisi;
+kursor `{changed_at,rank,id}` hanya dipakai untuk halaman dalam satu refresh.
+Klien mengulang dari awal pada refresh berikutnya agar pembaruan rekaman yang
+pernah dibaca tetap dapat ditemukan. Pull memverifikasi `user_id` dan
+menyimpan checkpoint atomik bersama seluruh snapshot. Contoh lama di bawah yang
+menyebut header `X-Idempotency-Key`, `duplicate_ignored`, `validation_failed`
+dan LWW tidak menggambarkan RPC terimplementasi. ADR accepted lama tidak diubah.

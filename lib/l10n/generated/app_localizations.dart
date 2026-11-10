@@ -712,6 +712,36 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Koneksi tidak diketahui'**
   String get connectivityUnknown;
+
+  /// No description provided for @syncNow.
+  ///
+  /// In id, this message translates to:
+  /// **'Sinkronkan sekarang'**
+  String get syncNow;
+
+  /// No description provided for @syncFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Sinkronisasi tidak tersedia. Perubahan lokal tetap tersimpan.'**
+  String get syncFailed;
+
+  /// No description provided for @useServerVersion.
+  ///
+  /// In id, this message translates to:
+  /// **'Pakai versi server'**
+  String get useServerVersion;
+
+  /// No description provided for @conflictWarning.
+  ///
+  /// In id, this message translates to:
+  /// **'Buang perubahan lokal ini dan muat data server? Tindakan ini tidak dapat dibatalkan.'**
+  String get conflictWarning;
+
+  /// No description provided for @resolveConflict.
+  ///
+  /// In id, this message translates to:
+  /// **'Atasi konflik untuk {entity}'**
+  String resolveConflict(String entity);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

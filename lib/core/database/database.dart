@@ -20,6 +20,7 @@ part 'database.g.dart';
     Items,
     Reminders,
     ReminderLogs,
+    ProgressEvents,
     SyncOutbox,
     SyncMetadata,
     UserPreferences,
@@ -37,7 +38,7 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase.defaults() => AppDatabase();
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -58,6 +59,32 @@ class AppDatabase extends _$AppDatabase {
     },
     onUpgrade: (Migrator m, int from, int to) async {
       if (from < 2) await m.createTable(userPreferences);
+      if (from < 3) {
+        await m.createTable(progressEvents);
+        if (from >= 2) {
+          await m.addColumn(userPreferences, userPreferences.version);
+        }
+        // Existing SQLite CHECK cannot be altered in place; preserve queued rows.
+        await customStatement('''CREATE TABLE sync_outbox_new (
+            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+            operation_id TEXT NOT NULL UNIQUE, user_id TEXT NOT NULL,
+            entity_type TEXT NOT NULL, record_id TEXT NOT NULL,
+            operation_type TEXT NOT NULL, payload_json TEXT NOT NULL,
+            created_at TEXT NOT NULL, retry_count INTEGER NOT NULL DEFAULT 0,
+            last_attempt_at TEXT, status TEXT NOT NULL DEFAULT 'pending', error_message TEXT,
+            CHECK (entity_type IN ('item','reminder','reminder_log','progress','completion','preference')),
+            CHECK (operation_type IN ('insert','update','delete')),
+            CHECK (status IN ('pending','processing','failed','conflict'))
+          )''');
+        await customStatement(
+          'INSERT INTO sync_outbox_new SELECT * FROM sync_outbox',
+        );
+        await customStatement('DROP TABLE sync_outbox');
+        await customStatement(
+          'ALTER TABLE sync_outbox_new RENAME TO sync_outbox',
+        );
+        await _createCustomIndexes();
+      }
     },
   );
 
@@ -140,7 +167,12 @@ class AppDatabase extends _$AppDatabase {
   /// Completely clears all data for a specific user (account switch or logout wipe).
   Future<void> clearAllUserData(String userId) async {
     await transaction(() async {
+      if ((await outboxDao.getAllMutations(userId)).isNotEmpty) {
+        throw StateError('Cannot erase unsynchronized operations');
+      }
       await (delete(reminderLogs)..where((t) => t.userId.equals(userId))).go();
+      await (delete(progressEvents)
+        ..where((t) => t.userId.equals(userId))).go();
       await (delete(reminders)..where((t) => t.userId.equals(userId))).go();
       await (delete(items)..where((t) => t.userId.equals(userId))).go();
       await (delete(syncOutbox)..where((t) => t.userId.equals(userId))).go();
