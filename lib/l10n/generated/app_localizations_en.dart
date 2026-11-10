@@ -356,4 +356,135 @@ class AppLocalizationsEn extends AppLocalizations {
   String resolveConflict(String entity) {
     return 'Resolve conflict for $entity';
   }
+
+  @override
+  String get addReminder => 'Add Reminder';
+
+  @override
+  String get editReminder => 'Edit Reminder';
+
+  @override
+  String get reminderName => 'Reminder Name';
+
+  @override
+  String get reminderNameHint => 'e.g. Engine Oil Change';
+
+  @override
+  String get reminderNameRequired => 'Reminder name is required';
+
+  @override
+  String get reminderNameTooLong => 'Reminder name cannot exceed 150 characters';
+
+  @override
+  String get selectItem => 'Select Item';
+
+  @override
+  String get selectItemRequired => 'Item is required';
+
+  @override
+  String get engineType => 'Reminder Type';
+
+  @override
+  String get intervalValue => 'Interval';
+
+  @override
+  String get intervalUnit => 'Interval Unit';
+
+  @override
+  String get daysUnit => 'Days';
+
+  @override
+  String get weeksUnit => 'Weeks';
+
+  @override
+  String get monthsUnit => 'Months';
+
+  @override
+  String get yearsUnit => 'Years';
+
+  @override
+  String get baselineMode => 'Recurrence Baseline';
+
+  @override
+  String get actualCompletion => 'Actual Completion (Default)';
+
+  @override
+  String get strictSchedule => 'Strict Schedule';
+
+  @override
+  String get targetDate => 'Due Date';
+
+  @override
+  String get targetTime => 'Reminder Time';
+
+  @override
+  String get targetDateRequired => 'Due date is required';
+
+  @override
+  String get targetDateInvalid => 'Invalid date format';
+
+  @override
+  String get usageThreshold => 'Usage Threshold';
+
+  @override
+  String get usageThresholdHint => 'e.g. 100';
+
+  @override
+  String get usageThresholdRequired => 'Usage threshold is required';
+
+  @override
+  String get usageThresholdPositive => 'Threshold must be greater than 0';
+
+  @override
+  String get currentUsage => 'Initial Usage Counter';
+
+  @override
+  String get usageUnit => 'Usage Unit';
+
+  @override
+  String get usageUnitHint => 'e.g. times, cycles, hours';
+
+  @override
+  String get intervalKm => 'Distance Interval (km)';
+
+  @override
+  String get intervalKmHint => 'e.g. 5000';
+
+  @override
+  String get intervalKmRequired => 'Distance interval is required';
+
+  @override
+  String get intervalKmPositive => 'Distance interval must be greater than 0';
+
+  @override
+  String get lastServiceOdometer => 'Last Service Odometer (km)';
+
+  @override
+  String get lastServiceOdometerRequired => 'Last service odometer is required';
+
+  @override
+  String get vehicleRequiredForMileage => 'Only items with an odometer (vehicles) can use mileage reminders';
+
+  @override
+  String get schedulePreview => 'Upcoming Schedule Preview';
+
+  @override
+  String get wearPreview => 'Wear & Remaining Preview';
+
+  @override
+  String targetOdometerPreview(int odo) {
+    return 'Target Odometer: $odo km';
+  }
+
+  @override
+  String get savingReminder => 'Saving reminder...';
+
+  @override
+  String get reminderSaved => 'Reminder saved successfully';
+
+  @override
+  String get reminderSaveFailed => 'Could not save reminder';
+
+  @override
+  String get engineTypeImmutable => 'Reminder type cannot be changed after creation';
 }

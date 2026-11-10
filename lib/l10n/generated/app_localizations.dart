@@ -742,6 +742,264 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Atasi konflik untuk {entity}'**
   String resolveConflict(String entity);
+
+  /// No description provided for @addReminder.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah Pengingat'**
+  String get addReminder;
+
+  /// No description provided for @editReminder.
+  ///
+  /// In id, this message translates to:
+  /// **'Edit Pengingat'**
+  String get editReminder;
+
+  /// No description provided for @reminderName.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama Pengingat'**
+  String get reminderName;
+
+  /// No description provided for @reminderNameHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Contoh: Ganti Oli Mesin'**
+  String get reminderNameHint;
+
+  /// No description provided for @reminderNameRequired.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama pengingat wajib diisi'**
+  String get reminderNameRequired;
+
+  /// No description provided for @reminderNameTooLong.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama pengingat maksimal 150 karakter'**
+  String get reminderNameTooLong;
+
+  /// No description provided for @selectItem.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Barang'**
+  String get selectItem;
+
+  /// No description provided for @selectItemRequired.
+  ///
+  /// In id, this message translates to:
+  /// **'Barang wajib dipilih'**
+  String get selectItemRequired;
+
+  /// No description provided for @engineType.
+  ///
+  /// In id, this message translates to:
+  /// **'Jenis Pengingat'**
+  String get engineType;
+
+  /// No description provided for @intervalValue.
+  ///
+  /// In id, this message translates to:
+  /// **'Interval'**
+  String get intervalValue;
+
+  /// No description provided for @intervalUnit.
+  ///
+  /// In id, this message translates to:
+  /// **'Satuan Interval'**
+  String get intervalUnit;
+
+  /// No description provided for @daysUnit.
+  ///
+  /// In id, this message translates to:
+  /// **'Hari'**
+  String get daysUnit;
+
+  /// No description provided for @weeksUnit.
+  ///
+  /// In id, this message translates to:
+  /// **'Minggu'**
+  String get weeksUnit;
+
+  /// No description provided for @monthsUnit.
+  ///
+  /// In id, this message translates to:
+  /// **'Bulan'**
+  String get monthsUnit;
+
+  /// No description provided for @yearsUnit.
+  ///
+  /// In id, this message translates to:
+  /// **'Tahun'**
+  String get yearsUnit;
+
+  /// No description provided for @baselineMode.
+  ///
+  /// In id, this message translates to:
+  /// **'Mode Perhitungan Siklus'**
+  String get baselineMode;
+
+  /// No description provided for @actualCompletion.
+  ///
+  /// In id, this message translates to:
+  /// **'Selesai Aktual (Default)'**
+  String get actualCompletion;
+
+  /// No description provided for @strictSchedule.
+  ///
+  /// In id, this message translates to:
+  /// **'Jadwal Ketat'**
+  String get strictSchedule;
+
+  /// No description provided for @targetDate.
+  ///
+  /// In id, this message translates to:
+  /// **'Tanggal Jatuh Tempo'**
+  String get targetDate;
+
+  /// No description provided for @targetTime.
+  ///
+  /// In id, this message translates to:
+  /// **'Jam Pengingat'**
+  String get targetTime;
+
+  /// No description provided for @targetDateRequired.
+  ///
+  /// In id, this message translates to:
+  /// **'Tanggal jatuh tempo wajib diisi'**
+  String get targetDateRequired;
+
+  /// No description provided for @targetDateInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'Format tanggal tidak valid'**
+  String get targetDateInvalid;
+
+  /// No description provided for @usageThreshold.
+  ///
+  /// In id, this message translates to:
+  /// **'Ambang Batas Pemakaian'**
+  String get usageThreshold;
+
+  /// No description provided for @usageThresholdHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Contoh: 100'**
+  String get usageThresholdHint;
+
+  /// No description provided for @usageThresholdRequired.
+  ///
+  /// In id, this message translates to:
+  /// **'Ambang batas pemakaian wajib diisi'**
+  String get usageThresholdRequired;
+
+  /// No description provided for @usageThresholdPositive.
+  ///
+  /// In id, this message translates to:
+  /// **'Ambang batas harus lebih dari 0'**
+  String get usageThresholdPositive;
+
+  /// No description provided for @currentUsage.
+  ///
+  /// In id, this message translates to:
+  /// **'Counter Pemakaian Awal'**
+  String get currentUsage;
+
+  /// No description provided for @usageUnit.
+  ///
+  /// In id, this message translates to:
+  /// **'Satuan Pemakaian'**
+  String get usageUnit;
+
+  /// No description provided for @usageUnitHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Contoh: kali, siklus, jam'**
+  String get usageUnitHint;
+
+  /// No description provided for @intervalKm.
+  ///
+  /// In id, this message translates to:
+  /// **'Interval Jarak (km)'**
+  String get intervalKm;
+
+  /// No description provided for @intervalKmHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Contoh: 5000'**
+  String get intervalKmHint;
+
+  /// No description provided for @intervalKmRequired.
+  ///
+  /// In id, this message translates to:
+  /// **'Interval jarak wajib diisi'**
+  String get intervalKmRequired;
+
+  /// No description provided for @intervalKmPositive.
+  ///
+  /// In id, this message translates to:
+  /// **'Interval jarak harus lebih dari 0'**
+  String get intervalKmPositive;
+
+  /// No description provided for @lastServiceOdometer.
+  ///
+  /// In id, this message translates to:
+  /// **'Odometer Terakhir (km)'**
+  String get lastServiceOdometer;
+
+  /// No description provided for @lastServiceOdometerRequired.
+  ///
+  /// In id, this message translates to:
+  /// **'Odometer terakhir wajib diisi'**
+  String get lastServiceOdometerRequired;
+
+  /// No description provided for @vehicleRequiredForMileage.
+  ///
+  /// In id, this message translates to:
+  /// **'Hanya barang dengan odometer (kendaraan) yang dapat menggunakan pengingat jarak'**
+  String get vehicleRequiredForMileage;
+
+  /// No description provided for @schedulePreview.
+  ///
+  /// In id, this message translates to:
+  /// **'Pratinjau Jadwal Berikutnya'**
+  String get schedulePreview;
+
+  /// No description provided for @wearPreview.
+  ///
+  /// In id, this message translates to:
+  /// **'Pratinjau Keausan & Sisa'**
+  String get wearPreview;
+
+  /// No description provided for @targetOdometerPreview.
+  ///
+  /// In id, this message translates to:
+  /// **'Target Odometer: {odo} km'**
+  String targetOdometerPreview(int odo);
+
+  /// No description provided for @savingReminder.
+  ///
+  /// In id, this message translates to:
+  /// **'Menyimpan pengingat...'**
+  String get savingReminder;
+
+  /// No description provided for @reminderSaved.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengingat berhasil disimpan'**
+  String get reminderSaved;
+
+  /// No description provided for @reminderSaveFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal menyimpan pengingat'**
+  String get reminderSaveFailed;
+
+  /// No description provided for @engineTypeImmutable.
+  ///
+  /// In id, this message translates to:
+  /// **'Jenis pengingat tidak dapat diubah setelah dibuat'**
+  String get engineTypeImmutable;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

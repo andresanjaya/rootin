@@ -356,4 +356,135 @@ class AppLocalizationsId extends AppLocalizations {
   String resolveConflict(String entity) {
     return 'Atasi konflik untuk $entity';
   }
+
+  @override
+  String get addReminder => 'Tambah Pengingat';
+
+  @override
+  String get editReminder => 'Edit Pengingat';
+
+  @override
+  String get reminderName => 'Nama Pengingat';
+
+  @override
+  String get reminderNameHint => 'Contoh: Ganti Oli Mesin';
+
+  @override
+  String get reminderNameRequired => 'Nama pengingat wajib diisi';
+
+  @override
+  String get reminderNameTooLong => 'Nama pengingat maksimal 150 karakter';
+
+  @override
+  String get selectItem => 'Pilih Barang';
+
+  @override
+  String get selectItemRequired => 'Barang wajib dipilih';
+
+  @override
+  String get engineType => 'Jenis Pengingat';
+
+  @override
+  String get intervalValue => 'Interval';
+
+  @override
+  String get intervalUnit => 'Satuan Interval';
+
+  @override
+  String get daysUnit => 'Hari';
+
+  @override
+  String get weeksUnit => 'Minggu';
+
+  @override
+  String get monthsUnit => 'Bulan';
+
+  @override
+  String get yearsUnit => 'Tahun';
+
+  @override
+  String get baselineMode => 'Mode Perhitungan Siklus';
+
+  @override
+  String get actualCompletion => 'Selesai Aktual (Default)';
+
+  @override
+  String get strictSchedule => 'Jadwal Ketat';
+
+  @override
+  String get targetDate => 'Tanggal Jatuh Tempo';
+
+  @override
+  String get targetTime => 'Jam Pengingat';
+
+  @override
+  String get targetDateRequired => 'Tanggal jatuh tempo wajib diisi';
+
+  @override
+  String get targetDateInvalid => 'Format tanggal tidak valid';
+
+  @override
+  String get usageThreshold => 'Ambang Batas Pemakaian';
+
+  @override
+  String get usageThresholdHint => 'Contoh: 100';
+
+  @override
+  String get usageThresholdRequired => 'Ambang batas pemakaian wajib diisi';
+
+  @override
+  String get usageThresholdPositive => 'Ambang batas harus lebih dari 0';
+
+  @override
+  String get currentUsage => 'Counter Pemakaian Awal';
+
+  @override
+  String get usageUnit => 'Satuan Pemakaian';
+
+  @override
+  String get usageUnitHint => 'Contoh: kali, siklus, jam';
+
+  @override
+  String get intervalKm => 'Interval Jarak (km)';
+
+  @override
+  String get intervalKmHint => 'Contoh: 5000';
+
+  @override
+  String get intervalKmRequired => 'Interval jarak wajib diisi';
+
+  @override
+  String get intervalKmPositive => 'Interval jarak harus lebih dari 0';
+
+  @override
+  String get lastServiceOdometer => 'Odometer Terakhir (km)';
+
+  @override
+  String get lastServiceOdometerRequired => 'Odometer terakhir wajib diisi';
+
+  @override
+  String get vehicleRequiredForMileage => 'Hanya barang dengan odometer (kendaraan) yang dapat menggunakan pengingat jarak';
+
+  @override
+  String get schedulePreview => 'Pratinjau Jadwal Berikutnya';
+
+  @override
+  String get wearPreview => 'Pratinjau Keausan & Sisa';
+
+  @override
+  String targetOdometerPreview(int odo) {
+    return 'Target Odometer: $odo km';
+  }
+
+  @override
+  String get savingReminder => 'Menyimpan pengingat...';
+
+  @override
+  String get reminderSaved => 'Pengingat berhasil disimpan';
+
+  @override
+  String get reminderSaveFailed => 'Gagal menyimpan pengingat';
+
+  @override
+  String get engineTypeImmutable => 'Jenis pengingat tidak dapat diubah setelah dibuat';
 }
