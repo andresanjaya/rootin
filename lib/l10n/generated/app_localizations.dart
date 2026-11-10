@@ -62,7 +62,8 @@ import 'app_localizations_id.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale)
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -70,7 +71,8 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -82,17 +84,18 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
-    Locale('id')
+    Locale('id'),
   ];
 
   /// No description provided for @home.
@@ -1000,9 +1003,214 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Jenis pengingat tidak dapat diubah setelah dibuat'**
   String get engineTypeImmutable;
+
+  /// No description provided for @reminderDetail.
+  ///
+  /// In id, this message translates to:
+  /// **'Detail Pengingat'**
+  String get reminderDetail;
+
+  /// No description provided for @completeCycle.
+  ///
+  /// In id, this message translates to:
+  /// **'Selesaikan Siklus'**
+  String get completeCycle;
+
+  /// No description provided for @completionDate.
+  ///
+  /// In id, this message translates to:
+  /// **'Tanggal Selesai'**
+  String get completionDate;
+
+  /// No description provided for @performedBy.
+  ///
+  /// In id, this message translates to:
+  /// **'Dikerjakan Oleh'**
+  String get performedBy;
+
+  /// No description provided for @performedByHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Contoh: Bengkel Resmi, Mandiri'**
+  String get performedByHint;
+
+  /// No description provided for @cost.
+  ///
+  /// In id, this message translates to:
+  /// **'Biaya'**
+  String get cost;
+
+  /// No description provided for @costHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Contoh: 150000'**
+  String get costHint;
+
+  /// No description provided for @notes.
+  ///
+  /// In id, this message translates to:
+  /// **'Catatan'**
+  String get notes;
+
+  /// No description provided for @notesHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Catatan tambahan perawatan...'**
+  String get notesHint;
+
+  /// No description provided for @odometerAtCompletion.
+  ///
+  /// In id, this message translates to:
+  /// **'Odometer Saat Selesai (km)'**
+  String get odometerAtCompletion;
+
+  /// No description provided for @odometerAtCompletionHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Contoh: {odo}'**
+  String odometerAtCompletionHint(int odo);
+
+  /// No description provided for @confirmComplete.
+  ///
+  /// In id, this message translates to:
+  /// **'Konfirmasi Selesai'**
+  String get confirmComplete;
+
+  /// No description provided for @completingCycle.
+  ///
+  /// In id, this message translates to:
+  /// **'Menyelesaikan siklus...'**
+  String get completingCycle;
+
+  /// No description provided for @cycleCompleted.
+  ///
+  /// In id, this message translates to:
+  /// **'Siklus perawatan berhasil diselesaikan'**
+  String get cycleCompleted;
+
+  /// No description provided for @cycleCompleteFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal menyelesaikan siklus'**
+  String get cycleCompleteFailed;
+
+  /// No description provided for @plusOneUsage.
+  ///
+  /// In id, this message translates to:
+  /// **'+1 Pemakaian'**
+  String get plusOneUsage;
+
+  /// No description provided for @usageIncremented.
+  ///
+  /// In id, this message translates to:
+  /// **'Pemakaian bertambah (+1)'**
+  String get usageIncremented;
+
+  /// No description provided for @usageIncrementFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal menambah pemakaian'**
+  String get usageIncrementFailed;
+
+  /// No description provided for @updateOdometer.
+  ///
+  /// In id, this message translates to:
+  /// **'Perbarui Odometer'**
+  String get updateOdometer;
+
+  /// No description provided for @currentOdometer.
+  ///
+  /// In id, this message translates to:
+  /// **'Odometer Saat Ini'**
+  String get currentOdometer;
+
+  /// No description provided for @newOdometer.
+  ///
+  /// In id, this message translates to:
+  /// **'Odometer Baru (km)'**
+  String get newOdometer;
+
+  /// No description provided for @newOdometerHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Harus lebih besar dari odometer saat ini'**
+  String get newOdometerHint;
+
+  /// No description provided for @newOdometerRequired.
+  ///
+  /// In id, this message translates to:
+  /// **'Odometer baru wajib diisi'**
+  String get newOdometerRequired;
+
+  /// No description provided for @newOdometerInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'Odometer baru harus lebih besar atau sama dengan odometer saat ini'**
+  String get newOdometerInvalid;
+
+  /// No description provided for @odometerUpdated.
+  ///
+  /// In id, this message translates to:
+  /// **'Odometer berhasil diperbarui'**
+  String get odometerUpdated;
+
+  /// No description provided for @odometerUpdateFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal memperbarui odometer'**
+  String get odometerUpdateFailed;
+
+  /// No description provided for @serviceHistory.
+  ///
+  /// In id, this message translates to:
+  /// **'Riwayat Servis / Siklus'**
+  String get serviceHistory;
+
+  /// No description provided for @noLogsYet.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada riwayat penyelesaian untuk pengingat ini'**
+  String get noLogsYet;
+
+  /// No description provided for @progressSection.
+  ///
+  /// In id, this message translates to:
+  /// **'Progres & Target'**
+  String get progressSection;
+
+  /// No description provided for @calculationBasis.
+  ///
+  /// In id, this message translates to:
+  /// **'Basis Perhitungan'**
+  String get calculationBasis;
+
+  /// No description provided for @completedOn.
+  ///
+  /// In id, this message translates to:
+  /// **'Selesai pada {date}'**
+  String completedOn(String date);
+
+  /// No description provided for @performedByLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Oleh: {name}'**
+  String performedByLabel(String name);
+
+  /// No description provided for @costLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Biaya: {cost}'**
+  String costLabel(String cost);
+
+  /// No description provided for @odometerLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Odometer: {odo} km'**
+  String odometerLabel(int odo);
 }
 
-class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -1011,25 +1219,26 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['en', 'id'].contains(locale.languageCode);
+  bool isSupported(Locale locale) =>
+      <String>['en', 'id'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
-
-
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'en': return AppLocalizationsEn();
-    case 'id': return AppLocalizationsId();
+    case 'en':
+      return AppLocalizationsEn();
+    case 'id':
+      return AppLocalizationsId();
   }
 
   throw FlutterError(
     'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.'
+    'that was used.',
   );
 }

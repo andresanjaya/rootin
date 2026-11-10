@@ -26,7 +26,8 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get loginDescription => 'Masuk ke akun Anda untuk mengelola pengingat pemeliharaan';
+  String get loginDescription =>
+      'Masuk ke akun Anda untuk mengelola pengingat pemeliharaan';
 
   @override
   String get email => 'Email';
@@ -74,7 +75,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get registerFailed => 'Gagal mendaftar. Silakan coba lagi.';
 
   @override
-  String get registerSuccess => 'Pendaftaran berhasil! Silakan periksa email Anda atau masuk.';
+  String get registerSuccess =>
+      'Pendaftaran berhasil! Silakan periksa email Anda atau masuk.';
 
   @override
   String get registerAccount => 'Daftar Akun';
@@ -83,7 +85,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get createAccount => 'Buat Akun Rootin';
 
   @override
-  String get registerDescription => 'Kelola jadwal perawatan barang dan kendaraan Anda secara teratur';
+  String get registerDescription =>
+      'Kelola jadwal perawatan barang dan kendaraan Anda secara teratur';
 
   @override
   String get confirmPassword => 'Konfirmasi Kata Sandi';
@@ -101,7 +104,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get forgotPassword => 'Lupa Kata Sandi';
 
   @override
-  String get resetLinkFailed => 'Gagal mengirim tautan reset. Silakan coba lagi.';
+  String get resetLinkFailed =>
+      'Gagal mengirim tautan reset. Silakan coba lagi.';
 
   @override
   String get linkSent => 'Tautan Terkirim';
@@ -118,7 +122,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get resetPassword => 'Atur Ulang Kata Sandi';
 
   @override
-  String get resetDescription => 'Masukkan email yang terdaftar untuk menerima tautan pembaruan kata sandi';
+  String get resetDescription =>
+      'Masukkan email yang terdaftar untuk menerima tautan pembaruan kata sandi';
 
   @override
   String get sendResetLink => 'Kirim Tautan Reset';
@@ -130,7 +135,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get passwordUpdated => 'Kata sandi berhasil diperbarui!';
 
   @override
-  String get passwordUpdateFailed => 'Gagal memperbarui kata sandi. Silakan coba lagi.';
+  String get passwordUpdateFailed =>
+      'Gagal memperbarui kata sandi. Silakan coba lagi.';
 
   @override
   String get newPassword => 'Kata Sandi Baru';
@@ -139,7 +145,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get updatePassword => 'Perbarui Kata Sandi';
 
   @override
-  String get newPasswordDescription => 'Masukkan kata sandi baru untuk akun Anda (minimal 6 karakter)';
+  String get newPasswordDescription =>
+      'Masukkan kata sandi baru untuk akun Anda (minimal 6 karakter)';
 
   @override
   String get newPasswordRequired => 'Kata sandi baru wajib diisi';
@@ -187,7 +194,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get reminderTime => 'Waktu pengingat';
 
   @override
-  String get localOnly => 'Preferensi ini tersimpan di perangkat ini. Penjadwalan notifikasi belum tersedia.';
+  String get localOnly =>
+      'Preferensi ini tersimpan di perangkat ini. Penjadwalan notifikasi belum tersedia.';
 
   @override
   String get save => 'Simpan';
@@ -247,7 +255,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get loadFailed => 'Gagal memuat data lokal';
 
   @override
-  String get timezoneUnavailable => 'Atur zona waktu yang valid untuk melihat pengingat';
+  String get timezoneUnavailable =>
+      'Atur zona waktu yang valid untuk melihat pengingat';
 
   @override
   String get searchReminders => 'Cari pengingat atau barang';
@@ -335,7 +344,8 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get syncStatusUnavailable => 'Status antrean sinkronisasi lokal tidak tersedia';
+  String get syncStatusUnavailable =>
+      'Status antrean sinkronisasi lokal tidak tersedia';
 
   @override
   String get connectivityUnknown => 'Koneksi tidak diketahui';
@@ -344,13 +354,15 @@ class AppLocalizationsId extends AppLocalizations {
   String get syncNow => 'Sinkronkan sekarang';
 
   @override
-  String get syncFailed => 'Sinkronisasi tidak tersedia. Perubahan lokal tetap tersimpan.';
+  String get syncFailed =>
+      'Sinkronisasi tidak tersedia. Perubahan lokal tetap tersimpan.';
 
   @override
   String get useServerVersion => 'Pakai versi server';
 
   @override
-  String get conflictWarning => 'Buang perubahan lokal ini dan muat data server? Tindakan ini tidak dapat dibatalkan.';
+  String get conflictWarning =>
+      'Buang perubahan lokal ini dan muat data server? Tindakan ini tidak dapat dibatalkan.';
 
   @override
   String resolveConflict(String entity) {
@@ -463,7 +475,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get lastServiceOdometerRequired => 'Odometer terakhir wajib diisi';
 
   @override
-  String get vehicleRequiredForMileage => 'Hanya barang dengan odometer (kendaraan) yang dapat menggunakan pengingat jarak';
+  String get vehicleRequiredForMileage =>
+      'Hanya barang dengan odometer (kendaraan) yang dapat menggunakan pengingat jarak';
 
   @override
   String get schedulePreview => 'Pratinjau Jadwal Berikutnya';
@@ -486,5 +499,119 @@ class AppLocalizationsId extends AppLocalizations {
   String get reminderSaveFailed => 'Gagal menyimpan pengingat';
 
   @override
-  String get engineTypeImmutable => 'Jenis pengingat tidak dapat diubah setelah dibuat';
+  String get engineTypeImmutable =>
+      'Jenis pengingat tidak dapat diubah setelah dibuat';
+
+  @override
+  String get reminderDetail => 'Detail Pengingat';
+
+  @override
+  String get completeCycle => 'Selesaikan Siklus';
+
+  @override
+  String get completionDate => 'Tanggal Selesai';
+
+  @override
+  String get performedBy => 'Dikerjakan Oleh';
+
+  @override
+  String get performedByHint => 'Contoh: Bengkel Resmi, Mandiri';
+
+  @override
+  String get cost => 'Biaya';
+
+  @override
+  String get costHint => 'Contoh: 150000';
+
+  @override
+  String get notes => 'Catatan';
+
+  @override
+  String get notesHint => 'Catatan tambahan perawatan...';
+
+  @override
+  String get odometerAtCompletion => 'Odometer Saat Selesai (km)';
+
+  @override
+  String odometerAtCompletionHint(int odo) {
+    return 'Contoh: $odo';
+  }
+
+  @override
+  String get confirmComplete => 'Konfirmasi Selesai';
+
+  @override
+  String get completingCycle => 'Menyelesaikan siklus...';
+
+  @override
+  String get cycleCompleted => 'Siklus perawatan berhasil diselesaikan';
+
+  @override
+  String get cycleCompleteFailed => 'Gagal menyelesaikan siklus';
+
+  @override
+  String get plusOneUsage => '+1 Pemakaian';
+
+  @override
+  String get usageIncremented => 'Pemakaian bertambah (+1)';
+
+  @override
+  String get usageIncrementFailed => 'Gagal menambah pemakaian';
+
+  @override
+  String get updateOdometer => 'Perbarui Odometer';
+
+  @override
+  String get currentOdometer => 'Odometer Saat Ini';
+
+  @override
+  String get newOdometer => 'Odometer Baru (km)';
+
+  @override
+  String get newOdometerHint => 'Harus lebih besar dari odometer saat ini';
+
+  @override
+  String get newOdometerRequired => 'Odometer baru wajib diisi';
+
+  @override
+  String get newOdometerInvalid =>
+      'Odometer baru harus lebih besar atau sama dengan odometer saat ini';
+
+  @override
+  String get odometerUpdated => 'Odometer berhasil diperbarui';
+
+  @override
+  String get odometerUpdateFailed => 'Gagal memperbarui odometer';
+
+  @override
+  String get serviceHistory => 'Riwayat Servis / Siklus';
+
+  @override
+  String get noLogsYet => 'Belum ada riwayat penyelesaian untuk pengingat ini';
+
+  @override
+  String get progressSection => 'Progres & Target';
+
+  @override
+  String get calculationBasis => 'Basis Perhitungan';
+
+  @override
+  String completedOn(String date) {
+    return 'Selesai pada $date';
+  }
+
+  @override
+  String performedByLabel(String name) {
+    return 'Oleh: $name';
+  }
+
+  @override
+  String costLabel(String cost) {
+    return 'Biaya: $cost';
+  }
+
+  @override
+  String odometerLabel(int odo) {
+    return 'Odometer: $odo km';
+  }
 }
