@@ -74,7 +74,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerFailed => 'Could not sign up. Please try again.';
 
   @override
-  String get registerSuccess => 'Registration successful! Check your email or sign in.';
+  String get registerSuccess =>
+      'Registration successful! Check your email or sign in.';
 
   @override
   String get registerAccount => 'Create account';
@@ -83,7 +84,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createAccount => 'Create a Rootin account';
 
   @override
-  String get registerDescription => 'Keep track of maintenance for your belongings and vehicles';
+  String get registerDescription =>
+      'Keep track of maintenance for your belongings and vehicles';
 
   @override
   String get confirmPassword => 'Confirm password';
@@ -118,7 +120,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resetPassword => 'Reset password';
 
   @override
-  String get resetDescription => 'Enter your registered email to receive a password reset link';
+  String get resetDescription =>
+      'Enter your registered email to receive a password reset link';
 
   @override
   String get sendResetLink => 'Send reset link';
@@ -130,7 +133,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordUpdated => 'Password updated!';
 
   @override
-  String get passwordUpdateFailed => 'Could not update your password. Please try again.';
+  String get passwordUpdateFailed =>
+      'Could not update your password. Please try again.';
 
   @override
   String get newPassword => 'New password';
@@ -139,7 +143,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updatePassword => 'Update password';
 
   @override
-  String get newPasswordDescription => 'Enter a new password (at least 6 characters)';
+  String get newPasswordDescription =>
+      'Enter a new password (at least 6 characters)';
 
   @override
   String get newPasswordRequired => 'New password is required';
@@ -187,7 +192,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reminderTime => 'Reminder time';
 
   @override
-  String get localOnly => 'These preferences are stored on this device. Notification scheduling is not available yet.';
+  String get localOnly =>
+      'These preferences are stored on this device. Notification scheduling is not available yet.';
 
   @override
   String get save => 'Save';
@@ -350,7 +356,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get useServerVersion => 'Use server version';
 
   @override
-  String get conflictWarning => 'Discard this local change and load server data? This cannot be undone.';
+  String get conflictWarning =>
+      'Discard this local change and load server data? This cannot be undone.';
 
   @override
   String resolveConflict(String entity) {
@@ -373,7 +380,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reminderNameRequired => 'Reminder name is required';
 
   @override
-  String get reminderNameTooLong => 'Reminder name cannot exceed 150 characters';
+  String get reminderNameTooLong =>
+      'Reminder name cannot exceed 150 characters';
 
   @override
   String get selectItem => 'Select Item';
@@ -463,7 +471,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lastServiceOdometerRequired => 'Last service odometer is required';
 
   @override
-  String get vehicleRequiredForMileage => 'Only items with an odometer (vehicles) can use mileage reminders';
+  String get vehicleRequiredForMileage =>
+      'Only items with an odometer (vehicles) can use mileage reminders';
 
   @override
   String get schedulePreview => 'Upcoming Schedule Preview';
@@ -486,5 +495,119 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reminderSaveFailed => 'Could not save reminder';
 
   @override
-  String get engineTypeImmutable => 'Reminder type cannot be changed after creation';
+  String get engineTypeImmutable =>
+      'Reminder type cannot be changed after creation';
+
+  @override
+  String get reminderDetail => 'Reminder Details';
+
+  @override
+  String get completeCycle => 'Complete Cycle';
+
+  @override
+  String get completionDate => 'Completion Date';
+
+  @override
+  String get performedBy => 'Performed By';
+
+  @override
+  String get performedByHint => 'e.g. Official Workshop, Self';
+
+  @override
+  String get cost => 'Cost';
+
+  @override
+  String get costHint => 'e.g. 150000';
+
+  @override
+  String get notes => 'Notes';
+
+  @override
+  String get notesHint => 'Maintenance notes...';
+
+  @override
+  String get odometerAtCompletion => 'Odometer at Completion (km)';
+
+  @override
+  String odometerAtCompletionHint(int odo) {
+    return 'e.g. $odo';
+  }
+
+  @override
+  String get confirmComplete => 'Confirm Completion';
+
+  @override
+  String get completingCycle => 'Completing cycle...';
+
+  @override
+  String get cycleCompleted => 'Maintenance cycle completed successfully';
+
+  @override
+  String get cycleCompleteFailed => 'Failed to complete cycle';
+
+  @override
+  String get plusOneUsage => '+1 Usage';
+
+  @override
+  String get usageIncremented => 'Usage incremented (+1)';
+
+  @override
+  String get usageIncrementFailed => 'Failed to increment usage';
+
+  @override
+  String get updateOdometer => 'Update Odometer';
+
+  @override
+  String get currentOdometer => 'Current Odometer';
+
+  @override
+  String get newOdometer => 'New Odometer (km)';
+
+  @override
+  String get newOdometerHint => 'Must be greater than current odometer';
+
+  @override
+  String get newOdometerRequired => 'New odometer is required';
+
+  @override
+  String get newOdometerInvalid =>
+      'New odometer must be greater than or equal to current odometer';
+
+  @override
+  String get odometerUpdated => 'Odometer updated successfully';
+
+  @override
+  String get odometerUpdateFailed => 'Failed to update odometer';
+
+  @override
+  String get serviceHistory => 'Service & Cycle History';
+
+  @override
+  String get noLogsYet => 'No completion history for this reminder yet';
+
+  @override
+  String get progressSection => 'Progress & Target';
+
+  @override
+  String get calculationBasis => 'Calculation Basis';
+
+  @override
+  String completedOn(String date) {
+    return 'Completed on $date';
+  }
+
+  @override
+  String performedByLabel(String name) {
+    return 'By: $name';
+  }
+
+  @override
+  String costLabel(String cost) {
+    return 'Cost: $cost';
+  }
+
+  @override
+  String odometerLabel(int odo) {
+    return 'Odometer: $odo km';
+  }
 }

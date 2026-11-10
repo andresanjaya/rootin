@@ -5,6 +5,7 @@ import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rootin_mobile/core/database/database.dart';
 import 'package:rootin_mobile/core/database/database_providers.dart';
+import 'package:rootin_mobile/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:rootin_mobile/features/reminders/domain/reminder_rules.dart';
 
 String generateUuidV4() {
@@ -227,9 +228,313 @@ class RemindersRepository {
       _inFlightOperations.remove(reminderId);
     }
   }
+
+  /// Gets an item by ID.
+  Future<Item?> getItemById(String userId, String itemId) {
+    return db.itemsDao.getItemById(userId, itemId);
+  }
+
+  /// Streams a single item by ID.
+  Stream<Item?> watchItemById(String userId, String itemId) {
+    return db.itemsDao.watchItemById(userId, itemId);
+  }
+
+  /// Streams a single reminder by ID.
+  Stream<Reminder?> watchReminderById(String userId, String reminderId) {
+    return db.remindersDao.watchReminderById(userId, reminderId);
+  }
+
+  /// Streams logs for a specific reminder.
+  Stream<List<ReminderLog>> watchReminderLogs(
+    String userId,
+    String reminderId,
+  ) {
+    return db.reminderLogsDao.watchLogs(userId, reminderId: reminderId);
+  }
+
+  /// Streams all logs for a user.
+  Stream<List<ReminderLog>> watchAllLogs(String userId) {
+    return db.reminderLogsDao.watchLogs(userId);
+  }
+
+  /// Completes a reminder service cycle, creating an audit log and advancing schedule.
+  Future<String> completeReminderCycle({
+    required String userId,
+    required String reminderId,
+    required String completionDate,
+    int? odometerAtCompletion,
+    double? cost,
+    String? performedBy,
+    String? notes,
+  }) async {
+    final reminder = await db.remindersDao.getReminderById(userId, reminderId);
+    if (reminder == null) throw StateError('Active owned reminder required');
+    final item = await db.itemsDao.getItemById(userId, reminder.itemId);
+    if (item == null) throw StateError('Active owned item required');
+
+    final logs = await db.reminderLogsDao.getLogs(
+      userId,
+      reminderId: reminderId,
+      limit: 1,
+    );
+    final previousCompletionDate =
+        logs.isNotEmpty ? logs.first.completionDate : null;
+
+    final calc = ReminderRules.calculateCycleCompletion(
+      reminder: reminder,
+      completionDate: completionDate,
+      odometerAtCompletion: odometerAtCompletion,
+      previousCompletionDate: previousCompletionDate,
+    );
+
+    final logId = generateUuidV4();
+    final operationId = generateUuidV4();
+    final completedAtIso = DateTime.now().toUtc().toIso8601String();
+
+    return await db.transaction(() async {
+      await db.reminderLogsDao.insertLog(
+        ReminderLogsCompanion.insert(
+          id: logId,
+          userId: userId,
+          itemId: reminder.itemId,
+          reminderId: reminderId,
+          completedAt: completedAtIso,
+          completionDate: completionDate,
+          odometerAtCompletion: Value(odometerAtCompletion),
+          cost: Value(cost),
+          performedBy: Value(performedBy),
+          notes: Value(notes),
+          createdAt: completedAtIso,
+          version: const Value(1),
+        ),
+      );
+
+      await db.remindersDao.updateReminder(
+        userId,
+        RemindersCompanion(
+          id: Value(reminderId),
+          targetDate: Value(calc.nextTargetDate),
+          lastServiceOdometer: Value(calc.newLastServiceOdometer),
+          usageCounter: Value(calc.newUsageCounter ?? reminder.usageCounter),
+          snoozeUntil: const Value(null),
+          version: Value(calc.newVersion),
+          updatedAt: Value(completedAtIso),
+        ),
+      );
+
+      final rpcPayload = <String, dynamic>{
+        'item_id': reminder.itemId,
+        'reminder_id': reminderId,
+        'completed_at': completedAtIso,
+        'completion_date': completionDate,
+        if (odometerAtCompletion != null)
+          'odometer_at_completion': odometerAtCompletion,
+        if (cost != null) 'cost': cost,
+        if (performedBy != null) 'performed_by': performedBy,
+        if (notes != null) 'notes': notes,
+      };
+
+      final outboxRequest = {
+        'operation_id': operationId,
+        'record_id': logId,
+        'entity_type': 'completion',
+        'operation_type': 'insert',
+        'version': reminder.version,
+        'payload': rpcPayload,
+      };
+
+      await db.outboxDao.enqueue(
+        SyncOutboxCompanion.insert(
+          operationId: operationId,
+          userId: userId,
+          entityType: 'completion',
+          recordId: logId,
+          operationType: 'insert',
+          createdAt: completedAtIso,
+          payloadJson: jsonEncode(outboxRequest),
+        ),
+      );
+
+      return logId;
+    });
+  }
+
+  /// Increments usage counter and records a progress event atomically.
+  Future<String> recordUsageIncrement({
+    required String userId,
+    required String reminderId,
+    int amount = 1,
+  }) async {
+    final reminder = await db.remindersDao.getReminderById(userId, reminderId);
+    if (reminder == null || reminder.engineType != 'usage') {
+      throw StateError('Active owned usage reminder required');
+    }
+
+    final progressEventId = generateUuidV4();
+    final operationId = generateUuidV4();
+    final nowIso = DateTime.now().toUtc().toIso8601String();
+
+    return await db.transaction(() async {
+      final newCounter = (reminder.usageCounter ?? 0) + amount;
+      final newVersion = reminder.version + 1;
+
+      await db.remindersDao.updateReminder(
+        userId,
+        RemindersCompanion(
+          id: Value(reminderId),
+          usageCounter: Value(newCounter),
+          version: Value(newVersion),
+          updatedAt: Value(nowIso),
+        ),
+      );
+
+      await db
+          .into(db.progressEvents)
+          .insert(
+            ProgressEventsCompanion.insert(
+              id: progressEventId,
+              userId: userId,
+              itemId: reminder.itemId,
+              reminderId: Value(reminderId),
+              kind: 'usage',
+              amount: amount,
+              recordedAt: nowIso,
+            ),
+          );
+
+      final outboxRequest = {
+        'operation_id': operationId,
+        'record_id': progressEventId,
+        'entity_type': 'progress',
+        'operation_type': 'insert',
+        'version': 1,
+        'payload': {
+          'item_id': reminder.itemId,
+          'reminder_id': reminderId,
+          'kind': 'usage',
+          'amount': amount,
+        },
+      };
+
+      await db.outboxDao.enqueue(
+        SyncOutboxCompanion.insert(
+          operationId: operationId,
+          userId: userId,
+          entityType: 'progress',
+          recordId: progressEventId,
+          operationType: 'insert',
+          createdAt: nowIso,
+          payloadJson: jsonEncode(outboxRequest),
+        ),
+      );
+
+      return progressEventId;
+    });
+  }
+
+  /// Updates vehicle odometer and records an odometer progress event atomically.
+  Future<String> recordOdometerUpdate({
+    required String userId,
+    required String itemId,
+    required int newOdometer,
+  }) async {
+    final item = await db.itemsDao.getItemById(userId, itemId);
+    if (item == null || !item.hasOdometer) {
+      throw StateError('Active owned vehicle item required');
+    }
+    if (newOdometer < (item.currentOdometer ?? 0)) {
+      throw ArgumentError(
+        'Odometer cannot decrease: $newOdometer < ${item.currentOdometer}',
+      );
+    }
+
+    final progressEventId = generateUuidV4();
+    final operationId = generateUuidV4();
+    final nowIso = DateTime.now().toUtc().toIso8601String();
+
+    return await db.transaction(() async {
+      await db.itemsDao.updateItem(
+        userId,
+        ItemsCompanion(
+          id: Value(itemId),
+          currentOdometer: Value(newOdometer),
+          version: Value(item.version + 1),
+          updatedAt: Value(nowIso),
+        ),
+      );
+
+      await db
+          .into(db.progressEvents)
+          .insert(
+            ProgressEventsCompanion.insert(
+              id: progressEventId,
+              userId: userId,
+              itemId: itemId,
+              kind: 'odometer',
+              amount: newOdometer,
+              recordedAt: nowIso,
+            ),
+          );
+
+      final outboxRequest = {
+        'operation_id': operationId,
+        'record_id': progressEventId,
+        'entity_type': 'progress',
+        'operation_type': 'insert',
+        'version': 1,
+        'payload': {
+          'item_id': itemId,
+          'kind': 'odometer',
+          'amount': newOdometer,
+        },
+      };
+
+      await db.outboxDao.enqueue(
+        SyncOutboxCompanion.insert(
+          operationId: operationId,
+          userId: userId,
+          entityType: 'progress',
+          recordId: progressEventId,
+          operationType: 'insert',
+          createdAt: nowIso,
+          payloadJson: jsonEncode(outboxRequest),
+        ),
+      );
+
+      return progressEventId;
+    });
+  }
 }
 
 final remindersRepositoryProvider = Provider<RemindersRepository>((ref) {
   final db = ref.watch(appDatabaseProvider);
   return RemindersRepository(db);
+});
+
+final reminderDetailProvider = StreamProvider.family<Reminder?, String>((
+  ref,
+  reminderId,
+) {
+  final userId = ref.watch(currentUserProvider)?.id;
+  if (userId == null) return Stream.value(null);
+  return ref
+      .watch(remindersRepositoryProvider)
+      .watchReminderById(userId, reminderId);
+});
+
+final itemDetailProvider = StreamProvider.family<Item?, String>((ref, itemId) {
+  final userId = ref.watch(currentUserProvider)?.id;
+  if (userId == null) return Stream.value(null);
+  return ref.watch(remindersRepositoryProvider).watchItemById(userId, itemId);
+});
+
+final reminderLogsProvider = StreamProvider.family<List<ReminderLog>, String>((
+  ref,
+  reminderId,
+) {
+  final userId = ref.watch(currentUserProvider)?.id;
+  if (userId == null) return Stream.value([]);
+  return ref
+      .watch(remindersRepositoryProvider)
+      .watchReminderLogs(userId, reminderId);
 });

@@ -172,4 +172,123 @@ void main() {
       },
     );
   });
+
+  group('RemindersRepository micro-actions and completion', () {
+    test('recordUsageIncrement increments counter and logs progress', () async {
+      final id = await repository.saveReminder(
+        userId: userId,
+        data: const ReminderFormData(
+          itemId: 'item-appliance',
+          name: 'Filter Kopi',
+          engineType: 'usage',
+          usageThreshold: 50,
+          usageCounter: 5,
+        ),
+      );
+
+      final eventId = await repository.recordUsageIncrement(
+        userId: userId,
+        reminderId: id,
+        amount: 1,
+      );
+      expect(eventId, isNotEmpty);
+
+      final updated = await db.remindersDao.getReminderById(userId, id);
+      expect(updated!.usageCounter, 6);
+
+      final events =
+          await (db.select(db.progressEvents)..where(
+            (t) => t.userId.equals(userId) & t.id.equals(eventId),
+          )).get();
+      expect(events.length, 1);
+      expect(events.first.kind, 'usage');
+      expect(events.first.amount, 1);
+
+      final outbox = await db.outboxDao.getAllMutations(userId);
+      final progressMutation = outbox.firstWhere(
+        (m) => m.entityType == 'progress',
+      );
+      expect(progressMutation.operationType, 'insert');
+      final payload = jsonDecode(progressMutation.payloadJson);
+      expect(payload['payload']['kind'], 'usage');
+      expect(payload['payload']['amount'], 1);
+    });
+
+    test(
+      'recordOdometerUpdate updates vehicle odometer and prevents decrease',
+      () async {
+        final eventId = await repository.recordOdometerUpdate(
+          userId: userId,
+          itemId: 'item-vehicle',
+          newOdometer: 48000,
+        );
+        expect(eventId, isNotEmpty);
+
+        final item = await db.itemsDao.getItemById(userId, 'item-vehicle');
+        expect(item!.currentOdometer, 48000);
+
+        // Decreasing odometer throws ArgumentError
+        expect(
+          () => repository.recordOdometerUpdate(
+            userId: userId,
+            itemId: 'item-vehicle',
+            newOdometer: 47000,
+          ),
+          throwsA(isA<ArgumentError>()),
+        );
+      },
+    );
+
+    test(
+      'completeReminderCycle records log, advances schedule, and enqueues completion mutation',
+      () async {
+        final id = await repository.saveReminder(
+          userId: userId,
+          data: const ReminderFormData(
+            itemId: 'item-appliance',
+            name: 'Pembersihan Rutin',
+            engineType: 'time',
+            intervalValue: 1,
+            intervalUnit: 'months',
+            targetDate: '2026-03-01',
+            baselineMode: 'actual_completion',
+          ),
+        );
+
+        final logId = await repository.completeReminderCycle(
+          userId: userId,
+          reminderId: id,
+          completionDate: '2026-03-10',
+          cost: 200000.0,
+          performedBy: 'Teknisi Handal',
+          notes: 'Semua aman dan lancar',
+        );
+        expect(logId, isNotEmpty);
+
+        // Schedule advanced
+        final updated = await db.remindersDao.getReminderById(userId, id);
+        expect(updated!.targetDate, '2026-04-10');
+        expect(updated.version, 2);
+
+        // Log saved
+        final logs = await db.reminderLogsDao.getLogs(userId, reminderId: id);
+        expect(logs.length, 1);
+        expect(logs.first.completionDate, '2026-03-10');
+        expect(logs.first.cost, 200000.0);
+        expect(logs.first.performedBy, 'Teknisi Handal');
+        expect(logs.first.notes, 'Semua aman dan lancar');
+
+        // Outbox mutation
+        final outbox = await db.outboxDao.getAllMutations(userId);
+        final completionMutation = outbox.firstWhere(
+          (m) => m.entityType == 'completion',
+        );
+        expect(completionMutation.operationType, 'insert');
+        final payload = jsonDecode(completionMutation.payloadJson);
+        expect(payload['payload']['completion_date'], '2026-03-10');
+        expect(payload['payload']['cost'], 200000.0);
+        expect(payload['payload']['performed_by'], 'Teknisi Handal');
+      },
+    );
+  });
 }

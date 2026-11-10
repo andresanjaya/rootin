@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:rootin_mobile/core/database/database.dart';
 import 'package:rootin_mobile/core/time/calendar_clock.dart';
 
 /// Supported interval units for time-based reminders.
@@ -52,9 +53,87 @@ enum ReminderEngineType {
   }
 }
 
+/// Result of completing a reminder cycle according to domain rules.
+class CycleCompletionResult {
+  const CycleCompletionResult({
+    this.nextTargetDate,
+    this.newLastServiceOdometer,
+    this.newUsageCounter,
+    required this.newVersion,
+  });
+
+  final String? nextTargetDate;
+  final int? newLastServiceOdometer;
+  final int? newUsageCounter;
+  final int newVersion;
+}
+
 /// Pure Dart business rules for calculation and validation of Rootin reminders.
 class ReminderRules {
   ReminderRules._();
+
+  /// Calculates the new reminder state after completing a service cycle.
+  ///
+  /// - Time: Starts from actual completion date (or target date if strict schedule).
+  /// - Mileage: Updates baseline [lastServiceOdometer] with [odometerAtCompletion].
+  /// - Usage: Resets [usageCounter] to 0 for current completions.
+  /// - Backdated completion: If completed before a prior completion, future scheduled
+  ///   targetDate and progress are preserved to avoid regressing upcoming cycles.
+  static CycleCompletionResult calculateCycleCompletion({
+    required Reminder reminder,
+    required String completionDate,
+    int? odometerAtCompletion,
+    String? previousCompletionDate,
+  }) {
+    parseCalendarDate(completionDate); // Validate calendar date format
+    final nextVersion = reminder.version + 1;
+    final isBackdated =
+        previousCompletionDate != null &&
+        completionDate.compareTo(previousCompletionDate) < 0;
+
+    String? nextTargetDate;
+    if (reminder.engineType == 'time') {
+      if (!isBackdated) {
+        final baseDateStr =
+            reminder.baselineMode == 'strict_schedule' &&
+                    reminder.targetDate != null
+                ? reminder.targetDate!
+                : completionDate;
+        final baseDate = parseCalendarDate(baseDateStr);
+        final nextDate = calculateNextDueDate(
+          baseDate: baseDate,
+          intervalValue: reminder.intervalValue ?? 1,
+          intervalUnit: reminder.intervalUnit ?? 'months',
+          anchorDay: reminder.anchorDay ?? baseDate.day,
+        );
+        nextTargetDate = formatCalendarDate(nextDate);
+      } else {
+        // Preserves future target date when recording past completion
+        nextTargetDate = reminder.targetDate;
+      }
+    }
+
+    int? newLastServiceOdometer;
+    if (reminder.engineType == 'mileage') {
+      final odo = odometerAtCompletion ?? reminder.lastServiceOdometer;
+      if (odo != null && odo < 0) {
+        throw ArgumentError('odometerAtCompletion cannot be negative: $odo');
+      }
+      newLastServiceOdometer = max(reminder.lastServiceOdometer ?? 0, odo ?? 0);
+    }
+
+    int? newUsageCounter;
+    if (reminder.engineType == 'usage') {
+      newUsageCounter = isBackdated ? reminder.usageCounter : 0;
+    }
+
+    return CycleCompletionResult(
+      nextTargetDate: nextTargetDate,
+      newLastServiceOdometer: newLastServiceOdometer,
+      newUsageCounter: newUsageCounter,
+      newVersion: nextVersion,
+    );
+  }
 
   /// Check whether [year] is a leap year according to the Gregorian calendar rules.
   static bool isLeapYear(int year) {

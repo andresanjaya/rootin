@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rootin_mobile/core/database/database.dart';
 import 'package:rootin_mobile/features/reminders/domain/reminder_rules.dart';
 
 void main() {
@@ -354,6 +355,136 @@ void main() {
         ),
         isNull,
       );
+    });
+  });
+
+  Reminder testReminder({
+    required String engineType,
+    String? targetDate,
+    int? intervalValue,
+    String? intervalUnit,
+    String? baselineMode,
+    int? anchorDay,
+    int? usageCounter,
+    int? lastServiceOdometer,
+    int version = 1,
+  }) {
+    return Reminder(
+      id: 'rem-1',
+      userId: 'user-1',
+      itemId: 'item-1',
+      name: 'Test Reminder',
+      engineType: engineType,
+      targetDate: targetDate,
+      targetTime: null,
+      intervalValue: intervalValue,
+      intervalUnit: intervalUnit,
+      baselineMode: baselineMode,
+      anchorDay: anchorDay,
+      usageCounter: usageCounter,
+      usageThreshold: 100,
+      usageUnit: 'kali',
+      lastServiceOdometer: lastServiceOdometer,
+      intervalKm: 5000,
+      snoozeUntil: null,
+      isActive: true,
+      createdAt: '2026-01-01T00:00:00Z',
+      updatedAt: '2026-01-01T00:00:00Z',
+      deletedAt: null,
+      version: version,
+    );
+  }
+
+  group('ReminderRules calculateCycleCompletion', () {
+    test(
+      'time-based with actual_completion computes next target from completion date',
+      () {
+        final reminder = testReminder(
+          engineType: 'time',
+          targetDate: '2026-03-15',
+          intervalValue: 1,
+          intervalUnit: 'months',
+          baselineMode: 'actual_completion',
+        );
+
+        final result = ReminderRules.calculateCycleCompletion(
+          reminder: reminder,
+          completionDate: '2026-03-20',
+        );
+
+        expect(result.nextTargetDate, '2026-04-20');
+        expect(result.newVersion, 2);
+      },
+    );
+
+    test(
+      'time-based with strict_schedule computes next target from current target date',
+      () {
+        final reminder = testReminder(
+          engineType: 'time',
+          targetDate: '2026-03-15',
+          intervalValue: 1,
+          intervalUnit: 'months',
+          baselineMode: 'strict_schedule',
+        );
+
+        final result = ReminderRules.calculateCycleCompletion(
+          reminder: reminder,
+          completionDate: '2026-03-20',
+        );
+
+        expect(result.nextTargetDate, '2026-04-15');
+        expect(result.newVersion, 2);
+      },
+    );
+
+    test(
+      'time-based backdated completion does not modify future scheduled target date',
+      () {
+        final reminder = testReminder(
+          engineType: 'time',
+          targetDate: '2026-04-01',
+          intervalValue: 1,
+          intervalUnit: 'months',
+          baselineMode: 'actual_completion',
+        );
+
+        final result = ReminderRules.calculateCycleCompletion(
+          reminder: reminder,
+          completionDate: '2026-03-01',
+          previousCompletionDate: '2026-03-15',
+        );
+
+        expect(result.nextTargetDate, '2026-04-01');
+      },
+    );
+
+    test('usage-based completion resets counter to 0', () {
+      final reminder = testReminder(engineType: 'usage', usageCounter: 105);
+
+      final result = ReminderRules.calculateCycleCompletion(
+        reminder: reminder,
+        completionDate: '2026-03-20',
+      );
+
+      expect(result.newUsageCounter, 0);
+      expect(result.newVersion, 2);
+    });
+
+    test('mileage-based completion updates last service odometer', () {
+      final reminder = testReminder(
+        engineType: 'mileage',
+        lastServiceOdometer: 50000,
+      );
+
+      final result = ReminderRules.calculateCycleCompletion(
+        reminder: reminder,
+        completionDate: '2026-03-20',
+        odometerAtCompletion: 55200,
+      );
+
+      expect(result.newLastServiceOdometer, 55200);
+      expect(result.newVersion, 2);
     });
   });
 }

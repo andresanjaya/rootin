@@ -254,11 +254,31 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
                     ? _message(l.noHistory)
                     : ListView.builder(
                       itemCount: logs.length,
-                      itemBuilder:
-                          (context, index) => ListTile(
-                            title: Text(logs[index].completionDate),
-                            subtitle: Text(logs[index].notes ?? l.completed),
+                      itemBuilder: (context, index) {
+                        final log = logs[index];
+                        final details = [
+                          if (log.performedBy != null &&
+                              log.performedBy!.isNotEmpty)
+                            l.performedByLabel(log.performedBy!),
+                          if (log.cost != null)
+                            l.costLabel(log.cost!.toStringAsFixed(0)),
+                          if (log.odometerAtCompletion != null)
+                            l.odometerLabel(log.odometerAtCompletion!),
+                          if (log.notes != null && log.notes!.isNotEmpty)
+                            log.notes!,
+                        ];
+                        return ListTile(
+                          leading: const Icon(
+                            Icons.check_circle_outline,
+                            color: Colors.green,
                           ),
+                          title: Text(l.completedOn(log.completionDate)),
+                          subtitle:
+                              details.isNotEmpty
+                                  ? Text(details.join(' · '))
+                                  : Text(l.completed),
+                        );
+                      },
                     ),
       );
 
@@ -434,7 +454,7 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
                 onPressed:
                     () => context.push('/reminders/${entry.reminder.id}/edit'),
               ),
-              onTap: () => context.push('/reminders/${entry.reminder.id}/edit'),
+              onTap: () => context.push('/reminders/${entry.reminder.id}'),
             );
           },
         );
