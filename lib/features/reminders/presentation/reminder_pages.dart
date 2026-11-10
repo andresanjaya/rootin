@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rootin_mobile/core/sync/mobile_sync.dart';
 import 'package:rootin_mobile/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:rootin_mobile/features/items/data/items_repository.dart';
 import 'package:rootin_mobile/features/reminders/data/reminder_feed.dart';
 import 'package:rootin_mobile/features/settings/settings_provider.dart';
 import 'package:rootin_mobile/l10n/generated/app_localizations.dart';
@@ -120,6 +121,13 @@ class _ReminderShellState extends ConsumerState<ReminderShell>
                 onPressed: () => context.push('/reminders/new'),
                 child: const Icon(Icons.add),
               )
+              : index == 2
+              ? FloatingActionButton(
+                key: const Key('add_item_fab'),
+                tooltip: l.addItem,
+                onPressed: () => context.push('/items/new'),
+                child: const Icon(Icons.add),
+              )
               : null,
       bottomNavigationBar:
           wide
@@ -204,8 +212,8 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
     }
     switch (widget.section) {
       case 'items':
-        ref.invalidate(visibleItemsProvider);
-        await ref.read(visibleItemsProvider.future);
+        ref.invalidate(itemsListProvider);
+        await ref.read(itemsListProvider(activity == 'archived').future);
       case 'history':
         ref.invalidate(historyProvider);
         await ref.read(historyProvider.future);
@@ -224,24 +232,165 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
     }
   }
 
-  Widget _items(AppLocalizations l) => ref
-      .watch(visibleItemsProvider)
-      .when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => _message(l.loadFailed),
-        data:
-            (items) =>
-                items.isEmpty
-                    ? _message(l.noItems)
-                    : ListView.builder(
-                      itemCount: items.length,
-                      itemBuilder:
-                          (context, index) => ListTile(
-                            title: Text(items[index].name),
-                            subtitle: Text(items[index].category),
-                          ),
+  Widget _items(AppLocalizations l) {
+    final includeArchived = activity == 'archived';
+    final itemsAsync = ref.watch(itemsListProvider(includeArchived));
+
+    return itemsAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (_, _) => _message(l.loadFailed),
+      data: (items) {
+        final filtered =
+            items.where((item) {
+              if (activity == 'active' && item.isArchived) return false;
+              if (activity == 'archived' && !item.isArchived) return false;
+              if (category != 'all' && item.category != category) return false;
+              if (query.isNotEmpty) {
+                final q = query.toLowerCase();
+                final matchesName = item.name.toLowerCase().contains(q);
+                final matchesBrand =
+                    item.brand?.toLowerCase().contains(q) ?? false;
+                final matchesModel =
+                    item.modelNumber?.toLowerCase().contains(q) ?? false;
+                final matchesSerial =
+                    item.serialOrPlateNumber?.toLowerCase().contains(q) ??
+                    false;
+                if (!matchesName &&
+                    !matchesBrand &&
+                    !matchesModel &&
+                    !matchesSerial) {
+                  return false;
+                }
+              }
+              return true;
+            }).toList();
+
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                children: [
+                  TextField(
+                    key: const Key('search_items_input'),
+                    decoration: InputDecoration(
+                      labelText: l.searchItems,
+                      prefixIcon: const Icon(Icons.search),
                     ),
-      );
+                    onChanged: (val) => setState(() => query = val),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DropdownButton<String>(
+                          key: const Key('item_category_filter'),
+                          isExpanded: true,
+                          value: category,
+                          items: [
+                            DropdownMenuItem(
+                              value: 'all',
+                              child: Text(l.allCategories),
+                            ),
+                            DropdownMenuItem(
+                              value: 'vehicle',
+                              child: Text(l.categoryVehicle),
+                            ),
+                            DropdownMenuItem(
+                              value: 'appliance',
+                              child: Text(l.categoryAppliance),
+                            ),
+                            DropdownMenuItem(
+                              value: 'furniture',
+                              child: Text(l.categoryFurniture),
+                            ),
+                            DropdownMenuItem(
+                              value: 'facility',
+                              child: Text(l.categoryFacility),
+                            ),
+                            DropdownMenuItem(
+                              value: 'other',
+                              child: Text(l.categoryOther),
+                            ),
+                          ],
+                          onChanged: (val) => setState(() => category = val!),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      DropdownButton<String>(
+                        key: const Key('item_activity_filter'),
+                        value: activity,
+                        items: [
+                          DropdownMenuItem(
+                            value: 'active',
+                            child: Text(l.activeItems),
+                          ),
+                          DropdownMenuItem(
+                            value: 'archived',
+                            child: Text(l.archivedItems),
+                          ),
+                        ],
+                        onChanged: (val) => setState(() => activity = val!),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child:
+                  filtered.isEmpty
+                      ? _message(l.noItems)
+                      : ListView.builder(
+                        itemCount: filtered.length,
+                        itemBuilder: (context, index) {
+                          final item = filtered[index];
+                          final catLabel = switch (item.category) {
+                            'vehicle' => l.categoryVehicle,
+                            'appliance' => l.categoryAppliance,
+                            'furniture' => l.categoryFurniture,
+                            'facility' => l.categoryFacility,
+                            _ => l.categoryOther,
+                          };
+                          final catIcon = switch (item.category) {
+                            'vehicle' => Icons.directions_car_outlined,
+                            'appliance' => Icons.kitchen_outlined,
+                            'furniture' => Icons.chair_outlined,
+                            'facility' => Icons.domain_outlined,
+                            _ => Icons.inventory_2_outlined,
+                          };
+                          final details = [
+                            catLabel,
+                            if (item.brand != null && item.brand!.isNotEmpty)
+                              item.brand!,
+                            if (item.serialOrPlateNumber != null &&
+                                item.serialOrPlateNumber!.isNotEmpty)
+                              item.serialOrPlateNumber!,
+                          ].join(' · ');
+
+                          return ListTile(
+                            leading: Icon(catIcon),
+                            title: Text(item.name),
+                            subtitle: Text(details),
+                            trailing:
+                                item.hasOdometer
+                                    ? Text(
+                                      '${item.currentOdometer ?? 0} km',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    )
+                                    : const Icon(Icons.chevron_right),
+                            onTap: () => context.push('/items/${item.id}'),
+                          );
+                        },
+                      ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   Widget _history(AppLocalizations l) => ref
       .watch(historyProvider)

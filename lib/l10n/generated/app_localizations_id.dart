@@ -614,4 +614,143 @@ class AppLocalizationsId extends AppLocalizations {
   String odometerLabel(int odo) {
     return 'Odometer: $odo km';
   }
+
+  @override
+  String get addItem => 'Tambah Barang';
+
+  @override
+  String get editItem => 'Edit Barang';
+
+  @override
+  String get itemDetail => 'Detail Barang';
+
+  @override
+  String get itemName => 'Nama Barang';
+
+  @override
+  String get itemNameHint => 'Contoh: Honda Vario, Mesin Cuci Samsung';
+
+  @override
+  String get itemNameRequired => 'Nama barang wajib diisi';
+
+  @override
+  String get category => 'Kategori';
+
+  @override
+  String get categoryVehicle => 'Kendaraan';
+
+  @override
+  String get categoryAppliance => 'Elektronik / Mesin';
+
+  @override
+  String get categoryFurniture => 'Perabot';
+
+  @override
+  String get categoryFacility => 'Fasilitas';
+
+  @override
+  String get categoryOther => 'Lainnya';
+
+  @override
+  String get brand => 'Merek';
+
+  @override
+  String get brandHint => 'Contoh: Honda, Samsung';
+
+  @override
+  String get modelNumber => 'Model / Tipe';
+
+  @override
+  String get modelNumberHint => 'Contoh: Vario 160, WW80T';
+
+  @override
+  String get serialOrPlate => 'Nomor Plat / Seri';
+
+  @override
+  String get serialOrPlateHint => 'Contoh: B 1234 XYZ, SN-987654';
+
+  @override
+  String get purchaseDate => 'Tanggal Pembelian';
+
+  @override
+  String get purchaseDateHint => 'Pilih tanggal pembelian';
+
+  @override
+  String get hasOdometer => 'Memiliki Odometer';
+
+  @override
+  String get hasOdometerDesc =>
+      'Aktifkan jika barang memiliki pencatat jarak tempuh (kilometer/mil)';
+
+  @override
+  String get initialOdometer => 'Odometer Awal (km)';
+
+  @override
+  String get initialOdometerHint => 'Contoh: 15000';
+
+  @override
+  String get itemSaved => 'Barang berhasil disimpan';
+
+  @override
+  String get itemSaveFailed => 'Gagal menyimpan barang';
+
+  @override
+  String get archiveItem => 'Arsipkan Barang';
+
+  @override
+  String get unarchiveItem => 'Buka Arsip Barang';
+
+  @override
+  String get confirmArchiveItem =>
+      'Arsipkan barang ini? Pengingat terkait akan dinonaktifkan sementara dari jadwal utama.';
+
+  @override
+  String get confirmUnarchiveItem => 'Aktifkan kembali barang ini?';
+
+  @override
+  String get itemArchived => 'Barang berhasil diarsipkan';
+
+  @override
+  String get itemUnarchived => 'Barang berhasil diaktifkan kembali';
+
+  @override
+  String get deleteItem => 'Hapus Barang';
+
+  @override
+  String get confirmDeleteItem =>
+      'Hapus barang ini secara permanen? Pengingat terkait juga akan dihapus. Riwayat servis tetap tersimpan.';
+
+  @override
+  String get itemDeleted => 'Barang berhasil dihapus';
+
+  @override
+  String get itemDeleteFailed => 'Gagal menghapus barang';
+
+  @override
+  String associatedReminders(int count) {
+    return 'Pengingat Terkait ($count)';
+  }
+
+  @override
+  String get noAssociatedReminders => 'Belum ada pengingat untuk barang ini';
+
+  @override
+  String get searchItems => 'Cari barang...';
+
+  @override
+  String get activeItems => 'Barang Aktif';
+
+  @override
+  String get archivedItems => 'Barang Diarsipkan';
+
+  @override
+  String get odometerCorrectionConfirm => 'Konfirmasi Koreksi Odometer';
+
+  @override
+  String odometerCorrectionDesc(int newOdo, int currentOdo) {
+    return 'Angka odometer ($newOdo km) lebih rendah dari catatan sebelumnya ($currentOdo km). Lanjutkan sebagai koreksi kesalahan?';
+  }
+
+  @override
+  String get confirmCorrection => 'Ya, Koreksi';
 }

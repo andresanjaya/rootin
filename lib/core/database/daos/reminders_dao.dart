@@ -96,6 +96,26 @@ class RemindersDao extends DatabaseAccessor<AppDatabase>
     return count > 0;
   }
 
+  /// Soft deletes all reminders for a specific item.
+  Future<int> softDeleteRemindersByItem(
+    String userId,
+    String itemId, {
+    required String deletedAt,
+    required String updatedAt,
+  }) async {
+    return (update(reminders)..where(
+      (t) =>
+          t.itemId.equals(itemId) &
+          t.userId.equals(userId) &
+          t.deletedAt.isNull(),
+    )).write(
+      RemindersCompanion(
+        deletedAt: Value(deletedAt),
+        updatedAt: Value(updatedAt),
+      ),
+    );
+  }
+
   /// Permanently deletes a reminder scoped to the user.
   Future<int> deleteReminderPermanently(String userId, String id) {
     return (delete(reminders)

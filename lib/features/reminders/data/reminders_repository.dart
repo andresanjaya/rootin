@@ -437,14 +437,15 @@ class RemindersRepository {
     required String userId,
     required String itemId,
     required int newOdometer,
+    bool allowCorrection = false,
   }) async {
     final item = await db.itemsDao.getItemById(userId, itemId);
     if (item == null || !item.hasOdometer) {
       throw StateError('Active owned vehicle item required');
     }
-    if (newOdometer < (item.currentOdometer ?? 0)) {
+    if (newOdometer < (item.currentOdometer ?? 0) && !allowCorrection) {
       throw ArgumentError(
-        'Odometer cannot decrease: $newOdometer < ${item.currentOdometer}',
+        'Odometer cannot decrease without confirmed correction: $newOdometer < ${item.currentOdometer}',
       );
     }
 

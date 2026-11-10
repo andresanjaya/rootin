@@ -1207,6 +1207,270 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Odometer: {odo} km'**
   String odometerLabel(int odo);
+
+  /// No description provided for @addItem.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah Barang'**
+  String get addItem;
+
+  /// No description provided for @editItem.
+  ///
+  /// In id, this message translates to:
+  /// **'Edit Barang'**
+  String get editItem;
+
+  /// No description provided for @itemDetail.
+  ///
+  /// In id, this message translates to:
+  /// **'Detail Barang'**
+  String get itemDetail;
+
+  /// No description provided for @itemName.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama Barang'**
+  String get itemName;
+
+  /// No description provided for @itemNameHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Contoh: Honda Vario, Mesin Cuci Samsung'**
+  String get itemNameHint;
+
+  /// No description provided for @itemNameRequired.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama barang wajib diisi'**
+  String get itemNameRequired;
+
+  /// No description provided for @category.
+  ///
+  /// In id, this message translates to:
+  /// **'Kategori'**
+  String get category;
+
+  /// No description provided for @categoryVehicle.
+  ///
+  /// In id, this message translates to:
+  /// **'Kendaraan'**
+  String get categoryVehicle;
+
+  /// No description provided for @categoryAppliance.
+  ///
+  /// In id, this message translates to:
+  /// **'Elektronik / Mesin'**
+  String get categoryAppliance;
+
+  /// No description provided for @categoryFurniture.
+  ///
+  /// In id, this message translates to:
+  /// **'Perabot'**
+  String get categoryFurniture;
+
+  /// No description provided for @categoryFacility.
+  ///
+  /// In id, this message translates to:
+  /// **'Fasilitas'**
+  String get categoryFacility;
+
+  /// No description provided for @categoryOther.
+  ///
+  /// In id, this message translates to:
+  /// **'Lainnya'**
+  String get categoryOther;
+
+  /// No description provided for @brand.
+  ///
+  /// In id, this message translates to:
+  /// **'Merek'**
+  String get brand;
+
+  /// No description provided for @brandHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Contoh: Honda, Samsung'**
+  String get brandHint;
+
+  /// No description provided for @modelNumber.
+  ///
+  /// In id, this message translates to:
+  /// **'Model / Tipe'**
+  String get modelNumber;
+
+  /// No description provided for @modelNumberHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Contoh: Vario 160, WW80T'**
+  String get modelNumberHint;
+
+  /// No description provided for @serialOrPlate.
+  ///
+  /// In id, this message translates to:
+  /// **'Nomor Plat / Seri'**
+  String get serialOrPlate;
+
+  /// No description provided for @serialOrPlateHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Contoh: B 1234 XYZ, SN-987654'**
+  String get serialOrPlateHint;
+
+  /// No description provided for @purchaseDate.
+  ///
+  /// In id, this message translates to:
+  /// **'Tanggal Pembelian'**
+  String get purchaseDate;
+
+  /// No description provided for @purchaseDateHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih tanggal pembelian'**
+  String get purchaseDateHint;
+
+  /// No description provided for @hasOdometer.
+  ///
+  /// In id, this message translates to:
+  /// **'Memiliki Odometer'**
+  String get hasOdometer;
+
+  /// No description provided for @hasOdometerDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Aktifkan jika barang memiliki pencatat jarak tempuh (kilometer/mil)'**
+  String get hasOdometerDesc;
+
+  /// No description provided for @initialOdometer.
+  ///
+  /// In id, this message translates to:
+  /// **'Odometer Awal (km)'**
+  String get initialOdometer;
+
+  /// No description provided for @initialOdometerHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Contoh: 15000'**
+  String get initialOdometerHint;
+
+  /// No description provided for @itemSaved.
+  ///
+  /// In id, this message translates to:
+  /// **'Barang berhasil disimpan'**
+  String get itemSaved;
+
+  /// No description provided for @itemSaveFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal menyimpan barang'**
+  String get itemSaveFailed;
+
+  /// No description provided for @archiveItem.
+  ///
+  /// In id, this message translates to:
+  /// **'Arsipkan Barang'**
+  String get archiveItem;
+
+  /// No description provided for @unarchiveItem.
+  ///
+  /// In id, this message translates to:
+  /// **'Buka Arsip Barang'**
+  String get unarchiveItem;
+
+  /// No description provided for @confirmArchiveItem.
+  ///
+  /// In id, this message translates to:
+  /// **'Arsipkan barang ini? Pengingat terkait akan dinonaktifkan sementara dari jadwal utama.'**
+  String get confirmArchiveItem;
+
+  /// No description provided for @confirmUnarchiveItem.
+  ///
+  /// In id, this message translates to:
+  /// **'Aktifkan kembali barang ini?'**
+  String get confirmUnarchiveItem;
+
+  /// No description provided for @itemArchived.
+  ///
+  /// In id, this message translates to:
+  /// **'Barang berhasil diarsipkan'**
+  String get itemArchived;
+
+  /// No description provided for @itemUnarchived.
+  ///
+  /// In id, this message translates to:
+  /// **'Barang berhasil diaktifkan kembali'**
+  String get itemUnarchived;
+
+  /// No description provided for @deleteItem.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus Barang'**
+  String get deleteItem;
+
+  /// No description provided for @confirmDeleteItem.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus barang ini secara permanen? Pengingat terkait juga akan dihapus. Riwayat servis tetap tersimpan.'**
+  String get confirmDeleteItem;
+
+  /// No description provided for @itemDeleted.
+  ///
+  /// In id, this message translates to:
+  /// **'Barang berhasil dihapus'**
+  String get itemDeleted;
+
+  /// No description provided for @itemDeleteFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal menghapus barang'**
+  String get itemDeleteFailed;
+
+  /// No description provided for @associatedReminders.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengingat Terkait ({count})'**
+  String associatedReminders(int count);
+
+  /// No description provided for @noAssociatedReminders.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada pengingat untuk barang ini'**
+  String get noAssociatedReminders;
+
+  /// No description provided for @searchItems.
+  ///
+  /// In id, this message translates to:
+  /// **'Cari barang...'**
+  String get searchItems;
+
+  /// No description provided for @activeItems.
+  ///
+  /// In id, this message translates to:
+  /// **'Barang Aktif'**
+  String get activeItems;
+
+  /// No description provided for @archivedItems.
+  ///
+  /// In id, this message translates to:
+  /// **'Barang Diarsipkan'**
+  String get archivedItems;
+
+  /// No description provided for @odometerCorrectionConfirm.
+  ///
+  /// In id, this message translates to:
+  /// **'Konfirmasi Koreksi Odometer'**
+  String get odometerCorrectionConfirm;
+
+  /// No description provided for @odometerCorrectionDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Angka odometer ({newOdo} km) lebih rendah dari catatan sebelumnya ({currentOdo} km). Lanjutkan sebagai koreksi kesalahan?'**
+  String odometerCorrectionDesc(int newOdo, int currentOdo);
+
+  /// No description provided for @confirmCorrection.
+  ///
+  /// In id, this message translates to:
+  /// **'Ya, Koreksi'**
+  String get confirmCorrection;
 }
 
 class _AppLocalizationsDelegate

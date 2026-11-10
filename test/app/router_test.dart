@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rootin_mobile/app/app.dart';
 import 'package:rootin_mobile/app/router.dart';
+import 'package:rootin_mobile/features/items/data/items_repository.dart';
 import 'package:rootin_mobile/features/reminders/data/reminder_feed.dart';
 import 'package:rootin_mobile/features/settings/settings_provider.dart';
 import 'package:rootin_mobile/features/auth/data/repositories/in_memory_auth_repository.dart';
@@ -114,6 +115,7 @@ void main() {
           localTodayProvider.overrideWithValue(DateTime.utc(2026, 10, 25)),
           reminderFeedProvider.overrideWith((ref) => Stream.value([])),
           visibleItemsProvider.overrideWith((ref) => Stream.value([])),
+          itemsListProvider.overrideWith((ref, _) => Stream.value([])),
           historyProvider.overrideWith((ref) => Stream.value([])),
           outboxSummaryProvider.overrideWith(
             (ref) => Stream.value(
