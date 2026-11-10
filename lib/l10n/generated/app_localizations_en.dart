@@ -610,4 +610,143 @@ class AppLocalizationsEn extends AppLocalizations {
   String odometerLabel(int odo) {
     return 'Odometer: $odo km';
   }
+
+  @override
+  String get addItem => 'Add Item';
+
+  @override
+  String get editItem => 'Edit Item';
+
+  @override
+  String get itemDetail => 'Item Details';
+
+  @override
+  String get itemName => 'Item Name';
+
+  @override
+  String get itemNameHint => 'e.g. Honda Vario, Samsung Washing Machine';
+
+  @override
+  String get itemNameRequired => 'Item name is required';
+
+  @override
+  String get category => 'Category';
+
+  @override
+  String get categoryVehicle => 'Vehicle';
+
+  @override
+  String get categoryAppliance => 'Appliance / Machine';
+
+  @override
+  String get categoryFurniture => 'Furniture';
+
+  @override
+  String get categoryFacility => 'Facility';
+
+  @override
+  String get categoryOther => 'Other';
+
+  @override
+  String get brand => 'Brand';
+
+  @override
+  String get brandHint => 'e.g. Honda, Samsung';
+
+  @override
+  String get modelNumber => 'Model / Type';
+
+  @override
+  String get modelNumberHint => 'e.g. Vario 160, WW80T';
+
+  @override
+  String get serialOrPlate => 'Plate / Serial Number';
+
+  @override
+  String get serialOrPlateHint => 'e.g. B 1234 XYZ, SN-987654';
+
+  @override
+  String get purchaseDate => 'Purchase Date';
+
+  @override
+  String get purchaseDateHint => 'Select purchase date';
+
+  @override
+  String get hasOdometer => 'Has Odometer';
+
+  @override
+  String get hasOdometerDesc =>
+      'Enable if this item tracks mileage with an odometer';
+
+  @override
+  String get initialOdometer => 'Initial Odometer (km)';
+
+  @override
+  String get initialOdometerHint => 'e.g. 15000';
+
+  @override
+  String get itemSaved => 'Item saved successfully';
+
+  @override
+  String get itemSaveFailed => 'Failed to save item';
+
+  @override
+  String get archiveItem => 'Archive Item';
+
+  @override
+  String get unarchiveItem => 'Unarchive Item';
+
+  @override
+  String get confirmArchiveItem =>
+      'Archive this item? Associated reminders will be temporarily paused.';
+
+  @override
+  String get confirmUnarchiveItem => 'Reactivate this item?';
+
+  @override
+  String get itemArchived => 'Item archived successfully';
+
+  @override
+  String get itemUnarchived => 'Item reactivated successfully';
+
+  @override
+  String get deleteItem => 'Delete Item';
+
+  @override
+  String get confirmDeleteItem =>
+      'Delete this item? Associated reminders will also be removed. Maintenance history is preserved.';
+
+  @override
+  String get itemDeleted => 'Item deleted successfully';
+
+  @override
+  String get itemDeleteFailed => 'Failed to delete item';
+
+  @override
+  String associatedReminders(int count) {
+    return 'Associated Reminders ($count)';
+  }
+
+  @override
+  String get noAssociatedReminders => 'No reminders for this item yet';
+
+  @override
+  String get searchItems => 'Search items...';
+
+  @override
+  String get activeItems => 'Active Items';
+
+  @override
+  String get archivedItems => 'Archived Items';
+
+  @override
+  String get odometerCorrectionConfirm => 'Confirm Odometer Correction';
+
+  @override
+  String odometerCorrectionDesc(int newOdo, int currentOdo) {
+    return 'The new odometer ($newOdo km) is lower than the current reading ($currentOdo km). Proceed as an error correction?';
+  }
+
+  @override
+  String get confirmCorrection => 'Yes, Save Correction';
 }

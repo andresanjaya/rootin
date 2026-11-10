@@ -8,6 +8,8 @@ import 'package:rootin_mobile/features/auth/presentation/screens/forgot_password
 import 'package:rootin_mobile/features/auth/presentation/screens/login_screen.dart';
 import 'package:rootin_mobile/features/auth/presentation/screens/register_screen.dart';
 import 'package:rootin_mobile/features/auth/presentation/screens/reset_password_screen.dart';
+import 'package:rootin_mobile/features/items/presentation/item_detail_screen.dart';
+import 'package:rootin_mobile/features/items/presentation/item_form_screen.dart';
 import 'package:rootin_mobile/features/reminders/presentation/reminder_detail_screen.dart';
 import 'package:rootin_mobile/features/reminders/presentation/reminder_form_screen.dart';
 import 'package:rootin_mobile/features/reminders/presentation/reminder_pages.dart';
@@ -145,6 +147,25 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       GoRoute(path: '/', redirect: (context, state) => '/today'),
+      GoRoute(
+        path: '/items/new',
+        name: 'new-item',
+        builder: (context, state) => const ItemFormScreen(),
+      ),
+      GoRoute(
+        path: '/items/:id',
+        name: 'item-detail',
+        builder:
+            (context, state) =>
+                ItemDetailScreen(itemId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/items/:id/edit',
+        name: 'edit-item',
+        builder:
+            (context, state) =>
+                ItemFormScreen(itemId: state.pathParameters['id']),
+      ),
       GoRoute(
         path: '/reminders/new',
         name: 'new-reminder',
