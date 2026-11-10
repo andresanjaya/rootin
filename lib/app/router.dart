@@ -8,6 +8,7 @@ import 'package:rootin_mobile/features/auth/presentation/screens/forgot_password
 import 'package:rootin_mobile/features/auth/presentation/screens/login_screen.dart';
 import 'package:rootin_mobile/features/auth/presentation/screens/register_screen.dart';
 import 'package:rootin_mobile/features/auth/presentation/screens/reset_password_screen.dart';
+import 'package:rootin_mobile/features/reminders/presentation/reminder_form_screen.dart';
 import 'package:rootin_mobile/features/reminders/presentation/reminder_pages.dart';
 import 'package:rootin_mobile/features/settings/settings_screen.dart';
 
@@ -143,6 +144,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       GoRoute(path: '/', redirect: (context, state) => '/today'),
+      GoRoute(
+        path: '/reminders/new',
+        name: 'new-reminder',
+        builder:
+            (context, state) => ReminderFormScreen(
+              initialItemId: state.uri.queryParameters['itemId'],
+            ),
+      ),
+      GoRoute(
+        path: '/reminders/:id/edit',
+        name: 'edit-reminder',
+        builder:
+            (context, state) =>
+                ReminderFormScreen(reminderId: state.pathParameters['id']),
+      ),
       GoRoute(
         path: '/auth/login',
         name: 'login',

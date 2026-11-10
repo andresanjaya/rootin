@@ -93,12 +93,32 @@ class _ReminderShellState extends ConsumerState<ReminderShell>
       ),
       floatingActionButton:
           index == 0
-              ? IconButton(
-                key: const Key('home_logout_button'),
-                icon: const Icon(Icons.logout),
-                tooltip: l.logout,
-                onPressed:
-                    () => ref.read(authControllerProvider.notifier).signOut(),
+              ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FloatingActionButton.small(
+                    key: const Key('add_reminder_fab'),
+                    tooltip: l.addReminder,
+                    onPressed: () => context.push('/reminders/new'),
+                    child: const Icon(Icons.add),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    key: const Key('home_logout_button'),
+                    icon: const Icon(Icons.logout),
+                    tooltip: l.logout,
+                    onPressed:
+                        () =>
+                            ref.read(authControllerProvider.notifier).signOut(),
+                  ),
+                ],
+              )
+              : index == 1
+              ? FloatingActionButton(
+                key: const Key('add_reminder_fab_tab'),
+                tooltip: l.addReminder,
+                onPressed: () => context.push('/reminders/new'),
+                child: const Icon(Icons.add),
               )
               : null,
       bottomNavigationBar:
@@ -408,6 +428,13 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
               subtitle: Text(
                 '${entry.item.name} · ${_detail(l, entry, today, zone)}',
               ),
+              trailing: IconButton(
+                icon: const Icon(Icons.edit_outlined),
+                tooltip: l.editReminder,
+                onPressed:
+                    () => context.push('/reminders/${entry.reminder.id}/edit'),
+              ),
+              onTap: () => context.push('/reminders/${entry.reminder.id}/edit'),
             );
           },
         );
