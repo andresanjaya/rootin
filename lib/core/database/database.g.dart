@@ -3065,6 +3065,471 @@ class ReminderLogsCompanion extends UpdateCompanion<ReminderLog> {
   }
 }
 
+class $ProgressEventsTable extends ProgressEvents
+    with TableInfo<$ProgressEventsTable, ProgressEvent> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProgressEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _itemIdMeta = const VerificationMeta('itemId');
+  @override
+  late final GeneratedColumn<String> itemId = GeneratedColumn<String>(
+    'item_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES items (id)',
+    ),
+  );
+  static const VerificationMeta _reminderIdMeta = const VerificationMeta(
+    'reminderId',
+  );
+  @override
+  late final GeneratedColumn<String> reminderId = GeneratedColumn<String>(
+    'reminder_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES reminders (id)',
+    ),
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
+  @override
+  late final GeneratedColumn<int> amount = GeneratedColumn<int>(
+    'amount',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recordedAtMeta = const VerificationMeta(
+    'recordedAt',
+  );
+  @override
+  late final GeneratedColumn<String> recordedAt = GeneratedColumn<String>(
+    'recorded_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    userId,
+    itemId,
+    reminderId,
+    kind,
+    amount,
+    recordedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'progress_events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ProgressEvent> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('item_id')) {
+      context.handle(
+        _itemIdMeta,
+        itemId.isAcceptableOrUnknown(data['item_id']!, _itemIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_itemIdMeta);
+    }
+    if (data.containsKey('reminder_id')) {
+      context.handle(
+        _reminderIdMeta,
+        reminderId.isAcceptableOrUnknown(data['reminder_id']!, _reminderIdMeta),
+      );
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('amount')) {
+      context.handle(
+        _amountMeta,
+        amount.isAcceptableOrUnknown(data['amount']!, _amountMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_amountMeta);
+    }
+    if (data.containsKey('recorded_at')) {
+      context.handle(
+        _recordedAtMeta,
+        recordedAt.isAcceptableOrUnknown(data['recorded_at']!, _recordedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recordedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ProgressEvent map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProgressEvent(
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}id'],
+          )!,
+      userId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}user_id'],
+          )!,
+      itemId:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}item_id'],
+          )!,
+      reminderId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reminder_id'],
+      ),
+      kind:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}kind'],
+          )!,
+      amount:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}amount'],
+          )!,
+      recordedAt:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}recorded_at'],
+          )!,
+    );
+  }
+
+  @override
+  $ProgressEventsTable createAlias(String alias) {
+    return $ProgressEventsTable(attachedDatabase, alias);
+  }
+}
+
+class ProgressEvent extends DataClass implements Insertable<ProgressEvent> {
+  final String id;
+  final String userId;
+  final String itemId;
+  final String? reminderId;
+  final String kind;
+  final int amount;
+  final String recordedAt;
+  const ProgressEvent({
+    required this.id,
+    required this.userId,
+    required this.itemId,
+    this.reminderId,
+    required this.kind,
+    required this.amount,
+    required this.recordedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['user_id'] = Variable<String>(userId);
+    map['item_id'] = Variable<String>(itemId);
+    if (!nullToAbsent || reminderId != null) {
+      map['reminder_id'] = Variable<String>(reminderId);
+    }
+    map['kind'] = Variable<String>(kind);
+    map['amount'] = Variable<int>(amount);
+    map['recorded_at'] = Variable<String>(recordedAt);
+    return map;
+  }
+
+  ProgressEventsCompanion toCompanion(bool nullToAbsent) {
+    return ProgressEventsCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      itemId: Value(itemId),
+      reminderId:
+          reminderId == null && nullToAbsent
+              ? const Value.absent()
+              : Value(reminderId),
+      kind: Value(kind),
+      amount: Value(amount),
+      recordedAt: Value(recordedAt),
+    );
+  }
+
+  factory ProgressEvent.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ProgressEvent(
+      id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String>(json['userId']),
+      itemId: serializer.fromJson<String>(json['itemId']),
+      reminderId: serializer.fromJson<String?>(json['reminderId']),
+      kind: serializer.fromJson<String>(json['kind']),
+      amount: serializer.fromJson<int>(json['amount']),
+      recordedAt: serializer.fromJson<String>(json['recordedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String>(userId),
+      'itemId': serializer.toJson<String>(itemId),
+      'reminderId': serializer.toJson<String?>(reminderId),
+      'kind': serializer.toJson<String>(kind),
+      'amount': serializer.toJson<int>(amount),
+      'recordedAt': serializer.toJson<String>(recordedAt),
+    };
+  }
+
+  ProgressEvent copyWith({
+    String? id,
+    String? userId,
+    String? itemId,
+    Value<String?> reminderId = const Value.absent(),
+    String? kind,
+    int? amount,
+    String? recordedAt,
+  }) => ProgressEvent(
+    id: id ?? this.id,
+    userId: userId ?? this.userId,
+    itemId: itemId ?? this.itemId,
+    reminderId: reminderId.present ? reminderId.value : this.reminderId,
+    kind: kind ?? this.kind,
+    amount: amount ?? this.amount,
+    recordedAt: recordedAt ?? this.recordedAt,
+  );
+  ProgressEvent copyWithCompanion(ProgressEventsCompanion data) {
+    return ProgressEvent(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      itemId: data.itemId.present ? data.itemId.value : this.itemId,
+      reminderId:
+          data.reminderId.present ? data.reminderId.value : this.reminderId,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      amount: data.amount.present ? data.amount.value : this.amount,
+      recordedAt:
+          data.recordedAt.present ? data.recordedAt.value : this.recordedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProgressEvent(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('itemId: $itemId, ')
+          ..write('reminderId: $reminderId, ')
+          ..write('kind: $kind, ')
+          ..write('amount: $amount, ')
+          ..write('recordedAt: $recordedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, userId, itemId, reminderId, kind, amount, recordedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ProgressEvent &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.itemId == this.itemId &&
+          other.reminderId == this.reminderId &&
+          other.kind == this.kind &&
+          other.amount == this.amount &&
+          other.recordedAt == this.recordedAt);
+}
+
+class ProgressEventsCompanion extends UpdateCompanion<ProgressEvent> {
+  final Value<String> id;
+  final Value<String> userId;
+  final Value<String> itemId;
+  final Value<String?> reminderId;
+  final Value<String> kind;
+  final Value<int> amount;
+  final Value<String> recordedAt;
+  final Value<int> rowid;
+  const ProgressEventsCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.itemId = const Value.absent(),
+    this.reminderId = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.recordedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ProgressEventsCompanion.insert({
+    required String id,
+    required String userId,
+    required String itemId,
+    this.reminderId = const Value.absent(),
+    required String kind,
+    required int amount,
+    required String recordedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       userId = Value(userId),
+       itemId = Value(itemId),
+       kind = Value(kind),
+       amount = Value(amount),
+       recordedAt = Value(recordedAt);
+  static Insertable<ProgressEvent> custom({
+    Expression<String>? id,
+    Expression<String>? userId,
+    Expression<String>? itemId,
+    Expression<String>? reminderId,
+    Expression<String>? kind,
+    Expression<int>? amount,
+    Expression<String>? recordedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (itemId != null) 'item_id': itemId,
+      if (reminderId != null) 'reminder_id': reminderId,
+      if (kind != null) 'kind': kind,
+      if (amount != null) 'amount': amount,
+      if (recordedAt != null) 'recorded_at': recordedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ProgressEventsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? userId,
+    Value<String>? itemId,
+    Value<String?>? reminderId,
+    Value<String>? kind,
+    Value<int>? amount,
+    Value<String>? recordedAt,
+    Value<int>? rowid,
+  }) {
+    return ProgressEventsCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      itemId: itemId ?? this.itemId,
+      reminderId: reminderId ?? this.reminderId,
+      kind: kind ?? this.kind,
+      amount: amount ?? this.amount,
+      recordedAt: recordedAt ?? this.recordedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (itemId.present) {
+      map['item_id'] = Variable<String>(itemId.value);
+    }
+    if (reminderId.present) {
+      map['reminder_id'] = Variable<String>(reminderId.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (amount.present) {
+      map['amount'] = Variable<int>(amount.value);
+    }
+    if (recordedAt.present) {
+      map['recorded_at'] = Variable<String>(recordedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProgressEventsCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('itemId: $itemId, ')
+          ..write('reminderId: $reminderId, ')
+          ..write('kind: $kind, ')
+          ..write('amount: $amount, ')
+          ..write('recordedAt: $recordedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SyncOutboxTable extends SyncOutbox
     with TableInfo<$SyncOutboxTable, SyncOutboxData> {
   @override
@@ -4242,6 +4707,18 @@ class $UserPreferencesTable extends UserPreferences
     requiredDuringInsert: false,
     defaultValue: const Constant('09:00'),
   );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     userId,
@@ -4249,6 +4726,7 @@ class $UserPreferencesTable extends UserPreferences
     distanceUnit,
     timezoneOverride,
     reminderTime,
+    version,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -4303,6 +4781,12 @@ class $UserPreferencesTable extends UserPreferences
         ),
       );
     }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    }
     return context;
   }
 
@@ -4335,6 +4819,11 @@ class $UserPreferencesTable extends UserPreferences
             DriftSqlType.string,
             data['${effectivePrefix}reminder_time'],
           )!,
+      version:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}version'],
+          )!,
     );
   }
 
@@ -4350,12 +4839,14 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
   final String distanceUnit;
   final String? timezoneOverride;
   final String reminderTime;
+  final int version;
   const UserPreference({
     required this.userId,
     this.locale,
     required this.distanceUnit,
     this.timezoneOverride,
     required this.reminderTime,
+    required this.version,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4369,6 +4860,7 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
       map['timezone_override'] = Variable<String>(timezoneOverride);
     }
     map['reminder_time'] = Variable<String>(reminderTime);
+    map['version'] = Variable<int>(version);
     return map;
   }
 
@@ -4383,6 +4875,7 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
               ? const Value.absent()
               : Value(timezoneOverride),
       reminderTime: Value(reminderTime),
+      version: Value(version),
     );
   }
 
@@ -4397,6 +4890,7 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
       distanceUnit: serializer.fromJson<String>(json['distanceUnit']),
       timezoneOverride: serializer.fromJson<String?>(json['timezoneOverride']),
       reminderTime: serializer.fromJson<String>(json['reminderTime']),
+      version: serializer.fromJson<int>(json['version']),
     );
   }
   @override
@@ -4408,6 +4902,7 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
       'distanceUnit': serializer.toJson<String>(distanceUnit),
       'timezoneOverride': serializer.toJson<String?>(timezoneOverride),
       'reminderTime': serializer.toJson<String>(reminderTime),
+      'version': serializer.toJson<int>(version),
     };
   }
 
@@ -4417,6 +4912,7 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
     String? distanceUnit,
     Value<String?> timezoneOverride = const Value.absent(),
     String? reminderTime,
+    int? version,
   }) => UserPreference(
     userId: userId ?? this.userId,
     locale: locale.present ? locale.value : this.locale,
@@ -4426,6 +4922,7 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
             ? timezoneOverride.value
             : this.timezoneOverride,
     reminderTime: reminderTime ?? this.reminderTime,
+    version: version ?? this.version,
   );
   UserPreference copyWithCompanion(UserPreferencesCompanion data) {
     return UserPreference(
@@ -4443,6 +4940,7 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
           data.reminderTime.present
               ? data.reminderTime.value
               : this.reminderTime,
+      version: data.version.present ? data.version.value : this.version,
     );
   }
 
@@ -4453,14 +4951,21 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
           ..write('locale: $locale, ')
           ..write('distanceUnit: $distanceUnit, ')
           ..write('timezoneOverride: $timezoneOverride, ')
-          ..write('reminderTime: $reminderTime')
+          ..write('reminderTime: $reminderTime, ')
+          ..write('version: $version')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(userId, locale, distanceUnit, timezoneOverride, reminderTime);
+  int get hashCode => Object.hash(
+    userId,
+    locale,
+    distanceUnit,
+    timezoneOverride,
+    reminderTime,
+    version,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -4469,7 +4974,8 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
           other.locale == this.locale &&
           other.distanceUnit == this.distanceUnit &&
           other.timezoneOverride == this.timezoneOverride &&
-          other.reminderTime == this.reminderTime);
+          other.reminderTime == this.reminderTime &&
+          other.version == this.version);
 }
 
 class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
@@ -4478,6 +4984,7 @@ class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
   final Value<String> distanceUnit;
   final Value<String?> timezoneOverride;
   final Value<String> reminderTime;
+  final Value<int> version;
   final Value<int> rowid;
   const UserPreferencesCompanion({
     this.userId = const Value.absent(),
@@ -4485,6 +4992,7 @@ class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
     this.distanceUnit = const Value.absent(),
     this.timezoneOverride = const Value.absent(),
     this.reminderTime = const Value.absent(),
+    this.version = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   UserPreferencesCompanion.insert({
@@ -4493,6 +5001,7 @@ class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
     this.distanceUnit = const Value.absent(),
     this.timezoneOverride = const Value.absent(),
     this.reminderTime = const Value.absent(),
+    this.version = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : userId = Value(userId);
   static Insertable<UserPreference> custom({
@@ -4501,6 +5010,7 @@ class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
     Expression<String>? distanceUnit,
     Expression<String>? timezoneOverride,
     Expression<String>? reminderTime,
+    Expression<int>? version,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -4509,6 +5019,7 @@ class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
       if (distanceUnit != null) 'distance_unit': distanceUnit,
       if (timezoneOverride != null) 'timezone_override': timezoneOverride,
       if (reminderTime != null) 'reminder_time': reminderTime,
+      if (version != null) 'version': version,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4519,6 +5030,7 @@ class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
     Value<String>? distanceUnit,
     Value<String?>? timezoneOverride,
     Value<String>? reminderTime,
+    Value<int>? version,
     Value<int>? rowid,
   }) {
     return UserPreferencesCompanion(
@@ -4527,6 +5039,7 @@ class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
       distanceUnit: distanceUnit ?? this.distanceUnit,
       timezoneOverride: timezoneOverride ?? this.timezoneOverride,
       reminderTime: reminderTime ?? this.reminderTime,
+      version: version ?? this.version,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -4549,6 +5062,9 @@ class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
     if (reminderTime.present) {
       map['reminder_time'] = Variable<String>(reminderTime.value);
     }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -4563,6 +5079,7 @@ class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
           ..write('distanceUnit: $distanceUnit, ')
           ..write('timezoneOverride: $timezoneOverride, ')
           ..write('reminderTime: $reminderTime, ')
+          ..write('version: $version, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4575,6 +5092,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ItemsTable items = $ItemsTable(this);
   late final $RemindersTable reminders = $RemindersTable(this);
   late final $ReminderLogsTable reminderLogs = $ReminderLogsTable(this);
+  late final $ProgressEventsTable progressEvents = $ProgressEventsTable(this);
   late final $SyncOutboxTable syncOutbox = $SyncOutboxTable(this);
   late final $SyncMetadataTable syncMetadata = $SyncMetadataTable(this);
   late final $UserPreferencesTable userPreferences = $UserPreferencesTable(
@@ -4594,6 +5112,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     items,
     reminders,
     reminderLogs,
+    progressEvents,
     syncOutbox,
     syncMetadata,
     userPreferences,
@@ -4704,6 +5223,24 @@ final class $$ItemsTableReferences
     ).filter((f) => f.itemId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_reminderLogsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$ProgressEventsTable, List<ProgressEvent>>
+  _progressEventsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.progressEvents,
+    aliasName: $_aliasNameGenerator(db.items.id, db.progressEvents.itemId),
+  );
+
+  $$ProgressEventsTableProcessedTableManager get progressEventsRefs {
+    final manager = $$ProgressEventsTableTableManager(
+      $_db,
+      $_db.progressEvents,
+    ).filter((f) => f.itemId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_progressEventsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -4849,6 +5386,31 @@ class $$ItemsTableFilterComposer extends Composer<_$AppDatabase, $ItemsTable> {
           }) => $$ReminderLogsTableFilterComposer(
             $db: $db,
             $table: $db.reminderLogs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> progressEventsRefs(
+    Expression<bool> Function($$ProgressEventsTableFilterComposer f) f,
+  ) {
+    final $$ProgressEventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.progressEvents,
+      getReferencedColumn: (t) => t.itemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProgressEventsTableFilterComposer(
+            $db: $db,
+            $table: $db.progressEvents,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -5087,6 +5649,31 @@ class $$ItemsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> progressEventsRefs<T extends Object>(
+    Expression<T> Function($$ProgressEventsTableAnnotationComposer a) f,
+  ) {
+    final $$ProgressEventsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.progressEvents,
+      getReferencedColumn: (t) => t.itemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProgressEventsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.progressEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ItemsTableTableManager
@@ -5102,7 +5689,11 @@ class $$ItemsTableTableManager
           $$ItemsTableUpdateCompanionBuilder,
           (Item, $$ItemsTableReferences),
           Item,
-          PrefetchHooks Function({bool remindersRefs, bool reminderLogsRefs})
+          PrefetchHooks Function({
+            bool remindersRefs,
+            bool reminderLogsRefs,
+            bool progressEventsRefs,
+          })
         > {
   $$ItemsTableTableManager(_$AppDatabase db, $ItemsTable table)
     : super(
@@ -5212,12 +5803,14 @@ class $$ItemsTableTableManager
           prefetchHooksCallback: ({
             remindersRefs = false,
             reminderLogsRefs = false,
+            progressEventsRefs = false,
           }) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [
                 if (remindersRefs) db.reminders,
                 if (reminderLogsRefs) db.reminderLogs,
+                if (progressEventsRefs) db.progressEvents,
               ],
               addJoins: null,
               getPrefetchedDataCallback: (items) async {
@@ -5256,6 +5849,23 @@ class $$ItemsTableTableManager
                               referencedItems.where((e) => e.itemId == item.id),
                       typedResults: items,
                     ),
+                  if (progressEventsRefs)
+                    await $_getPrefetchedData<Item, $ItemsTable, ProgressEvent>(
+                      currentTable: table,
+                      referencedTable: $$ItemsTableReferences
+                          ._progressEventsRefsTable(db),
+                      managerFromTypedResult:
+                          (p0) =>
+                              $$ItemsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).progressEventsRefs,
+                      referencedItemsForCurrentItem:
+                          (item, referencedItems) =>
+                              referencedItems.where((e) => e.itemId == item.id),
+                      typedResults: items,
+                    ),
                 ];
               },
             );
@@ -5276,7 +5886,11 @@ typedef $$ItemsTableProcessedTableManager =
       $$ItemsTableUpdateCompanionBuilder,
       (Item, $$ItemsTableReferences),
       Item,
-      PrefetchHooks Function({bool remindersRefs, bool reminderLogsRefs})
+      PrefetchHooks Function({
+        bool remindersRefs,
+        bool reminderLogsRefs,
+        bool progressEventsRefs,
+      })
     >;
 typedef $$RemindersTableCreateCompanionBuilder =
     RemindersCompanion Function({
@@ -5369,6 +5983,27 @@ final class $$RemindersTableReferences
     ).filter((f) => f.reminderId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_reminderLogsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$ProgressEventsTable, List<ProgressEvent>>
+  _progressEventsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.progressEvents,
+    aliasName: $_aliasNameGenerator(
+      db.reminders.id,
+      db.progressEvents.reminderId,
+    ),
+  );
+
+  $$ProgressEventsTableProcessedTableManager get progressEventsRefs {
+    final manager = $$ProgressEventsTableTableManager(
+      $_db,
+      $_db.progressEvents,
+    ).filter((f) => f.reminderId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_progressEventsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -5528,6 +6163,31 @@ class $$RemindersTableFilterComposer
           }) => $$ReminderLogsTableFilterComposer(
             $db: $db,
             $table: $db.reminderLogs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> progressEventsRefs(
+    Expression<bool> Function($$ProgressEventsTableFilterComposer f) f,
+  ) {
+    final $$ProgressEventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.progressEvents,
+      getReferencedColumn: (t) => t.reminderId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProgressEventsTableFilterComposer(
+            $db: $db,
+            $table: $db.progressEvents,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -5817,6 +6477,31 @@ class $$RemindersTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> progressEventsRefs<T extends Object>(
+    Expression<T> Function($$ProgressEventsTableAnnotationComposer a) f,
+  ) {
+    final $$ProgressEventsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.progressEvents,
+      getReferencedColumn: (t) => t.reminderId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ProgressEventsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.progressEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$RemindersTableTableManager
@@ -5832,7 +6517,11 @@ class $$RemindersTableTableManager
           $$RemindersTableUpdateCompanionBuilder,
           (Reminder, $$RemindersTableReferences),
           Reminder,
-          PrefetchHooks Function({bool itemId, bool reminderLogsRefs})
+          PrefetchHooks Function({
+            bool itemId,
+            bool reminderLogsRefs,
+            bool progressEventsRefs,
+          })
         > {
   $$RemindersTableTableManager(_$AppDatabase db, $RemindersTable table)
     : super(
@@ -5955,10 +6644,17 @@ class $$RemindersTableTableManager
                         ),
                       )
                       .toList(),
-          prefetchHooksCallback: ({itemId = false, reminderLogsRefs = false}) {
+          prefetchHooksCallback: ({
+            itemId = false,
+            reminderLogsRefs = false,
+            progressEventsRefs = false,
+          }) {
             return PrefetchHooks(
               db: db,
-              explicitlyWatchedTables: [if (reminderLogsRefs) db.reminderLogs],
+              explicitlyWatchedTables: [
+                if (reminderLogsRefs) db.reminderLogs,
+                if (progressEventsRefs) db.progressEvents,
+              ],
               addJoins: <
                 T extends TableManagerState<
                   dynamic,
@@ -6013,6 +6709,28 @@ class $$RemindersTableTableManager
                           ),
                       typedResults: items,
                     ),
+                  if (progressEventsRefs)
+                    await $_getPrefetchedData<
+                      Reminder,
+                      $RemindersTable,
+                      ProgressEvent
+                    >(
+                      currentTable: table,
+                      referencedTable: $$RemindersTableReferences
+                          ._progressEventsRefsTable(db),
+                      managerFromTypedResult:
+                          (p0) =>
+                              $$RemindersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).progressEventsRefs,
+                      referencedItemsForCurrentItem:
+                          (item, referencedItems) => referencedItems.where(
+                            (e) => e.reminderId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
                 ];
               },
             );
@@ -6033,7 +6751,11 @@ typedef $$RemindersTableProcessedTableManager =
       $$RemindersTableUpdateCompanionBuilder,
       (Reminder, $$RemindersTableReferences),
       Reminder,
-      PrefetchHooks Function({bool itemId, bool reminderLogsRefs})
+      PrefetchHooks Function({
+        bool itemId,
+        bool reminderLogsRefs,
+        bool progressEventsRefs,
+      })
     >;
 typedef $$ReminderLogsTableCreateCompanionBuilder =
     ReminderLogsCompanion Function({
@@ -6584,6 +7306,465 @@ typedef $$ReminderLogsTableProcessedTableManager =
       $$ReminderLogsTableUpdateCompanionBuilder,
       (ReminderLog, $$ReminderLogsTableReferences),
       ReminderLog,
+      PrefetchHooks Function({bool itemId, bool reminderId})
+    >;
+typedef $$ProgressEventsTableCreateCompanionBuilder =
+    ProgressEventsCompanion Function({
+      required String id,
+      required String userId,
+      required String itemId,
+      Value<String?> reminderId,
+      required String kind,
+      required int amount,
+      required String recordedAt,
+      Value<int> rowid,
+    });
+typedef $$ProgressEventsTableUpdateCompanionBuilder =
+    ProgressEventsCompanion Function({
+      Value<String> id,
+      Value<String> userId,
+      Value<String> itemId,
+      Value<String?> reminderId,
+      Value<String> kind,
+      Value<int> amount,
+      Value<String> recordedAt,
+      Value<int> rowid,
+    });
+
+final class $$ProgressEventsTableReferences
+    extends BaseReferences<_$AppDatabase, $ProgressEventsTable, ProgressEvent> {
+  $$ProgressEventsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $ItemsTable _itemIdTable(_$AppDatabase db) => db.items.createAlias(
+    $_aliasNameGenerator(db.progressEvents.itemId, db.items.id),
+  );
+
+  $$ItemsTableProcessedTableManager get itemId {
+    final $_column = $_itemColumn<String>('item_id')!;
+
+    final manager = $$ItemsTableTableManager(
+      $_db,
+      $_db.items,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_itemIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $RemindersTable _reminderIdTable(_$AppDatabase db) =>
+      db.reminders.createAlias(
+        $_aliasNameGenerator(db.progressEvents.reminderId, db.reminders.id),
+      );
+
+  $$RemindersTableProcessedTableManager? get reminderId {
+    final $_column = $_itemColumn<String>('reminder_id');
+    if ($_column == null) return null;
+    final manager = $$RemindersTableTableManager(
+      $_db,
+      $_db.reminders,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_reminderIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$ProgressEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $ProgressEventsTable> {
+  $$ProgressEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amount => $composableBuilder(
+    column: $table.amount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ItemsTableFilterComposer get itemId {
+    final $$ItemsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.itemId,
+      referencedTable: $db.items,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ItemsTableFilterComposer(
+            $db: $db,
+            $table: $db.items,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RemindersTableFilterComposer get reminderId {
+    final $$RemindersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.reminderId,
+      referencedTable: $db.reminders,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RemindersTableFilterComposer(
+            $db: $db,
+            $table: $db.reminders,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ProgressEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ProgressEventsTable> {
+  $$ProgressEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amount => $composableBuilder(
+    column: $table.amount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ItemsTableOrderingComposer get itemId {
+    final $$ItemsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.itemId,
+      referencedTable: $db.items,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ItemsTableOrderingComposer(
+            $db: $db,
+            $table: $db.items,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RemindersTableOrderingComposer get reminderId {
+    final $$RemindersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.reminderId,
+      referencedTable: $db.reminders,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RemindersTableOrderingComposer(
+            $db: $db,
+            $table: $db.reminders,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ProgressEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ProgressEventsTable> {
+  $$ProgressEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<int> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => column);
+
+  GeneratedColumn<String> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => column,
+  );
+
+  $$ItemsTableAnnotationComposer get itemId {
+    final $$ItemsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.itemId,
+      referencedTable: $db.items,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ItemsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.items,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$RemindersTableAnnotationComposer get reminderId {
+    final $$RemindersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.reminderId,
+      referencedTable: $db.reminders,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RemindersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.reminders,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ProgressEventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ProgressEventsTable,
+          ProgressEvent,
+          $$ProgressEventsTableFilterComposer,
+          $$ProgressEventsTableOrderingComposer,
+          $$ProgressEventsTableAnnotationComposer,
+          $$ProgressEventsTableCreateCompanionBuilder,
+          $$ProgressEventsTableUpdateCompanionBuilder,
+          (ProgressEvent, $$ProgressEventsTableReferences),
+          ProgressEvent,
+          PrefetchHooks Function({bool itemId, bool reminderId})
+        > {
+  $$ProgressEventsTableTableManager(
+    _$AppDatabase db,
+    $ProgressEventsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer:
+              () => $$ProgressEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer:
+              () =>
+                  $$ProgressEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer:
+              () => $$ProgressEventsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> userId = const Value.absent(),
+                Value<String> itemId = const Value.absent(),
+                Value<String?> reminderId = const Value.absent(),
+                Value<String> kind = const Value.absent(),
+                Value<int> amount = const Value.absent(),
+                Value<String> recordedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ProgressEventsCompanion(
+                id: id,
+                userId: userId,
+                itemId: itemId,
+                reminderId: reminderId,
+                kind: kind,
+                amount: amount,
+                recordedAt: recordedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String userId,
+                required String itemId,
+                Value<String?> reminderId = const Value.absent(),
+                required String kind,
+                required int amount,
+                required String recordedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ProgressEventsCompanion.insert(
+                id: id,
+                userId: userId,
+                itemId: itemId,
+                reminderId: reminderId,
+                kind: kind,
+                amount: amount,
+                recordedAt: recordedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper:
+              (p0) =>
+                  p0
+                      .map(
+                        (e) => (
+                          e.readTable(table),
+                          $$ProgressEventsTableReferences(db, table, e),
+                        ),
+                      )
+                      .toList(),
+          prefetchHooksCallback: ({itemId = false, reminderId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                T extends TableManagerState<
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic,
+                  dynamic
+                >
+              >(state) {
+                if (itemId) {
+                  state =
+                      state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.itemId,
+                            referencedTable: $$ProgressEventsTableReferences
+                                ._itemIdTable(db),
+                            referencedColumn:
+                                $$ProgressEventsTableReferences
+                                    ._itemIdTable(db)
+                                    .id,
+                          )
+                          as T;
+                }
+                if (reminderId) {
+                  state =
+                      state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.reminderId,
+                            referencedTable: $$ProgressEventsTableReferences
+                                ._reminderIdTable(db),
+                            referencedColumn:
+                                $$ProgressEventsTableReferences
+                                    ._reminderIdTable(db)
+                                    .id,
+                          )
+                          as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$ProgressEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ProgressEventsTable,
+      ProgressEvent,
+      $$ProgressEventsTableFilterComposer,
+      $$ProgressEventsTableOrderingComposer,
+      $$ProgressEventsTableAnnotationComposer,
+      $$ProgressEventsTableCreateCompanionBuilder,
+      $$ProgressEventsTableUpdateCompanionBuilder,
+      (ProgressEvent, $$ProgressEventsTableReferences),
+      ProgressEvent,
       PrefetchHooks Function({bool itemId, bool reminderId})
     >;
 typedef $$SyncOutboxTableCreateCompanionBuilder =
@@ -7153,6 +8334,7 @@ typedef $$UserPreferencesTableCreateCompanionBuilder =
       Value<String> distanceUnit,
       Value<String?> timezoneOverride,
       Value<String> reminderTime,
+      Value<int> version,
       Value<int> rowid,
     });
 typedef $$UserPreferencesTableUpdateCompanionBuilder =
@@ -7162,6 +8344,7 @@ typedef $$UserPreferencesTableUpdateCompanionBuilder =
       Value<String> distanceUnit,
       Value<String?> timezoneOverride,
       Value<String> reminderTime,
+      Value<int> version,
       Value<int> rowid,
     });
 
@@ -7196,6 +8379,11 @@ class $$UserPreferencesTableFilterComposer
 
   ColumnFilters<String> get reminderTime => $composableBuilder(
     column: $table.reminderTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get version => $composableBuilder(
+    column: $table.version,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -7233,6 +8421,11 @@ class $$UserPreferencesTableOrderingComposer
     column: $table.reminderTime,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$UserPreferencesTableAnnotationComposer
@@ -7264,6 +8457,9 @@ class $$UserPreferencesTableAnnotationComposer
     column: $table.reminderTime,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
 }
 
 class $$UserPreferencesTableTableManager
@@ -7315,6 +8511,7 @@ class $$UserPreferencesTableTableManager
                 Value<String> distanceUnit = const Value.absent(),
                 Value<String?> timezoneOverride = const Value.absent(),
                 Value<String> reminderTime = const Value.absent(),
+                Value<int> version = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UserPreferencesCompanion(
                 userId: userId,
@@ -7322,6 +8519,7 @@ class $$UserPreferencesTableTableManager
                 distanceUnit: distanceUnit,
                 timezoneOverride: timezoneOverride,
                 reminderTime: reminderTime,
+                version: version,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -7331,6 +8529,7 @@ class $$UserPreferencesTableTableManager
                 Value<String> distanceUnit = const Value.absent(),
                 Value<String?> timezoneOverride = const Value.absent(),
                 Value<String> reminderTime = const Value.absent(),
+                Value<int> version = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UserPreferencesCompanion.insert(
                 userId: userId,
@@ -7338,6 +8537,7 @@ class $$UserPreferencesTableTableManager
                 distanceUnit: distanceUnit,
                 timezoneOverride: timezoneOverride,
                 reminderTime: reminderTime,
+                version: version,
                 rowid: rowid,
               ),
           withReferenceMapper:
@@ -7382,6 +8582,8 @@ class $AppDatabaseManager {
       $$RemindersTableTableManager(_db, _db.reminders);
   $$ReminderLogsTableTableManager get reminderLogs =>
       $$ReminderLogsTableTableManager(_db, _db.reminderLogs);
+  $$ProgressEventsTableTableManager get progressEvents =>
+      $$ProgressEventsTableTableManager(_db, _db.progressEvents);
   $$SyncOutboxTableTableManager get syncOutbox =>
       $$SyncOutboxTableTableManager(_db, _db.syncOutbox);
   $$SyncMetadataTableTableManager get syncMetadata =>

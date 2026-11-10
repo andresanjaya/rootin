@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,12 +9,46 @@ import 'package:rootin_mobile/features/reminders/data/reminder_feed.dart';
 import 'package:rootin_mobile/features/settings/settings_provider.dart';
 import 'package:rootin_mobile/l10n/generated/app_localizations.dart';
 
-class ReminderShell extends ConsumerWidget {
+class ReminderShell extends ConsumerStatefulWidget {
   const ReminderShell({required this.navigationShell, super.key});
   final StatefulNavigationShell navigationShell;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ReminderShell> createState() => _ReminderShellState();
+}
+
+class _ReminderShellState extends ConsumerState<ReminderShell>
+    with WidgetsBindingObserver {
+  Timer? _retry;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _sync());
+    _retry = Timer.periodic(const Duration(minutes: 1), (_) => _sync());
+  }
+
+  void _sync() {
+    if (!mounted || ref.read(currentUserProvider) == null) return;
+    // Offline failures remain durable; resumed/foreground pass retries them.
+    unawaited(ref.read(mobileSyncProvider).run().catchError((Object _) {}));
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _sync();
+  }
+
+  @override
+  void dispose() {
+    _retry?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final destinations = [
       l.today,
@@ -28,11 +64,11 @@ class ReminderShell extends ConsumerWidget {
       Icons.calendar_month_outlined,
       Icons.settings_outlined,
     ];
-    final index = navigationShell.currentIndex;
+    final index = widget.navigationShell.currentIndex;
     final wide = MediaQuery.sizeOf(context).width >= 700;
-    void selectBranch(int selected) => navigationShell.goBranch(
+    void selectBranch(int selected) => widget.navigationShell.goBranch(
       selected,
-      initialLocation: selected == navigationShell.currentIndex,
+      initialLocation: selected == widget.navigationShell.currentIndex,
     );
     final navigation = NavigationRail(
       selectedIndex: index,
@@ -49,7 +85,10 @@ class ReminderShell extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: Row(
-          children: [if (wide) navigation, Expanded(child: navigationShell)],
+          children: [
+            if (wide) navigation,
+            Expanded(child: widget.navigationShell),
+          ],
         ),
       ),
       floatingActionButton:
@@ -137,10 +176,11 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
   }
 
   Future<void> _refreshLocalData() async {
+    Object? syncError;
     try {
       await ref.read(mobileSyncProvider).run();
-    } catch (_) {
-      // Offline refresh still shows durable local data and unsent operations.
+    } catch (error) {
+      syncError = error;
     }
     switch (widget.section) {
       case 'items':
@@ -156,6 +196,11 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
           ref.read(reminderFeedProvider.future),
           ref.read(outboxSummaryProvider.future),
         ]);
+    }
+    if (syncError != null && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.syncFailed)),
+      );
     }
   }
 
@@ -386,7 +431,17 @@ class _ReminderPageState extends ConsumerState<ReminderPage> {
             ),
           ),
         AsyncError() => Text(l.syncStatusUnavailable),
-        _ => Text(l.connectivityUnknown),
+        _ => ValueListenableBuilder<SyncRunStatus>(
+          valueListenable: ref.watch(mobileSyncProvider).status,
+          builder:
+              (_, status, _) => Text(
+                status.hasError
+                    ? l.syncFailed
+                    : status.lastSuccess == null
+                    ? l.connectivityUnknown
+                    : l.syncNow,
+              ),
+        ),
       };
 
   String _detail(

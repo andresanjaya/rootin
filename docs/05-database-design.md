@@ -19,9 +19,19 @@
 > menolak tulis dan mengembalikan `server_version`; **bukan LWW**. Urutan lock
 > item lalu reminder, termasuk completion/progress, dan advisory lock operasi
 > mencegah retry konkuren menggandakan event.
-> Pull menggunakan kursor keyset `(changed_at, rank, id)`, bukan timestamp tunggal;
-> pengambilan satu halaman secara berulang dapat kehilangan perubahan yang
-> ditulis mundur ke timestamp lebih awal hanya bila jam server dimanipulasi.
+> **ROOTIN-M018 (#17, 27 Oktober 2026):** migrasi aditif
+> `20261027000000_mobile_sync_changes.sql` mengganti pull snapshot dengan
+> `mobile_sync_changes` append-only. Trigger mencatat snapshot setiap perubahan;
+> advisory lock per user diambil sebelum mutasi RPC, sehingga sequence commit
+> terurut. Cursor `{sequence: n}` menunjuk perubahan terakhir yang diterapkan,
+> bukan timestamp; RLS/revoke menutup akses langsung log dari klien.
+> SQLite v3 menambah `progress_events`, versi `user_preferences`, serta CHECK
+> outbox untuk `progress`, `completion`, `preference`; upgrade mempertahankan
+> antrean lama. Preference waktu pengingat tetap lokal perangkat; locale,
+> jarak, dan zona tersinkron. Halaman pull dan checkpoint disimpan atomik,
+> halaman terblokir antrean tidak di-checkpoint. Log server belum dipangkas;
+> keputusan retensi perlu mempertimbangkan checkpoint semua perangkat.
+> Hook rekonsiliasi notifikasi mengikuti commit pull pada M019.
 > Data pending outbox lokal tidak dihapus saat konflik sampai client menyelesaikannya.
 
 * **Status**: Accepted

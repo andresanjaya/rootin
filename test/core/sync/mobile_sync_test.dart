@@ -32,6 +32,7 @@ class FakeTransport implements SyncTransport {
           'operation_id': mutations.single['operation_id'],
           'status': conflict ? 'conflict_rejected' : 'accepted',
           'server_version': 2,
+          'version': 1,
         },
       ],
     };
@@ -181,7 +182,6 @@ void main() {
   test(
     'pull checkpoint rolls back on invalid owner, then applies tombstone',
     () async {
-      final cursor = {'changed_at': now, 'rank': 1, 'id': item};
       transport.pages.add({
         'changes': [
           {'entity_type': 'item', 'record': record()},
@@ -190,7 +190,7 @@ void main() {
             'record': {...record(), 'user_id': 'other'},
           },
         ],
-        'next_cursor': cursor,
+        'next_cursor': {'sequence': 2},
       });
       await expectLater(
         MobileSync(db, transport, () => user).run(),
@@ -202,7 +202,7 @@ void main() {
         'changes': [
           {'entity_type': 'item', 'record': record()},
         ],
-        'next_cursor': cursor,
+        'next_cursor': {'sequence': 2},
       });
       await MobileSync(db, transport, () => user).run();
       expect((await db.itemsDao.getItemById(user, item))!.name, 'Bike');
@@ -213,14 +213,20 @@ void main() {
             'record': {...record(name: 'Gone', version: 2), 'deleted_at': now},
           },
         ],
-        'next_cursor': cursor,
+        'next_cursor': {'sequence': 3},
       });
       await MobileSync(db, transport, () => user).run();
       expect(await db.itemsDao.getItemById(user, item), isNull);
     },
   );
 
-  test('pull resolves parent before child across pages', () async {
+  test('pull applies parent then child across durable pages', () async {
+    transport.pages.add({
+      'changes': [
+        {'entity_type': 'item', 'record': record()},
+      ],
+      'next_cursor': {'sequence': 1},
+    });
     transport.pages.add({
       'changes': [
         {
@@ -241,15 +247,122 @@ void main() {
           },
         },
       ],
-      'next_cursor': {'changed_at': now, 'rank': 2, 'id': reminder},
+      'next_cursor': {'sequence': 2},
     });
+    await MobileSync(db, transport, () => user).run();
+    expect(await db.remindersDao.getReminderById(user, reminder), isNotNull);
+  });
+
+  test(
+    'two devices replay accepted write and converge after restart',
+    () async {
+      final second = AppDatabase.inMemory();
+      try {
+        await queue(db);
+        await db
+            .into(db.items)
+            .insert(
+              ItemsCompanion.insert(
+                id: item,
+                userId: user,
+                name: 'Bike',
+                category: 'vehicle',
+                createdAt: now,
+                updatedAt: now,
+              ),
+            );
+        transport.pages.add({
+          'changes': [
+            {'entity_type': 'item', 'record': record(version: 1)},
+          ],
+          'next_cursor': {'sequence': 1},
+        });
+        await MobileSync(db, transport, () => user).run();
+        expect(await db.outboxDao.getAllMutations(user), isEmpty);
+        expect((await db.itemsDao.getItemById(user, item))?.version, 1);
+        final peer =
+            FakeTransport()
+              ..pages.add({
+                'changes': [
+                  {'entity_type': 'item', 'record': record(version: 1)},
+                ],
+                'next_cursor': {'sequence': 1},
+              });
+        await MobileSync(second, peer, () => user).run();
+        expect((await second.itemsDao.getItemById(user, item))?.name, 'Bike');
+        peer.pages.add({
+          'changes': [
+            {
+              'entity_type': 'item',
+              'record': record(name: 'Updated', version: 2),
+            },
+          ],
+          'next_cursor': {'sequence': 2},
+        });
+        await MobileSync(second, peer, () => user).run();
+        expect(
+          (await second.itemsDao.getItemById(user, item))?.name,
+          'Updated',
+        );
+        expect((await second.itemsDao.getItemById(user, item))?.version, 2);
+      } finally {
+        await second.close();
+      }
+    },
+  );
+
+  test(
+    'checkpoint survives later corrupt page; retry uses committed cursor',
+    () async {
+      transport.pages.add({
+        'changes': [
+          {'entity_type': 'item', 'record': record()},
+        ],
+        'next_cursor': {'sequence': 1},
+      });
+      transport.pages.add({
+        'changes': [42],
+        'next_cursor': {'sequence': 2},
+      });
+      await expectLater(
+        MobileSync(db, transport, () => user).run(),
+        throwsFormatException,
+      );
+      expect(
+        (await db.getSyncMetadata(user, 'pull_cursor'))?.lastSyncedAt,
+        jsonEncode({'sequence': 1}),
+      );
+      transport.pages.add({
+        'changes': [
+          {'entity_type': 'item', 'record': record(name: 'New', version: 2)},
+        ],
+        'next_cursor': {'sequence': 2},
+      });
+      await MobileSync(db, transport, () => user).run();
+      expect((await db.itemsDao.getItemById(user, item))?.name, 'New');
+    },
+  );
+
+  test('malformed dependent row stays queued without breaking pull', () async {
+    await db.outboxDao.enqueue(
+      SyncOutboxCompanion.insert(
+        operationId: op,
+        userId: user,
+        entityType: 'progress',
+        recordId: reminder,
+        operationType: 'insert',
+        createdAt: now,
+        payloadJson: '{broken',
+      ),
+    );
     transport.pages.add({
       'changes': [
         {'entity_type': 'item', 'record': record()},
       ],
-      'next_cursor': {'changed_at': now, 'rank': 1, 'id': item},
+      'next_cursor': {'sequence': 1},
     });
     await MobileSync(db, transport, () => user).run();
-    expect(await db.remindersDao.getReminderById(user, reminder), isNotNull);
+    expect((await db.outboxDao.getAllMutations(user)).single.status, 'failed');
+    expect((await db.itemsDao.getItemById(user, item))?.name, 'Bike');
   });
 }

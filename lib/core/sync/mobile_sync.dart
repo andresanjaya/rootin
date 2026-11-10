@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rootin_mobile/core/database/database.dart';
 import 'package:rootin_mobile/core/database/database_providers.dart';
@@ -14,8 +16,8 @@ abstract class SyncTransport {
 }
 
 class SupabaseSyncTransport implements SyncTransport {
-  SupabaseSyncTransport(this.client);
-  final SupabaseClient client;
+  SupabaseSyncTransport();
+  SupabaseClient get client => Supabase.instance.client;
 
   @override
   Future<Map<String, dynamic>> push(
@@ -37,7 +39,7 @@ class SupabaseSyncTransport implements SyncTransport {
 }
 
 final syncTransportProvider = Provider<SyncTransport>(
-  (ref) => SupabaseSyncTransport(Supabase.instance.client),
+  (ref) => SupabaseSyncTransport(),
 );
 
 final mobileSyncProvider = Provider<MobileSync>(
@@ -45,7 +47,12 @@ final mobileSyncProvider = Provider<MobileSync>(
     ref.watch(appDatabaseProvider),
     ref.watch(syncTransportProvider),
     () {
-      final session = Supabase.instance.client.auth.currentSession;
+      Session? session;
+      try {
+        session = Supabase.instance.client.auth.currentSession;
+      } on AssertionError {
+        return null;
+      }
       final user = ref.read(currentUserProvider);
       return session == null || user == null || session.user.id != user.id
           ? null
@@ -60,6 +67,7 @@ class MobileSync {
   final SyncTransport transport;
   final String? Function() authenticatedUser;
   bool _running = false;
+  final status = ValueNotifier<SyncRunStatus>(const SyncRunStatus());
 
   void _checkUser(String userId) {
     if (authenticatedUser() != userId) {
@@ -75,22 +83,41 @@ class MobileSync {
       throw StateError('Authenticated Supabase session required');
     }
     _running = true;
+    status.value = const SyncRunStatus(running: true);
     try {
-      // Snapshot RPC exposes latest row only, not an append-only change log.
-      // Each pass starts at null; keep prior checkpoint until replacement commits.
       final queue = await db.outboxDao.getAllMutations(userId);
       for (final row in queue) {
         _checkUser(userId);
-        if (row.status == 'conflict' || row.status == 'failed') break;
-        if (row.status != 'pending' && row.status != 'processing') break;
+        if (row.status == 'conflict') break;
+        if (row.status == 'failed') {
+          final attempted = DateTime.tryParse(row.lastAttemptAt ?? '');
+          if (attempted == null ||
+              DateTime.now().toUtc().difference(attempted) <
+                  Duration(seconds: 1 << row.retryCount.clamp(0, 6))) {
+            break;
+          }
+        }
+        if (row.status != 'pending' &&
+            row.status != 'processing' &&
+            row.status != 'failed') {
+          break;
+        }
         Map<String, dynamic> request;
         try {
           request = _request(row);
         } on FormatException catch (e) {
-          await db.outboxDao.markFailed(row.id, errorMessage: '$e');
+          await db.outboxDao.markFailed(
+            row.id,
+            errorMessage: '$e',
+            incrementRetry: false,
+          );
           break;
         } on StateError catch (e) {
-          await db.outboxDao.markFailed(row.id, errorMessage: '$e');
+          await db.outboxDao.markFailed(
+            row.id,
+            errorMessage: '$e',
+            incrementRetry: false,
+          );
           break;
         }
         await db.outboxDao.markProcessing(row.id);
@@ -114,6 +141,11 @@ class MobileSync {
         }
         final result = results.single as Map;
         if (result['status'] == 'conflict_rejected') {
+          if (result['server_version'] != null &&
+              result['server_version'] is! int) {
+            await db.outboxDao.markPending(row.id);
+            throw const FormatException('Invalid conflict version');
+          }
           await db.outboxDao.markConflict(
             row.id,
             errorMessage: 'Server version: ${result['server_version']}',
@@ -124,16 +156,60 @@ class MobileSync {
           await db.outboxDao.markPending(row.id);
           throw const FormatException('Unknown sync push status');
         }
-        await db.outboxDao.deleteMutation(row.id);
+        if ((result['version'] is! int || result['version'] < 1) &&
+            row.entityType != 'progress' &&
+            row.entityType != 'completion') {
+          await db.outboxDao.markPending(row.id);
+          throw const FormatException('Accepted mutation missing version');
+        }
+        await db.transaction(() async {
+          _checkUser(userId);
+          final version = result['version'];
+          if (version is int) {
+            if (row.entityType == 'item') {
+              await (db.update(db.items)..where(
+                (t) => t.id.equals(row.recordId) & t.userId.equals(userId),
+              )).write(ItemsCompanion(version: Value(version)));
+            } else if (row.entityType == 'reminder') {
+              await (db.update(db.reminders)..where(
+                (t) => t.id.equals(row.recordId) & t.userId.equals(userId),
+              )).write(RemindersCompanion(version: Value(version)));
+            } else if (row.entityType == 'preference') {
+              await (db.update(db.userPreferences)..where(
+                (t) => t.userId.equals(userId),
+              )).write(UserPreferencesCompanion(version: Value(version)));
+            }
+          }
+          // Pull authoritative values after ack; queued writes stay dirty.
+          await db.outboxDao.deleteMutation(row.id);
+        });
       }
       await _pull(userId);
+      final remaining = await db.outboxDao.getAllMutations(userId);
+      status.value = SyncRunStatus(
+        hasError: remaining.any(
+          (r) => r.status == 'failed' || r.status == 'conflict',
+        ),
+        lastSuccess: DateTime.now().toUtc(),
+      );
+    } catch (error) {
+      status.value = SyncRunStatus(hasError: true, lastError: '$error');
+      rethrow;
     } finally {
       _running = false;
+      if (status.value.running) {
+        status.value = const SyncRunStatus(hasError: true);
+      }
     }
   }
 
   Map<String, dynamic> _request(SyncOutboxData row) {
-    final decoded = jsonDecode(row.payloadJson);
+    dynamic decoded;
+    try {
+      decoded = jsonDecode(row.payloadJson);
+    } on FormatException {
+      throw const FormatException('Invalid outbox JSON');
+    }
     if (decoded is! Map<String, dynamic>) {
       throw const FormatException('Outbox payload must be a JSON object');
     }
@@ -145,14 +221,27 @@ class MobileSync {
           decoded['entity_type'] != row.entityType ||
           decoded['operation_type'] != row.operationType ||
           decoded['version'] is! int ||
+          decoded['version'] < 1 ||
           decoded['payload'] is! Map) {
         throw const FormatException('Outbox request mismatches its identity');
       }
-      return decoded;
+      if (decoded['payload'] is Map &&
+          (decoded['payload'] as Map).keys.any((key) => key is! String)) {
+        throw const FormatException('Invalid outbox payload keys');
+      }
+      return Map<String, dynamic>.from(decoded);
     }
     if (row.operationType != 'insert' ||
         row.entityType != 'item' && row.entityType != 'reminder') {
       throw StateError('Legacy mutation requires explicit server version');
+    }
+    if (decoded['name'] is! String ||
+        decoded['name'].trim().isEmpty ||
+        row.entityType == 'item' && decoded['category'] is! String ||
+        row.entityType == 'reminder' &&
+            (decoded['item_id'] is! String ||
+                decoded['engine_type'] is! String)) {
+      throw const FormatException('Legacy insert payload is incomplete');
     }
     return {
       'operation_id': row.operationId,
@@ -165,8 +254,13 @@ class MobileSync {
   }
 
   Future<void> _pull(String userId) async {
-    Map<String, dynamic>? cursor;
-    final all = <Map<String, dynamic>>[];
+    final stored = await db.getSyncMetadata(userId, 'pull_cursor');
+    Map<String, dynamic>? cursor =
+        stored?.lastSyncedAt == null
+            ? null
+            : Map<String, dynamic>.from(
+              jsonDecode(stored!.lastSyncedAt!) as Map,
+            );
     while (true) {
       _checkUser(userId);
       final page = await transport.pull(cursor);
@@ -180,13 +274,15 @@ class MobileSync {
         throw const FormatException('Pull page missing cursor');
       }
       if (changes.isEmpty) break;
-      if (all.length + changes.length > 10000) {
-        throw StateError('Sync snapshot exceeds 10000 records');
-      }
       final nextCursor = Map<String, dynamic>.from(next as Map);
-      if (jsonEncode(cursor) == jsonEncode(nextCursor)) {
+      if (nextCursor['sequence'] is! int ||
+          nextCursor['sequence'] < 0 ||
+          (cursor != null &&
+              (cursor['sequence'] is! int ||
+                  nextCursor['sequence'] <= cursor['sequence']))) {
         throw const FormatException('Pull cursor did not advance');
       }
+      final batch = <Map<String, dynamic>>[];
       for (final raw in changes) {
         if (raw is! Map ||
             raw['record'] is! Map ||
@@ -197,37 +293,87 @@ class MobileSync {
         if (record['user_id'] != userId) {
           throw const FormatException('Cross-account sync record');
         }
-        all.add({'entity_type': raw['entity_type'], 'record': record});
+        batch.add({'entity_type': raw['entity_type'], 'record': record});
       }
-      cursor = nextCursor;
-    }
-    await db.transaction(() async {
-      _checkUser(userId);
-      for (final type in ['item', 'reminder', 'reminder_log']) {
-        for (final change in all.where(
-          (entry) => entry['entity_type'] == type,
-        )) {
-          await _apply(userId, type, change['record'] as Map<String, dynamic>);
+      // A skipped dirty change must be replayed after its mutation resolves.
+      // Never advance checkpoint past an unapplied record.
+      final outstanding = await db.outboxDao.getAllMutations(userId);
+      if (batch.any(
+        (change) => _blockedByPending(
+          change['entity_type'] as String,
+          change['record'] as Map<String, dynamic>,
+          outstanding,
+        ),
+      )) {
+        break;
+      }
+      await db.transaction(() async {
+        _checkUser(userId);
+        for (final type in [
+          'item',
+          'reminder',
+          'reminder_log',
+          'progress_event',
+          'preference',
+        ]) {
+          for (final change in batch.where(
+            (entry) => entry['entity_type'] == type,
+          )) {
+            await _apply(
+              userId,
+              type,
+              change['record'] as Map<String, dynamic>,
+            );
+          }
         }
-      }
-      _checkUser(userId);
-      if (cursor != null) {
+        _checkUser(userId);
         await db.setSyncMetadata(
           SyncMetadataCompanion.insert(
             key: 'pull_cursor',
             userId: userId,
-            lastSyncedAt: Value(jsonEncode(cursor)),
+            lastSyncedAt: Value(jsonEncode(nextCursor)),
             updatedAt: DateTime.now().toUtc().toIso8601String(),
           ),
         );
-      }
-    });
+      });
+      cursor = nextCursor;
+    }
   }
 
   Future<bool> _dirty(String userId, String type, String id) async =>
       (await db.outboxDao.getAllMutations(
         userId,
       )).any((row) => row.entityType == type && row.recordId == id);
+
+  bool _blockedByPending(
+    String type,
+    Map<String, dynamic> record,
+    List<SyncOutboxData> pending,
+  ) {
+    if (pending.isEmpty) return false;
+    final id = type == 'preference' ? record['user_id'] : record['id'];
+    return pending.any(
+      (row) =>
+          (row.entityType == type ||
+                  type == 'reminder_log' && row.entityType == 'completion' ||
+                  type == 'progress_event' && row.entityType == 'progress') &&
+              row.recordId == id ||
+          (type == 'item' &&
+              row.entityType == 'progress' &&
+              _queuedParent(row) == id) ||
+          (type == 'reminder' &&
+              row.entityType == 'completion' &&
+              _queuedParent(row, key: 'reminder_id') == id) ||
+          ((type == 'reminder' ||
+                  type == 'reminder_log' ||
+                  type == 'progress_event') &&
+              row.entityType == 'item' &&
+              row.recordId == record['item_id']) ||
+          ((type == 'reminder_log' || type == 'progress_event') &&
+              row.entityType == 'reminder' &&
+              row.recordId == record['reminder_id']),
+    );
+  }
 
   Future<void> _apply(
     String userId,
@@ -239,11 +385,7 @@ class MobileSync {
       if (id is! String ||
           await _dirty(userId, 'item', id) ||
           (await db.outboxDao.getAllMutations(userId)).any(
-            (row) =>
-                row.entityType == 'progress' &&
-                ((jsonDecode(row.payloadJson) as Map)['payload']
-                        as Map?)?['item_id'] ==
-                    id,
+            (row) => row.entityType == 'progress' && _queuedParent(row) == id,
           )) {
         return;
       }
@@ -253,6 +395,7 @@ class MobileSync {
       if (current != null && current.userId != userId) {
         throw const FormatException('Local record belongs to another account');
       }
+      if (current != null && current.version > (r['version'] as int)) return;
       await db
           .into(db.items)
           .insertOnConflictUpdate(
@@ -285,9 +428,7 @@ class MobileSync {
           (await db.outboxDao.getAllMutations(userId)).any(
             (row) =>
                 row.entityType == 'completion' &&
-                ((jsonDecode(row.payloadJson) as Map)['payload']
-                        as Map?)?['reminder_id'] ==
-                    id,
+                _queuedParent(row, key: 'reminder_id') == id,
           )) {
         return;
       }
@@ -297,6 +438,7 @@ class MobileSync {
       if (current != null && current.userId != userId) {
         throw const FormatException('Local record belongs to another account');
       }
+      if (current != null && current.version > (r['version'] as int)) return;
       await db
           .into(db.reminders)
           .insertOnConflictUpdate(
@@ -355,8 +497,69 @@ class MobileSync {
               version: Value(r['version'] as int),
             ),
           );
+    } else if (type == 'progress_event') {
+      if (id is! String ||
+          await _dirty(userId, 'progress', id) ||
+          await _dirty(userId, 'item', r['item_id'] as String) ||
+          (r['reminder_id'] != null &&
+              await _dirty(userId, 'reminder', r['reminder_id'] as String))) {
+        return;
+      }
+      final current =
+          await (db.select(db.progressEvents)
+            ..where((t) => t.id.equals(id))).getSingleOrNull();
+      if (current != null && current.userId != userId) {
+        throw const FormatException('Local record belongs to another account');
+      }
+      await db
+          .into(db.progressEvents)
+          .insertOnConflictUpdate(
+            ProgressEventsCompanion.insert(
+              id: id,
+              userId: userId,
+              itemId: r['item_id'] as String,
+              reminderId: Value(r['reminder_id'] as String?),
+              kind: r['kind'] as String,
+              amount: r['amount'] as int,
+              recordedAt: r['recorded_at'] as String,
+            ),
+          );
+    } else if (type == 'preference') {
+      if (r['user_id'] != userId ||
+          await _dirty(userId, 'preference', userId)) {
+        return;
+      }
+      final current =
+          await (db.select(db.userPreferences)
+            ..where((t) => t.userId.equals(userId))).getSingleOrNull();
+      final version = r['version'] as int;
+      if (current != null && version < current.version) return;
+      await db
+          .into(db.userPreferences)
+          .insertOnConflictUpdate(
+            UserPreferencesCompanion.insert(
+              userId: userId,
+              locale: Value(r['locale'] as String?),
+              distanceUnit: Value(r['distance_unit'] as String),
+              timezoneOverride: Value(r['time_zone'] as String?),
+              reminderTime: Value(current?.reminderTime ?? '09:00'),
+              version: Value(version),
+            ),
+          );
+    } else {
+      throw FormatException('Unsupported sync entity: $type');
     }
-    // progress_event and preference have no matching synced local table.
+  }
+
+  String? _queuedParent(SyncOutboxData row, {String key = 'item_id'}) {
+    try {
+      final request = _request(row);
+      return (request['payload'] as Map)[key] as String?;
+    } on FormatException {
+      return null; // Malformed rows stay failed; no local write is discarded.
+    } on StateError {
+      return null;
+    }
   }
 
   /// Explicitly discard one rejected local mutation and reload remote snapshot.
@@ -368,12 +571,35 @@ class MobileSync {
       final index = queue.indexWhere(
         (row) => row.id == outboxId && row.status == 'conflict',
       );
-      if (index < 0 || index != queue.length - 1) {
-        throw StateError('Resolve later queued mutations first');
+      if (index < 0) {
+        throw StateError('Conflict not found');
+      }
+      if (queue
+          .skip(index + 1)
+          .any(
+            (row) =>
+                row.recordId == queue[index].recordId ||
+                _queuedParent(row) == queue[index].recordId ||
+                _queuedParent(row, key: 'reminder_id') == queue[index].recordId,
+          )) {
+        throw StateError('Resolve dependent queued mutations first');
       }
       await db.outboxDao.deleteMutation(outboxId);
       await db.deleteSyncMetadataForUser(userId);
     });
     await run();
   }
+}
+
+class SyncRunStatus {
+  const SyncRunStatus({
+    this.running = false,
+    this.hasError = false,
+    this.lastSuccess,
+    this.lastError,
+  });
+  final bool running;
+  final bool hasError;
+  final DateTime? lastSuccess;
+  final String? lastError;
 }

@@ -151,6 +151,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         _useDeviceZone ? null : _timezone.text.trim(),
                     reminderTime:
                         '${_reminder.hour.toString().padLeft(2, '0')}:${_reminder.minute.toString().padLeft(2, '0')}',
+                    deviceTimezone: ref.read(deviceTimezoneProvider),
                   );
                   if (context.mounted) {
                     ScaffoldMessenger.of(

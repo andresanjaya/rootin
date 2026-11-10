@@ -11,10 +11,12 @@ void main() {
     () async {
       final dir = await Directory.systemTemp.createTemp('rootin-v1-');
       final file = File('${dir.path}/rootin.sqlite');
+      AppDatabase? opened;
       try {
         // Reconstruct actual v1 table shape from the pre-upgrade baseline using
         // Drift's schema SQL, then downgrade only the newly added table/version.
         var db = AppDatabase(NativeDatabase(file));
+        opened = db;
         await db.customSelect('SELECT 1').get();
         await db.customStatement(
           "INSERT INTO items (id,user_id,name,category,created_at,updated_at) VALUES ('item','u1','Bike','vehicle','2026-01-01T00:00:00Z','2026-01-01T00:00:00Z')",
@@ -26,15 +28,17 @@ void main() {
           "INSERT INTO sync_outbox (operation_id,user_id,entity_type,record_id,operation_type,payload_json,created_at) VALUES ('op','u1','reminder','rem','update','{}','2026-01-01T00:00:00Z')",
         );
         await db.customStatement('DROP TABLE user_preferences');
+        await db.customStatement('DROP TABLE progress_events');
         await db.customStatement('PRAGMA user_version = 1');
         await db.close();
 
         db = AppDatabase(NativeDatabase(file));
+        opened = db;
         expect(
           (await db.customSelect('PRAGMA user_version').getSingle()).read<int>(
             'user_version',
           ),
-          2,
+          3,
         );
         expect(
           (await db.customSelect('SELECT id FROM items').getSingle())
@@ -66,10 +70,12 @@ void main() {
           'u2',
           distanceUnit: 'km',
           reminderTime: '09:00',
+          deviceTimezone: 'UTC',
         );
         await db.close();
 
         db = AppDatabase(NativeDatabase(file));
+        opened = db;
         expect(
           (await db
                   .customSelect(
@@ -90,13 +96,16 @@ void main() {
         );
         expect(
           (await db
-                  .customSelect('SELECT operation_id FROM sync_outbox')
+                  .customSelect(
+                    "SELECT operation_id FROM sync_outbox WHERE operation_id='op'",
+                  )
                   .getSingle())
               .read<String>('operation_id'),
           'op',
         );
         await db.close();
       } finally {
+        await opened?.close();
         await dir.delete(recursive: true);
       }
     },
